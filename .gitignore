@@ -37,7 +37,7 @@ out/
 .vscode/
 
 ## application.properties
-!**/resources/
+**/resources/
 
 ## docker
-!**/docker
+**/docker
