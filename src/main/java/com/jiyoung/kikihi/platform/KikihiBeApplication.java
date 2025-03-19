@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.KIKIHI_BE;
+package com.jiyoung.kikihi.platform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

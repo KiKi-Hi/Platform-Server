@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.KIKIHI_BE;
+package com.jiyoung.kikihi.platform;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
