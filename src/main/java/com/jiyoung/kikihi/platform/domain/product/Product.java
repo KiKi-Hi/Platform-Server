@@ -11,11 +11,11 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
-public abstract class BaseProduct {
+public class Product {
 
     private Long id;
-    private String createdAt;
-    private String updatedAt;
+    private Long categoryId; // 카테고리 아이디를 통해서 분류한다.
+
     private String sortBy; // 정렬기준
     private String productName; // 상품명
     private String seller; // 판매처
@@ -34,5 +34,7 @@ public abstract class BaseProduct {
     private List<String> productDetailImages; // 상품 상세 이미지
     private String productInfoDisclosure; // 상품정보 제공공시
     private String transactionConditions; // 거래조건에 관한 정보
+    private String createdAt;
+    private String updatedAt;
 
 }

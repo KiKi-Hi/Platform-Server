@@ -1,4 +1,4 @@
 package com.jiyoung.kikihi.platform.adapter.out.jpa.product;
 
-public class KeyCapFavoriteJpaEntity {
+public class ProductFavoriteJpaEntity {
 }

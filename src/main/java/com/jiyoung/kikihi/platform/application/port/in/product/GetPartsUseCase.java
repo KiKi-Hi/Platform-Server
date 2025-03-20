@@ -1,8 +1,6 @@
 package com.jiyoung.kikihi.platform.application.port.in.product;
 
-import com.jiyoung.kikihi.platform.domain.product.Housing;
-import com.jiyoung.kikihi.platform.domain.product.KeyCap;
-import com.jiyoung.kikihi.platform.domain.product.Switch;
+import com.jiyoung.kikihi.platform.domain.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,58 +13,21 @@ public interface GetPartsUseCase {
         각각 조립품(하우징, 키캡, 스위치 등)은 각 사이트의 구매 링크를 모아서 사용자가 한번에 결제하도록 만들 수 있음
      */
 
-    // 부품 선택 시 조합 가격 반영
 
-    // 하우징 상세 조회
-    Housing getHousing(Long id);
+    // 상품 상세 조회
+    Product getProduct(Long id);
 
-    // 하우징 최신순
-    Page<Housing> getHousings(Pageable pageable);
+    // 상품 최신순 (카테고리별 조회)
+    Page<Product> getProducts(Pageable pageable, Long categoryId);
 
-    // 하우징 인기순
-    Page<Housing> getHousingsByLike(Pageable pageable);
+    // 상품 인기순 (카테고리별 조회)
+    Page<Product> getProductsByLike(Pageable pageable, Long categoryId);
 
-    // 하우징 조건별 , 조건문 추가해야 한다.
-    Page<Housing> getHousingsByCondition(Pageable pageable);
+    // 상품 조건별 , 조건문 추가해야 한다. (카테고리별 조회)
+    Page<Product> getProductsByCondition(Pageable pageable, Long categoryId);
 
-    // 하우징 관심목록
-    Page<Housing> getHousingsByWishList(Pageable pageable);
+    // 상품 관심목록 (카테고리별 조회)
+    Page<Product> getProductsByWishList(Pageable pageable, Long categoryId);
 
-
-    ///  -----------------------------------------------
-
-    // 키캡 상세 조회
-    KeyCap getKeyCap(Long id);
-
-    // 키캡 최신순
-    Page<KeyCap> getKeyCaps(Pageable pageable);
-
-    // 키캡 인기순
-    Page<KeyCap> getKeyCapsByLike(Pageable pageable);
-
-    // 키캡 조건별 , 조건문 추가해야 한다.
-    Page<KeyCap> getKeyCapsByCondition(Pageable pageable);
-
-    // 키캡 관심목록
-    Page<KeyCap> getKeyCapsByWishList(Pageable pageable);
-
-    ///  -----------------------------------------------
-
-    // 스위치 상세 조회
-    Switch getSwitch(Long id);
-
-    // 스위치 최신순
-    Page<Switch> getSwitches(Pageable pageable);
-
-    // 스위치 인기순
-    Page<Switch> getSwitchesByLike(Pageable pageable);
-
-    // 스위치 조건별 , 조건문 추가해야 한다.
-    Page<Switch> getSwitchesByCondition(Pageable pageable);
-
-    // 스위치 관심목록
-    Page<Switch> getSwitchesByWishList(Pageable pageable);// 스위치 조건별
-
-    // 기타
 
 }

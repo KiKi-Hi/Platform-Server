@@ -15,4 +15,8 @@ public interface CreateCustomUseCase {
     // 상품 생성
     Custom create(CustomRequest request);
 
+    // 장바구니에 넣도록 한다.
+    void addCart(Custom custom, Long userId);
+
+
 }

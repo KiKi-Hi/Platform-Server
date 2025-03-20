@@ -1,15 +1,12 @@
 package com.jiyoung.kikihi.platform.domain.product;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.jiyoung.kikihi.platform.domain.BaseDomain;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Builder
-public class Custom {
+@SuperBuilder
+public class Custom extends BaseDomain {
 
     /*
         유저가 완성한 커스텀 키보드 관련 엔티티 이다.
