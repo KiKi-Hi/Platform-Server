@@ -1,8 +1,5 @@
 package com.jiyoung.kikihi.platform.application.port.in.category;
 
-
-import java.util.Optional;
-
 public interface GetCategoryUseCase {
 
     /*

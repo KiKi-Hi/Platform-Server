@@ -15,17 +15,12 @@ public class Category {
 
     private String name;
 
-    private String code;
-
-    private String description;
 
     // of
-    public static Category of(Long parentId, String name, String code, String description) {
+    public static Category of(Long parentId, String name) {
         return Category.builder()
                 .name(name)
                 .parentId(parentId)
-                .code(code)
-                .description(description)
                 .build();
     }
 

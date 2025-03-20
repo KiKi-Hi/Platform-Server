@@ -1,18 +1,14 @@
-package com.jiyoung.kikihi.platform.domain.product;
+package com.jiyoung.kikihi.platform.adapter.out.mongo.product;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Builder
-public abstract class BaseProduct {
+@Document(collection = "base_product") // MongoDB 컬렉션 이름
+public abstract class BaseProductDocument {
 
+    @Id
     private Long id;
     private String createdAt;
     private String updatedAt;

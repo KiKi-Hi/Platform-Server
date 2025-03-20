@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.application.port.out;
+package com.jiyoung.kikihi.platform.application.port.out.product;
 
 public interface DeleteProductPort {
 

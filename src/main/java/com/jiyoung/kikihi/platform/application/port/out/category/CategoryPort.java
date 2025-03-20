@@ -1,7 +1,5 @@
-package com.jiyoung.kikihi.platform.application.port.out;
+package com.jiyoung.kikihi.platform.application.port.out.category;
 
-
-import java.util.Optional;
 
 public interface CategoryPort {
 
