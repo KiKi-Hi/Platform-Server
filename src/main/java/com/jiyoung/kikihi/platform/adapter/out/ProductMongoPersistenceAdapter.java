@@ -44,8 +44,8 @@ public class ProductMongoPersistenceAdapter implements SaveProductPort, LoadProd
 
     @Override
     public Page<Frame> findAllFrames(Pageable pageable) {
-        Page<FrameDocument> frameDocuments =frameMongoRepository.findAllFrames(pageable);
-        return frameDocuments.map(FrameDocument::toDomain);
+        return frameMongoRepository.findAllBy(pageable)
+                .map(FrameDocument::toDomain);
     }
 
 

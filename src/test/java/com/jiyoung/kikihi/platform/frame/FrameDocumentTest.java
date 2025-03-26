@@ -15,7 +15,7 @@ public class FrameDocumentTest {
     public void testToDomain() {
         // FrameDocument 객체를 만들어 테스트
         FrameDocument frameDocument = FrameDocument.builder()
-                .layout(Layout.FULL_SIZE) // 예시 값
+                .layout(Layout.FULL) // 예시 값
                 .materials(Material.ALUMINUM) // 예시 값
                 .mountType(MountType.BOTTOM_MOUNT) // 예시 값
                 .weight(1.2) // 예시 값
@@ -26,7 +26,7 @@ public class FrameDocumentTest {
         Frame frame = frameDocument.toDomain();
 
         // 변환된 객체가 예상한 값과 동일한지 확인
-        assertEquals(frame.getLayout(), Layout.FULL_SIZE);
+        assertEquals(frame.getLayout(), Layout.FULL);
         assertEquals(frame.getMaterials(), Material.ALUMINUM);
         assertEquals(frame.getMountType(), MountType.BOTTOM_MOUNT);
         assertEquals(frame.getWeight(), 1.2);

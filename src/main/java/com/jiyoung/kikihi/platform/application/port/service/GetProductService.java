@@ -56,7 +56,6 @@ public class GetProductService implements GetProductUseCase {
     @Override
     public Page<Frame> getFrameByFilter(FrameFilter filter, Pageable pageable) {
         // port를 사용해서 조회하기
-
         return loadPort.findAllFrames(pageable);
     }
 
