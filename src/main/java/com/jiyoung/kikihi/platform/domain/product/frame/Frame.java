@@ -1,9 +1,12 @@
 package com.jiyoung.kikihi.platform.domain.product.frame;
 
 import com.jiyoung.kikihi.platform.domain.product.Product;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
+@SuperBuilder
 public class Frame extends Product {
 
     private Layout layout; // 키보드 레이아웃 (예: 풀배열, 텐키리스 등)

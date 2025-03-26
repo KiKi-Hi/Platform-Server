@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -11,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Builder
+@SuperBuilder
 public abstract class Product {
 
-    private Long id;
+    private String id;
     private Long categoryId; // 카테고리 아이디를 통해서 분류한다.
 
     private String productName; // 상품명

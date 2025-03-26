@@ -6,7 +6,7 @@ services:
       - ./mysql/my.cnf:/etc/mysql/conf.d/mytv.cnf
       - ./mysql/data:/var/lib/mysql
     ports:
-      - '3306:3306'
+      - '4306:3306'
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
@@ -21,7 +21,7 @@ services:
     image: mongo:6.0.16
     container_name: kkh-mongodb
     ports:
-      - 27017:27017
+      - 37017:27017
     volumes:
       - ./mongodb/data:/data
     environment:

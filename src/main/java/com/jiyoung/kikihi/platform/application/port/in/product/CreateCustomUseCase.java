@@ -1,7 +1,7 @@
 package com.jiyoung.kikihi.platform.application.port.in.product;
 
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.CustomRequest;
-import com.jiyoung.kikihi.platform.domain.product.Custom;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomRequest;
+import com.jiyoung.kikihi.platform.domain.product.CustomKeyboard;
 
 public interface CreateCustomUseCase {
 
@@ -13,10 +13,10 @@ public interface CreateCustomUseCase {
      */
 
     // 상품 생성
-    Custom create(CustomRequest request);
+    CustomKeyboard create(CustomRequest request);
 
     // 장바구니에 넣도록 한다.
-    void addCart(Custom custom, Long userId);
+    void addCart(CustomKeyboard custom, Long userId);
 
 
 }

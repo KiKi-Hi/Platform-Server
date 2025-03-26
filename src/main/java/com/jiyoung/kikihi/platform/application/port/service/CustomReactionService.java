@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.application;
+package com.jiyoung.kikihi.platform.application.port.service;
 
 import com.jiyoung.kikihi.platform.application.port.in.product.ReactionPartsUseCase;
 import com.jiyoung.kikihi.platform.application.port.out.product.ProductReactionPort;
