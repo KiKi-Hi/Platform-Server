@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "frame")
 @AllArgsConstructor
@@ -17,10 +18,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 public class FrameDocument extends ProductDocument {
 
+    @Field("layout")
     private Layout layout;          // 키보드 레이아웃 (예: FULL, TKL 등)
+
+    @Field("materials")
     private Material materials;     // 재질 (예: ALUMINUM, PLASTIC 등)
+
+    @Field("mountType")
     private MountType mountType;    // 장착 방식 (예: GASKET, TRAY 등)
+
+    @Field("weight")
     private double weight;          // 무게 (예: 1.5)
+
+    @Field("soundDampening")
     private String soundDampening;  // 흡음 (예: "폼 추가")
 
     public Frame toDomain() {

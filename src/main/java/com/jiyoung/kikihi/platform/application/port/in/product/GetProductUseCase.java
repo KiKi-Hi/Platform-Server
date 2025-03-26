@@ -11,6 +11,8 @@ import com.jiyoung.kikihi.platform.domain.product.switches.Switch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface GetProductUseCase {
 
     /*
@@ -37,7 +39,7 @@ public interface GetProductUseCase {
 
     // frame filter 적용
     Page<Frame> getFrameByFilter(FrameFilter filter, Pageable pageable);
-
+    Page<Frame> getFrame(Pageable pageable);
     // switch filter 적용
     Page<Switch> getSwitchByFilter(SwitchFilter filter, Pageable pageable);
 

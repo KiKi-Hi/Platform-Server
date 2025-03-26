@@ -21,8 +21,7 @@ public interface FrameMongoRepository extends MongoRepository<FrameDocument, Str
 //    );
 
     // 모든 프레임을 페이징 처리하여 조회
-    @Query("{}")
-    Page<FrameDocument> findAllFrames(Pageable pageable);
+    Page<FrameDocument> findAllBy(Pageable pageable);
 
     // 필터를 적용한 조회
     @Query("{'materials': ?0, 'mountType': ?1, 'soundDampening': ?2, 'weight': ?3, 'layout': ?4}")

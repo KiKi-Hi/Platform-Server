@@ -7,7 +7,7 @@ public enum Layout {
     SIXTY_PERCENT("60%"),
     SEVENTY_PERCENT("70%"),
     TKL("TKL"),
-    FULL_SIZE("풀사이즈"),
+    FULL("풀사이즈"),
     TENKEYLESS("텐키리스");
 
     private final String displayName;

@@ -20,33 +20,22 @@ import java.util.Optional;
 public class ProductMongoPersistenceAdapter implements SaveProductPort, LoadProductPort, DeleteProductPort {
 
     private final FrameMongoRepository frameMongoRepository;
+
     @Override
     public Page<Frame> getFrames(FrameFilter filter, Pageable pageable) {
-        System.out.println("Fetching frames...");
-        Page<FrameDocument> frameDocuments =frameMongoRepository.findAll(pageable);
-        System.out.println("Fetched " + frameDocuments.getTotalElements() + " frames.");
+        Page<FrameDocument> frameDocuments =frameMongoRepository.findAllBy(pageable);
 
-        System.out.println(frameDocuments.getContent());
         return frameDocuments.map(FrameDocument::toDomain);
-//        Page<FrameDocument> frameDocuments = frameMongoRepository.findByFilter(
-//                filter.getMaterial(),
-//                filter.getMountType(),
-//                filter.getSoundDampening(),
-//                filter.getWeight(),
-//                filter.getLayout(),
-//                pageable);
-//
-//        System.out.println("FrameDocuments fetched: " + frameDocuments.getContent());
-//
-//        // frameDocuments 안의 각 FrameDocument 객체를 Frame 객체로 변환
-//        return frameDocuments.map(FrameDocument::toDomain);
     }
+
 
     @Override
     public Page<Frame> findAllFrames(Pageable pageable) {
-        Page<FrameDocument> frameDocuments =frameMongoRepository.findAllFrames(pageable);
+        Page<FrameDocument> frameDocuments =frameMongoRepository.findAllBy(pageable);
         return frameDocuments.map(FrameDocument::toDomain);
     }
+
+
 
 
     @Override

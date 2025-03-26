@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GetProductService implements GetProductUseCase {
@@ -56,7 +58,11 @@ public class GetProductService implements GetProductUseCase {
     @Override
     public Page<Frame> getFrameByFilter(FrameFilter filter, Pageable pageable) {
         // port를 사용해서 조회하기
+        return null;
+    }
 
+    @Override
+    public Page<Frame> getFrame(Pageable pageable) {
         return loadPort.findAllFrames(pageable);
     }
 

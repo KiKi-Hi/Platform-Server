@@ -2,6 +2,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.pageable.CustomPageRequest;
+import com.jiyoung.kikihi.global.response.pageable.PageResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.FrameFilter;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.KeycapFilter;
@@ -41,25 +42,20 @@ public class ProductController {
 
     // 조회 & 필터링 /api/frames?page=0&size=5&sort=price,desc
     @GetMapping("/frames")
-    public ApiResponse<Page<Frame>> getFrames(
-            @RequestParam(required = false) String material,
-            @RequestParam(required = false) String mountType,
-            @RequestParam(required = false) String soundDampening,
-            @RequestParam(required = false) Double weight,
-            @RequestParam(required = false) String layout,
-            CustomPageRequest pageRequest) {
+    public ApiResponse<PageResponse<Frame>> getFrames(
+                @RequestParam(required = false) String material,
+                @RequestParam(required = false) String mountType,
+                @RequestParam(required = false) String soundDampening,
+                @RequestParam(required = false) Double weight,
+                @RequestParam(required = false) String layout,
+                CustomPageRequest pageRequest) {
         FrameFilter filter = new FrameFilter(material, mountType, soundDampening, weight, layout);
-        Pageable pageable = PageRequest.of(
-                Math.max(pageRequest.getPage(), 0),  // 페이지 번호가 0보다 작지 않도록 보정
-                pageRequest.getSize()
-//                Sort.by(Sort.Direction.fromString(pageRequest.getDirection()), "price")  // <- 변경된 부분
-        );
-        System.out.println("Filter: " + filter);
-        System.out.println("pageable:"+pageable);
-        // 필터, 프레임 list를 다 갖고 오기 위해서 뭐가 필요한가?? 전체를 가져오는 건데???
-        Page<Frame> frameList = getProductService.getFrameByFilter(filter, pageable);
-        System.out.println("Total elements: " + frameList.getTotalElements());
-        return ApiResponse.ok(frameList);
+        Pageable pageable = org.springframework.data.domain.PageRequest
+                .of(pageRequest.getPage() - 1, pageRequest.getSize(), Sort.by("id")
+                        .descending());
+        Page<Frame> result=getProductService.getFrame(pageable);
+        List<Frame> frames=result.getContent();
+        return ApiResponse.ok(new PageResponse<>(frames,pageRequest,result.getTotalElements()));
     }
 
 

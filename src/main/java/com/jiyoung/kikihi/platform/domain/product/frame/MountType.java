@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum MountType {
-    TOP_MOUNT("Top Mount"),
-    BOTTOM_MOUNT("Bottom Mount"),
-    PLATE_MOUNT("Plate Mount"),
-    GASKET_MOUNT("Gasket Mount"),
-    TRAY_MOUNT("Tray Mount");
+    TOP("Top Mount"),
+    BOTTOM("Bottom Mount"),
+    PLATE("Plate Mount"),
+    GASKET("Gasket Mount"),
+    TRAY("Tray Mount");
 
     private final String displayName;
 
