@@ -1,8 +1,9 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.request;
 
-import lombok.Data;
 
-@Data
+import lombok.Getter;
+
+@Getter
 public class CustomRequest {
 
     private Long frameId;

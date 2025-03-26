@@ -33,8 +33,16 @@ public class ProductController {
 
 
     // custom keyboard 저장 (순서,호환 여부 check 가격 계산) 후 저장
-    @GetMapping
-    public ApiResponse<CustomKeyboard> saveCustomKeyboard(CustomRequest customRequest) {
+    @PostMapping
+    public ApiResponse<CustomKeyboard> saveCustomKeyboard(@RequestBody CustomRequest customRequest) {
+        // 입력받은 JSON 데이터를 출력
+        System.out.println("Received DTO: " + customRequest);
+
+        // 개별 필드가 null인지 확인
+        System.out.println("frameId: " + customRequest.getFrameId());
+        System.out.println("switchId: " + customRequest.getSwitchId());
+        System.out.println("keycapId: " + customRequest.getKeycapId());
+
         CustomKeyboard customKeyboard=customService.create(customRequest);
         return ApiResponse.ok(customKeyboard);
     }

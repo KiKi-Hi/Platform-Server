@@ -1,9 +1,9 @@
 package com.jiyoung.kikihi.platform.adapter.out.jpa.product;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.BaseEntity;
 import com.jiyoung.kikihi.platform.domain.product.CustomKeyboard;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,12 +14,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "custom")
 public class CustomKeyBoardJpaEntity extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // 자동 생성 추가
     private Long id;
+
+    @JsonProperty("frameId")
     private Long frameId;
+
+    @JsonProperty("switchId")
     private Long switchId;
+
+    @JsonProperty("keycapId")
     private Long keycapId;
     private String name;
     private double price;

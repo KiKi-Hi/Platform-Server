@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.adapter;
+package com.jiyoung.kikihi.platform.adapter.out;
 
 import com.jiyoung.kikihi.platform.adapter.out.jpa.product.CustomKeyBoardJpaEntity;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.product.repository.CustomKeyBoardJpaRepository;
@@ -10,13 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ProductJpaAdapter implements CustomPort {
+
     private final CustomKeyBoardJpaRepository customRepository;
 
     // CustomPort
     @Override
     public CustomKeyboard saveCustom(CustomKeyboard custom) {
-        var customJpaEntity= CustomKeyBoardJpaEntity.from(custom);
-        return customRepository.save(customJpaEntity).toDomain();
+        CustomKeyBoardJpaEntity jpaEntity=customRepository.save(CustomKeyBoardJpaEntity.from(custom));
+        return jpaEntity.toDomain();
     }
 }
 
