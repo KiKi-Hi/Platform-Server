@@ -3,11 +3,10 @@ package com.jiyoung.kikihi.platform.application.port.service;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.FrameFilter;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.KeycapFilter;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.SwitchFilter;
-import com.jiyoung.kikihi.platform.application.port.in.product.CreateCustomUseCase;
 import com.jiyoung.kikihi.platform.application.port.in.product.GetProductUseCase;
 import com.jiyoung.kikihi.platform.application.port.out.product.DeleteProductPort;
 import com.jiyoung.kikihi.platform.application.port.out.product.LoadProductPort;
-import com.jiyoung.kikihi.platform.application.port.out.product.ProductReactionPort;
+import com.jiyoung.kikihi.platform.application.port.out.product.ReactionPort;
 import com.jiyoung.kikihi.platform.application.port.out.product.SaveProductPort;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import com.jiyoung.kikihi.platform.domain.product.frame.Frame;
@@ -18,15 +17,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class GetProductService implements GetProductUseCase {
 
     private final SaveProductPort savePort;
     private final LoadProductPort loadPort;
-    private final ProductReactionPort reactionPort;
+    private final ReactionPort reactionPort;
     private final DeleteProductPort deletePort;
 
 

@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableJpaAuditing  // Auditing 활성화
-@EnableMongoRepositories(basePackages = "com.jiyoung.kikihi.platform.adapter.out.mongo")
 public class KikihiBeApplication {
 
 	public static void main(String[] args) {

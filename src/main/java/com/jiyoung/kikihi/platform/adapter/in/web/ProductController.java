@@ -7,6 +7,8 @@ import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.FrameFilter;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.KeycapFilter;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.filter.SwitchFilter;
+import com.jiyoung.kikihi.platform.application.port.in.product.CreateCustomUseCase;
+import com.jiyoung.kikihi.platform.application.port.in.product.GetProductUseCase;
 import com.jiyoung.kikihi.platform.application.port.service.CustomService;
 import com.jiyoung.kikihi.platform.application.port.service.GetProductService;
 import com.jiyoung.kikihi.platform.domain.product.CustomKeyboard;
@@ -28,8 +30,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final GetProductService getProductService;
-    private final CustomService customService;
+    private final GetProductUseCase getProductService;
+    private final CreateCustomUseCase customService;
 
 
     // custom keyboard 저장 (순서,호환 여부 check 가격 계산) 후 저장
@@ -84,6 +86,9 @@ public class ProductController {
 //
 //        return ApiResponse.ok(getProductsByFilter(filter, pageable, usePaging));
 //    }
+
+    // 상품 좋아요 기능
+
 
 
 }
