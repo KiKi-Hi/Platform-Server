@@ -2,8 +2,7 @@ name: Deploy Spring Boot to EC2
 
 on:
   push:
-    branches:
-      - temp/test-workflow  # temp/test-workflow 브랜치에 푸시될 때 실행
+    branches: ["temp/test-workflow"]   # temp/test-workflow 브랜치에 푸시될 때 실행
   workflow_dispatch:  # GitHub UI에서 'Run workflow' 버튼을 눌러 수동으로 실행할 수 있도록 설정
 
 jobs:
@@ -34,7 +33,9 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
 
       - name: 5. Gradle 빌드
-        run: ./gradlew build -x test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build -x test
 
       - name: 6. 빌드된 파일 이름 변경하기
         run: mv ./build/libs/*SNAPSHOT.jar ./kikihi-be-aws.jar
