@@ -3,7 +3,9 @@ version: '3.8'
 services:
   # Spring Boot App
   spring:
-    build: .
+    build:
+      context: ../
+      dockerfile: Dockerfile
     container_name: kkh-app
     expose:
       - "8080"
