@@ -40,7 +40,7 @@ out/
 **/resources/
 
 ## docker
-**/docker
+*.env
 
 ##test
 /src/test/*

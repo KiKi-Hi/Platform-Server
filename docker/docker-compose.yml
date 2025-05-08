@@ -14,6 +14,7 @@ services:
     networks:
       - backend-bridge
 
+
   # Nginx Proxy
   nginx:
     image: nginx:latest
