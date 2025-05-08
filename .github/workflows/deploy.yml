@@ -35,7 +35,7 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             # docker-compose 명령어 실행
-            cd /home/ubuntu/app
+            cd /home/ubuntu/app/docker
             docker-compose down
             docker-compose up --build -d
 
