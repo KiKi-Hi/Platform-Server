@@ -41,3 +41,6 @@ out/
 
 ## docker
 **/docker
+
+##test
+/src/test/*
