@@ -9,7 +9,7 @@ ENV GRADLE_OPTS="-Xmx1024m -Xms512m"
 RUN chmod +x ./gradlew
 
 # Gradle 빌드 실행 (테스트 제외)
-RUN ./gradlew build -x test
+RUN ./gradlew clean build -x test --no-daemon
 
 FROM openjdk:17-jdk
 WORKDIR /app
