@@ -40,7 +40,7 @@ out/
 **/resources/*.yml
 
 ## docker
-*.env
+#*.env
 
 ##test
 /src/test/*
