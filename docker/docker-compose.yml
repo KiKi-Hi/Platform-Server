@@ -28,7 +28,7 @@ services:
       - ./nginx/conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - springboot
+      - kkh-app
     networks:
       - backend
 
