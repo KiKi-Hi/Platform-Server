@@ -17,7 +17,7 @@ services:
   nginx:  # nginx 서비스 정의
     image: nginx:latest  # 사용할 Docker 이미지
     volumes:
-      - ./nginx/default.conf:/etc/nginx/nginx.conf  # 호스트의 nginx 설정 파일을 컨테이너 내 nginx 설정 경로로 마운트
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./data/certbot/conf:/etc/letsencrypt  # 인증서 관련 설정을 담은 디렉토리를 컨테이너 내 /etc/letsencrypt 로 마운트
       - ./data/certbot/www:/var/www/certbot  # certbot이 사용할 웹 루트 디렉토리를 컨테이너 내 /var/www/certbot 로 마운트
     restart: always  # 컨테이너가 종료될 경우 항상 재시작
