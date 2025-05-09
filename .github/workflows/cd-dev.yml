@@ -9,6 +9,7 @@
 name: 키키하이 CD 파이프라인
 
 on:
+
   workflow_run:
     workflows: ["키키하이 dev CI 파이프라인"]
     types:
@@ -16,7 +17,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'feat/KIKI-36-CI-CD' }}
     runs-on: ubuntu-22.04
 
     steps:
