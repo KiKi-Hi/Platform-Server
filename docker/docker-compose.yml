@@ -58,7 +58,7 @@ services:
     image: mongo:6.0.16
     container_name: kkh-mongodb
     ports:
-      - '37017:27017'
+      - '27017:27017'
     volumes:
       - ./mongodb/data:/data
     environment:
