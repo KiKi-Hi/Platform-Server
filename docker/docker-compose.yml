@@ -15,8 +15,7 @@ services:
       - mongodb
     networks:
       - backend-bridge
-    env_file:
-      - .env
+
 
   # Nginx Proxy
   nginx:
@@ -31,7 +30,7 @@ services:
     depends_on:
       - spring
     networks:
-      - backend
+      - backend-bridge
 
 
   # MySQL
