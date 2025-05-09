@@ -16,19 +16,26 @@ services:
       - backend-bridge
 
   # Nginx Proxy
-  nginx:
-    image: nginx:latest
-    container_name: nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
+  nginx:  # nginx 서비스 정의
+    image: nginx:latest  # 사용할 Docker 이미지
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - spring
-    networks:
-      - backend-bridge
+      - ./nginx/default.conf:/etc/nginx/nginx.conf  # 호스트의 nginx 설정 파일을 컨테이너 내 nginx 설정 경로로 마운트
+      - ./data/certbot/conf:/etc/letsencrypt  # 인증서 관련 설정을 담은 디렉토리를 컨테이너 내 /etc/letsencrypt 로 마운트
+      - ./data/certbot/www:/var/www/certbot  # certbot이 사용할 웹 루트 디렉토리를 컨테이너 내 /var/www/certbot 로 마운트
+    restart: always  # 컨테이너가 종료될 경우 항상 재시작
+    ports:
+      - 80:80  # 호스트의 80 포트를 컨테이너의 80 포트로 매핑
+      - 443:443  # 호스트의 443 포트를 컨테이너의 443 포트로 매핑
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    # 컨테이너 시작 시 실행할 명령어. nginx를 실행하고 주기적으로 설정을 다시 불러옴.
 
+  certbot:  # certbot 서비스 정의
+    image: certbot/certbot  # 사용할 Docker 이미지 지정
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt  # 인증서 관련 설정을 담은 디렉토리를 컨테이너 내 /etc/letsencrypt 로 마운트
+      - ./data/certbot/www:/var/www/certbot  # certbot이 사용할 웹 루트 디렉토리를 컨테이너 내 /var/www/certbot 로 마운트
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    # 컨테이너 시작 시 실행할 진입점(entrypoint)을 설정. certbot을 주기적으로 갱신하는 작업을 반복적으로 수행.
   # MySQL
   mysql:
     image: mysql:8.0
