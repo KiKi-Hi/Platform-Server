@@ -17,14 +17,14 @@ services:
   nginx:  # nginx 서비스 정의
     image: nginx:latest  # 사용할 Docker 이미지
     volumes:
-      - ./dev/nginx:/etc/nginx/conf.d
-      - /letsencrypt/certbot/conf:/etc/letsencrypt
-      - /letsencrypt/certbot/www:/var/www/certbot
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     ports:
       - 80:80
       - 443:443
     depends_on:
-      - spring
+      - certbot
     networks:
       - backend-bridge
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
