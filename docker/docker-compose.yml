@@ -30,7 +30,7 @@ services:
     depends_on:
       - spring
     networks:
-      - backend
+      - backend-bridge
 
   # MySQL
   mysql:
