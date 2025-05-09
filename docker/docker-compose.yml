@@ -20,15 +20,17 @@ services:
   # Nginx Proxy
   nginx:
     image: nginx:latest
-    container_name: nginx-proxy
+    container_name: nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - spring
+      - springboot
     networks:
-      - backend-bridge
+      - backend
 
   # MySQL
   mysql:
