@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   ### 키키하이 서버
