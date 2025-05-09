@@ -1,21 +1,19 @@
 version: '3.8'
 
 services:
-  # Spring Boot App
+
+  ### 키키하이 서버
   spring:
-    build:
-      context: ../
-      dockerfile: Dockerfile
+    image: kikihi/server:latest
     container_name: kkh-app
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     depends_on:
       - mysql
       - redis
       - mongodb
     networks:
       - backend-bridge
-
 
   # Nginx Proxy
   nginx:

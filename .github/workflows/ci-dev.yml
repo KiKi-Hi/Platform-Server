@@ -6,7 +6,7 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
 
-name: 키키하이 CI 파이프라인
+name: 키키하이 dev CI 파이프라인
 
 on:
   push:
