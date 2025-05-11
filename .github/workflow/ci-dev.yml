@@ -38,6 +38,12 @@ jobs:
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
           
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_PROD_YML }}" > ./src/main/resources/application-prod.yml
+          
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
+          
           mkdir -p src/test/resources
           echo "${{ secrets.TEST_APPLICATION_YML }}" > ./src/test/resources/application.yml
 
