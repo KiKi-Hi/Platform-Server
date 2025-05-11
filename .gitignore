@@ -38,6 +38,3 @@ out/
 
 ## application.properties
 **/resources/
-
-## docker
-**/docker
