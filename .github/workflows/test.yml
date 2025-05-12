@@ -7,11 +7,11 @@
 
 name: 키키하이 dev 테스트 CI 파이프라인
 
-### develop으로 PR 올릴 때, 테스트 코드를 실행하여, 체크하는 로직을 수행한다.
+### develop, main 으로 PR 올릴 때, 테스트 코드를 실행하여, 체크하는 로직을 수행한다.
 
 on:
   pull_request:
-    branches: ["develop"]
+    branches: ["develop","main"]
 
 jobs:
   #1. Test 용
