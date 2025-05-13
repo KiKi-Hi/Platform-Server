@@ -1,7 +1,5 @@
 package com.jiyoung.kikihi.platform.domain.user;
 
-import jakarta.persistence.*;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,32 +8,25 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
 @AllArgsConstructor
 @SuperBuilder
 public class User {
 
-    @Id
     private UUID id;
-
     private String name;
     private String email;
     private String password;
     private String phoneNumber;
-
-    @Enumerated(EnumType.STRING)
     private Role role;
-
     private String profileImage;
-
-    @Embedded
     private Address address;
 
-    @PrePersist
+    // 사용자 ID를 생성하는 메소드 (JPA에서의 @PrePersist처럼)
     public void generateUUID() {
-        this.id = UUID.randomUUID();
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
     }
 }
