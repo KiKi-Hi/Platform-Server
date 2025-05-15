@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiResponse<?> handleAccessDeniedException(AccessDeniedException ex) {
         log.error("[권한 없음] Exception: {}", ex.getMessage());
-        return ApiResponse.fail(new CustomException(ErrorCode.Forbidden,ex.getMessage()));
+        return ApiResponse.fail(new CustomException(ErrorCode.FORBIDDEN,ex.getMessage()));
     }
 
 
