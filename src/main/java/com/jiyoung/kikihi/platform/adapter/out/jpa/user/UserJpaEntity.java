@@ -1,12 +1,10 @@
 package com.jiyoung.kikihi.platform.adapter.out.jpa.user;
 
 import com.jiyoung.kikihi.platform.adapter.out.jpa.BaseTimeEntity;
+import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.Role;
 import jakarta.persistence.*;
-
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.util.UUID;
 
 @Entity
@@ -18,11 +16,16 @@ import java.util.UUID;
 public class UserJpaEntity extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
-    private String password;
+
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -31,10 +34,12 @@ public class UserJpaEntity extends BaseTimeEntity {
     private String profileImage;
 
     @Embedded
-    private AddressJpaEntity address;
+    private Address address;
 
     @PrePersist
     public void generateUUID() {
-        this.id = UUID.randomUUID();
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
     }
 }

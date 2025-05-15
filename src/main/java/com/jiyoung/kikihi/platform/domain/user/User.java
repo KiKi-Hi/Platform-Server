@@ -17,7 +17,6 @@ public class User {
     private UUID id;
     private String name;
     private String email;
-    private String password;
     private String phoneNumber;
     private Role role;
     private String profileImage;
