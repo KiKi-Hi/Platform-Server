@@ -17,8 +17,13 @@ public enum ErrorCode {
     // 404 Not Found
     NOT_FOUND_END_POINT(404, HttpStatus.NOT_FOUND, "요청한 대상이 존재하지 않습니다."),
     // 500 Internal Server Error
-    INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
 
+    // Custom Exception
+    TOKEN_EXPIRED(401, HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    TOKEN_INVALID(401, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    TOKEN_NOT_FOUND(401, HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
+    TOKEN_UNSUPPORTED(401, HttpStatus.UNAUTHORIZED, "지원하지 않는 토큰 형식입니다.");
 
     private final Integer code;
     private final HttpStatus httpStatus;
