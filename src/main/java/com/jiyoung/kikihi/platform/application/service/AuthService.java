@@ -1,7 +1,6 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.auth.jwt.service.JWTService;
-import com.jiyoung.kikihi.global.auth.oauth2.google.GoogleUtil;
 import com.jiyoung.kikihi.global.auth.oauth2.kakao.KaKaoDto;
 import com.jiyoung.kikihi.global.auth.oauth2.kakao.KakaoUtil;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.LoginDto;
@@ -20,7 +19,7 @@ import java.util.Optional;
 public class AuthService {
 
     private final KakaoUtil kakaoUtil;
-    private final GoogleUtil googleUtil;
+//    private final GoogleUtil googleUtil;
     private final JWTService jwtService;
     private final UserService userService;
 

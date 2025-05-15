@@ -1,12 +1,12 @@
 package com.jiyoung.kikihi.global.auth.jwt.util;
 
+import com.jiyoung.kikihi.platform.domain.user.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JWTProvider {
@@ -26,17 +26,17 @@ public class JWTProvider {
     private Long accessTokenExpiration;
 
     // Access Token 생성
-    public String generateAccessToken(Long userId, String email, String role) {
+    public String generateAccessToken(UUID userId, String email, Role role) {
         return generateToken(userId, email, role);
     }
 
     // Refresh Token 생성
-    public String generateRefreshToken(Long userId, String email, String role) {
+    public String generateRefreshToken(UUID userId, String email, Role role) {
         return generateToken(userId, email, role);
     }
 
     // 공통 토큰 생성 메서드
-    public String generateToken(Long userId, String email, String role) {
+    public String generateToken(UUID userId, String email, Role role) {
         return Jwts.builder()
                 .claim(ID_CLAIM, userId)
                 .claim(EMAIL_CLAIM, email)

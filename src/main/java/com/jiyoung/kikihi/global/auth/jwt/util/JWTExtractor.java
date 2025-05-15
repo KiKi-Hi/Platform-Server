@@ -1,6 +1,5 @@
 package com.jiyoung.kikihi.global.auth.jwt.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -11,10 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.jiyoung.kikihi.global.auth.jwt.util.JWTProvider.ACCESS_TOKEN_SUBJECT;
 
@@ -30,7 +28,6 @@ public class JWTExtractor {
     private String SECRET_KEY;
 
     private Key key;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
     public void init() {
@@ -45,7 +42,7 @@ public class JWTExtractor {
     }
 
     // 사용자 정보 추출
-    public Long getId(String token) {
+    public UUID getId(String token) {
         return getIdFromToken(token, ID_CLAIM);
     }
 
@@ -67,9 +64,9 @@ public class JWTExtractor {
         return claims.get(claimName, String.class);
     }
 
-    private Long getIdFromToken(String token, String claimName) {
+    private UUID getIdFromToken(String token, String claimName) {
         Claims claims = parseClaims(token);
-        return claims.get(claimName, Long.class);
+        return claims.get(claimName, UUID.class);
     }
 
     private Claims parseClaims(String token) {

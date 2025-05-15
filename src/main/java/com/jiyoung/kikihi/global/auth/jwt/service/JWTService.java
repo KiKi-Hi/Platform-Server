@@ -7,8 +7,11 @@ import com.jiyoung.kikihi.global.auth.jwt.util.RedisUtil;
 import com.jiyoung.kikihi.global.common.response.CustomException;
 import com.jiyoung.kikihi.global.common.response.ErrorCode;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.UserTokenDto;
+import com.jiyoung.kikihi.platform.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +29,14 @@ public class JWTService {
         return JWTTokenDto.of(accessToken, refreshToken);
     }
 
-    // Refresh Token 생성
+    // Token 재발급
     public JWTTokenDto reissueJwtToken(String refreshToken) {
+        // refreshToken 만료
         if (jwtExtractor.isExpired(refreshToken)) {
             throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
-        Long userId = jwtExtractor.getId(refreshToken);
+        UUID userId = jwtExtractor.getId(refreshToken);
         String redisToken = (String) redisUtil.getRefreshToken(userId);
 
         if (!redisToken.equals(refreshToken)) {
@@ -41,7 +45,7 @@ public class JWTService {
 
         String email = jwtExtractor.getEmail(refreshToken);
         String role = jwtExtractor.getRole(refreshToken);
-        return generateJwtToken(UserTokenDto.of(userId, email, role));
+        return generateJwtToken(UserTokenDto.of(userId, email, Role.valueOf(role)));
     }
 
 

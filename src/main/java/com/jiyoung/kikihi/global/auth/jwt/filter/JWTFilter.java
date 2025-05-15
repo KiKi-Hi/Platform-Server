@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.jiyoung.kikihi.global.common.response.ErrorCode.*;
 
@@ -58,7 +59,7 @@ public class JWTFilter extends OncePerRequestFilter {
     // 토큰 받아서 유저정보로 Authentication설정
     private void setAuthenticationToContext(String token) {
         // 토큰에서 유저정보 추출 (id, email, role)
-        Long id = jwtExtractor.getId(token);
+        UUID id = jwtExtractor.getId(token);
         String email = jwtExtractor.getEmail(token);
         String role = jwtExtractor.getRole(token);
 
