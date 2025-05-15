@@ -1,5 +1,9 @@
 package com.jiyoung.kikihi.global.auth.jwt.util;
 
+import com.jiyoung.kikihi.global.common.response.CustomException;
+import com.jiyoung.kikihi.global.common.response.ErrorCode;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -8,7 +12,7 @@ import org.springframework.http.ResponseCookie;
 import java.util.UUID;
 
 public class CookieUtil {
-    
+
     @Value("${kikihi.auth.jwt.cookieMaxAge}")
     private Long cookieMaxAge;
 
@@ -29,6 +33,17 @@ public class CookieUtil {
                 .build();
         response.setHeader("Set-Cookie", cookie.toString());
     }
+
+    // 쿠키 가져오기
+    private static Cookie[] getCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND_IN_COOKIE);
+        }
+        return cookies;
+    }
+
     // 쿠키 삭제
     public void deleteCookie(HttpServletResponse response, UUID userId) {
         ResponseCookie cookie = ResponseCookie.from(String.valueOf(userId), "value")

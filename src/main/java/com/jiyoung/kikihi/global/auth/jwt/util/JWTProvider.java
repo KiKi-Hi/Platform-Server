@@ -3,10 +3,12 @@ package com.jiyoung.kikihi.global.auth.jwt.util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Date;
 
+@Component
 public class JWTProvider {
 
     public static final String ACCESS_TOKEN_SUBJECT = "Authorization";
