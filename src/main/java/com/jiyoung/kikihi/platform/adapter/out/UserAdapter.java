@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.out;
 
+import com.jiyoung.kikihi.platform.adapter.out.jpa.user.UserJpaEntity;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.user.UserJpaRepository;
 import com.jiyoung.kikihi.platform.application.out.user.UserPort;
 import com.jiyoung.kikihi.platform.domain.user.User;
@@ -15,7 +16,9 @@ public class UserAdapter implements UserPort {
 
     @Override
     public User saveUser(User user) {
-        return userJpaRepository.save(user);
+        var entity=UserJpaEntity.from(user);
+        UserJpaEntity savedEntity =userJpaRepository.save(entity);
+        return UserJpaEntity.toDomain(savedEntity);
     }
 
     @Override
@@ -31,6 +34,11 @@ public class UserAdapter implements UserPort {
     @Override
     public Optional<User> loadUserById(Long userId) {
         return Optional.empty();
+    }
+
+    @Override
+    public User findByKakaoId(Long kakaoId) {
+        return null;
     }
 
 

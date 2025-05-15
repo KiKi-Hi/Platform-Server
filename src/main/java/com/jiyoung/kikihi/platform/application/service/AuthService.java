@@ -39,12 +39,13 @@ public class AuthService {
         log.debug("[Kakao Login] 사용자 정보 수신 완료 - kakaoId: {}", userInfo.id());
 
         // 2. DB에서 회원 조회
-        Optional<User> user = Optional.ofNullable(userService.findByKakaoId(kakaoId)
-                .orElseGet(() -> {
-                    log.info("[Kakao Login] 신규 회원, 회원가입 처리 - kakaoId: {}", kakaoId);
-                    // 회원등록
-                    return userService.joinUser(userInfo);
-                }));
+        User user = userService.findByKakaoId(kakaoId);
+
+        if (user == null) {
+            log.info("[Kakao Login] 신규 회원, 회원가입 처리 - kakaoId: {}", kakaoId);
+            user = userService.joinUser(userInfo);
+        }
+
 
 
         // 3. 정상 회원 → 정식 JWT 발급(카카오에서 받은 access token으로 유저정보를 활용해서 우리 서버 전용 토큰 발행)

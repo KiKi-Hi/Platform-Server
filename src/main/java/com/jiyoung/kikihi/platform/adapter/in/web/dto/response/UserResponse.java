@@ -17,7 +17,6 @@ public record UserResponse(
          UUID id,
          String name,
          String email,
-         String password,
          String phoneNumber,
          Role role,
          String profileImage,
@@ -27,7 +26,6 @@ public record UserResponse(
             UUID id,
             String name,
             String email,
-            String password,
             String phoneNumber,
             Role role,
             String profileImage,
@@ -37,7 +35,6 @@ public record UserResponse(
                 .id(id)
                 .name(name)
                 .email(email)
-                .password(password)
                 .phoneNumber(phoneNumber)
                 .role(role)
                 .profileImage(profileImage)
@@ -45,12 +42,11 @@ public record UserResponse(
                 .build();
     }
 
-    public static UserResponse from(Optional<User> user) {
+    public static UserResponse from(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .profileImage(user.getProfileImage())

@@ -38,8 +38,8 @@ public class UserService implements AuthUseCase {
     }
 
 
-    public Optional<User> findByKakaoId(Long kakaoId) {
-        return Optional.empty();
+    public User findByKakaoId(Long kakaoId) {
+        return userPort.findByKakaoId(kakaoId);
     }
 
 }

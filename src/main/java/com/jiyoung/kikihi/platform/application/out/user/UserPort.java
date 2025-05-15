@@ -17,4 +17,5 @@ public interface UserPort {
 
     Optional<User> loadUserById(Long userId);
 
+    User findByKakaoId(Long kakaoId);
 }

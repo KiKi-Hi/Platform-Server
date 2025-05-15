@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -19,12 +21,12 @@ public class RedisUtil {
     private final RedisTemplate<String, String> redisTemplate;
 
 
-    public void setRefreshToken(Long id, String value) {
+    public void setRefreshToken(UUID id, String value) {
         String key = String.format(TOKEN_FORMAT, id);
         redisTemplate.opsForValue().set(key, value, refreshTokenExpiration, TimeUnit.MILLISECONDS);
     }
 
-    public Object getRefreshToken(Long id) {
+    public Object getRefreshToken(UUID id) {
         String key = String.format(TOKEN_FORMAT, id);
         Object getObjecet = redisTemplate.opsForValue().get(key);
 
