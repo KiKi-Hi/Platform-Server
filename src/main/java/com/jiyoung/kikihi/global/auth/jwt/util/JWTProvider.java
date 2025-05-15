@@ -25,9 +25,6 @@ public class JWTProvider {
     @Value("${kikihi.jwt.access.expiration}")
     private Long accessTokenExpiration;
 
-    @Value("${kikihi.jwt.refresh.expiration}")
-    private Long refreshTokenExpiration;
-
     // Access Token 생성
     public String generateAccessToken(Long userId, String email, String role) {
         return generateToken(userId, email, role);

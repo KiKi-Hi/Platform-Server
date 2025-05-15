@@ -14,6 +14,7 @@ public class RedisUtil {
 
     @Value("${kikihi.jwt.refresh.expiration}")
     private Long refreshTokenExpiration;
+
     private final static String TOKEN_FORMAT = "refreshToken:%s";
     private final RedisTemplate<String, String> redisTemplate;
 
