@@ -7,12 +7,12 @@ import lombok.Builder;
 @Builder
 public record LoginDto(
         JWTTokenDto jwtTokenDto,
-        UserResponse memberResponse
+        UserResponse userResponse
 ) {
     public static LoginDto of(JWTTokenDto jwtTokenDto, UserResponse userResponse) {
         return LoginDto.builder()
                 .jwtTokenDto(jwtTokenDto)
-                .memberResponse(userResponse)
+                .userResponse(userResponse)
                 .build();
     }
 

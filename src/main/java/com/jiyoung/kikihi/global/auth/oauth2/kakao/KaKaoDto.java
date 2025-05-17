@@ -3,6 +3,8 @@ package com.jiyoung.kikihi.global.auth.oauth2.kakao;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.UUID;
+
 public class KaKaoDto {
 
     public record KakaoAuthCode(
