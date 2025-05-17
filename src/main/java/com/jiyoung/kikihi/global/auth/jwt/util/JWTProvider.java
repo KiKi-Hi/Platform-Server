@@ -25,28 +25,34 @@ public class JWTProvider {
     @Value("${kikihi.jwt.access.expiration}")
     private Long accessTokenExpiration;
 
+    @Value("${kikihi.jwt.refresh.expiration}")
+    private Long refreshTokenExpiration;
+
     // Access Token 생성
     public String generateAccessToken(UUID userId, String email, Role role) {
-        return generateToken(userId, email, role);
-    }
-
-    // Refresh Token 생성
-    public String generateRefreshToken(UUID userId, String email, Role role) {
-        return generateToken(userId, email, role);
-    }
-
-    // 공통 토큰 생성 메서드
-    public String generateToken(UUID userId, String email, Role role) {
         return Jwts.builder()
                 .claim(ID_CLAIM, userId)
                 .claim(EMAIL_CLAIM, email)
                 .claim(ROLE_CLAIM, ROLE_PREFIX + role)
-                .claim("tokenType", "REFRESH_TOKEN")
-                .setSubject(userId.toString()) // 사용자 정보 (고유식별자)
+                .claim("tokenType", "ACCESS_TOKEN")
+                .setSubject(userId.toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration)) // 예: 15분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
+
+    // Refresh Token 생성
+    public String generateRefreshToken(UUID userId, String email, Role role) {
+        return Jwts.builder()
+                .claim(ID_CLAIM, userId)
+                .claim("tokenType", "REFRESH_TOKEN")
+                .setSubject(userId.toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration)) // 예: 7일
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
 
 }
