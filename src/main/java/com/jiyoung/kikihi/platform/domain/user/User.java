@@ -22,10 +22,4 @@ public class User {
     private String profileImage;
     private Address address;
 
-    // 사용자 ID를 생성하는 메소드 (JPA에서의 @PrePersist처럼)
-    public void generateUUID() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
-    }
 }

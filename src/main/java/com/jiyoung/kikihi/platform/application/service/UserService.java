@@ -1,8 +1,8 @@
 package com.jiyoung.kikihi.platform.application.service;
 
-import com.jiyoung.kikihi.global.auth.oauth2.kakao.KaKaoDto;
-import com.jiyoung.kikihi.global.common.response.CustomException;
-import com.jiyoung.kikihi.global.common.response.ErrorCode;
+import com.jiyoung.kikihi.security.oauth2.kakao.KaKaoDto;
+import com.jiyoung.kikihi.global.response.CustomException;
+import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.platform.application.in.auth.AuthUseCase;
 import com.jiyoung.kikihi.platform.application.out.user.UserPort;
 import com.jiyoung.kikihi.platform.domain.user.User;

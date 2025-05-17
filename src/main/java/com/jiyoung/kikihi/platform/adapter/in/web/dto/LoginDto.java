@@ -1,6 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto;
 
-import com.jiyoung.kikihi.global.auth.jwt.dto.JWTTokenDto;
+import com.jiyoung.kikihi.security.jwt.dto.JWTTokenDto;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.UserResponse;
 import lombok.Builder;
 

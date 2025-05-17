@@ -1,8 +1,8 @@
 package com.jiyoung.kikihi.platform.adapter.in.web;
 
-import com.jiyoung.kikihi.global.auth.oauth2.kakao.KaKaoDto;
-import com.jiyoung.kikihi.global.auth.oauth2.kakao.KakaoUtil;
-import com.jiyoung.kikihi.global.common.response.ApiResponse;
+import com.jiyoung.kikihi.security.oauth2.kakao.KaKaoDto;
+import com.jiyoung.kikihi.security.oauth2.kakao.KakaoUtil;
+import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.LoginDto;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.UserResponse;
 import com.jiyoung.kikihi.platform.application.service.AuthService;
@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import static com.jiyoung.kikihi.global.auth.jwt.util.JWTProvider.ACCESS_TOKEN_SUBJECT;
-import static com.jiyoung.kikihi.global.auth.jwt.util.JWTProvider.REFRESH_TOKEN_SUBJECT;
+import static com.jiyoung.kikihi.security.jwt.util.JWTProvider.ACCESS_TOKEN_SUBJECT;
+import static com.jiyoung.kikihi.security.jwt.util.JWTProvider.REFRESH_TOKEN_SUBJECT;
 
 @Slf4j
 @RequestMapping("/auth")

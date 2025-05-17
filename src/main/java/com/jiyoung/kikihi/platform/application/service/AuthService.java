@@ -1,10 +1,10 @@
 package com.jiyoung.kikihi.platform.application.service;
 
-import com.jiyoung.kikihi.global.auth.jwt.dto.JWTTokenDto;
-import com.jiyoung.kikihi.global.auth.jwt.service.JWTService;
-import com.jiyoung.kikihi.global.auth.jwt.util.CookieUtil;
-import com.jiyoung.kikihi.global.auth.oauth2.kakao.KaKaoDto;
-import com.jiyoung.kikihi.global.auth.oauth2.kakao.KakaoUtil;
+import com.jiyoung.kikihi.security.jwt.dto.JWTTokenDto;
+import com.jiyoung.kikihi.security.jwt.service.JWTService;
+import com.jiyoung.kikihi.security.jwt.util.CookieUtil;
+import com.jiyoung.kikihi.security.oauth2.kakao.KaKaoDto;
+import com.jiyoung.kikihi.security.oauth2.kakao.KakaoUtil;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.LoginDto;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.UserTokenDto;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.UserResponse;
