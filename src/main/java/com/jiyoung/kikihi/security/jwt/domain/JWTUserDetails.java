@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.security.jwt.user;
+package com.jiyoung.kikihi.security.jwt.domain;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
