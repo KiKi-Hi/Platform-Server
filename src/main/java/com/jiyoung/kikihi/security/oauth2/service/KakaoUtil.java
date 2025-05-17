@@ -1,5 +1,6 @@
-package com.jiyoung.kikihi.security.oauth2.kakao;
+package com.jiyoung.kikihi.security.oauth2.service;
 
+import com.jiyoung.kikihi.security.oauth2.service.dto.KaKaoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
