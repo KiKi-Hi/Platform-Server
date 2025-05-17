@@ -8,9 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class CookieUtil {
 
     @Value("${kikihi.auth.jwt.cookieMaxAge}")
