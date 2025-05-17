@@ -2,6 +2,7 @@ package com.jiyoung.kikihi.platform.adapter.out.jpa.user;
 
 import com.jiyoung.kikihi.platform.adapter.out.jpa.BaseTimeEntity;
 import com.jiyoung.kikihi.platform.domain.user.Address;
+import com.jiyoung.kikihi.platform.domain.user.Provider;
 import com.jiyoung.kikihi.platform.domain.user.Role;
 import com.jiyoung.kikihi.platform.domain.user.User;
 import jakarta.persistence.*;
@@ -20,6 +21,8 @@ public class UserJpaEntity extends BaseTimeEntity {
     @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
+    private Provider provider;
+
     @Column(nullable = false)
     private String name;
 
@@ -35,7 +38,7 @@ public class UserJpaEntity extends BaseTimeEntity {
     private String profileImage;
 
     @Embedded
-    private Address address;
+    private AddressJpaEntity address;
 
     @PrePersist
     public void generateUUID() {
@@ -48,23 +51,26 @@ public class UserJpaEntity extends BaseTimeEntity {
         return UserJpaEntity.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .provider(user.getProvider())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .profileImage(user.getProfileImage())
-                .address(user.getAddress())
+                .address(AddressJpaEntity.from(user.getAddress()))
                 .build();
     }
 
-    public static User toDomain(UserJpaEntity userJpaEntity) {
+    public User toDomain() {
         return User.builder()
-                .id(userJpaEntity.getId())
-                .name(userJpaEntity.getName())
-                .email(userJpaEntity.getEmail())
-                .phoneNumber(userJpaEntity.getPhoneNumber())
-                .role(userJpaEntity.getRole())
-                .profileImage(userJpaEntity.getProfileImage())
-                .address(userJpaEntity.getAddress())
+                .id(id)
+                .provider(provider)
+                .name(name)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .role(role)
+                .profileImage(profileImage)
+                .address(address.toDomain())
                 .build();
     }
+
 }

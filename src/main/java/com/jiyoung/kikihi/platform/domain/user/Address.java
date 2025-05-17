@@ -15,4 +15,20 @@ public class Address {
     private String postCode;
     private String address;
     private String detailedAddress;
+
+    public static Address of() {
+        return Address.builder()
+                .postCode("postCode")
+                .address("address")
+                .detailedAddress("detailedAddress")
+                .build();
+    }
+
+    public static Address of(String postCode, String address, String detailedAddress) {
+        return Address.builder()
+                .postCode(postCode)
+                .address(address)
+                .detailedAddress(detailedAddress)
+                .build();
+    }
 }

@@ -16,9 +16,10 @@ public class UserAdapter implements UserPort {
 
     @Override
     public User saveUser(User user) {
-        var entity=UserJpaEntity.from(user);
-        UserJpaEntity savedEntity =userJpaRepository.save(entity);
-        return UserJpaEntity.toDomain(savedEntity);
+        var entity = UserJpaEntity.from(user);
+
+        return userJpaRepository.save(entity)
+                .toDomain();
     }
 
     @Override

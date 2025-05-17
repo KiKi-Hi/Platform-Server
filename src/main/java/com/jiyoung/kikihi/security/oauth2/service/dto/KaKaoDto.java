@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.security.oauth2.kakao;
+package com.jiyoung.kikihi.security.oauth2.service.dto;
 
 
 import jakarta.validation.constraints.NotBlank;

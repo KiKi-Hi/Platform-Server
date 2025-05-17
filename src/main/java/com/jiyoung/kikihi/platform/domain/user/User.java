@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.domain.user;
 
+import com.jiyoung.kikihi.security.oauth2.domain.OAuth2UserInfo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class User {
 
     private UUID id;
+    private Provider provider;
     private String name;
     private String email;
     private String phoneNumber;
@@ -22,4 +24,16 @@ public class User {
     private String profileImage;
     private Address address;
 
+    public static User of(OAuth2UserInfo userInfo) {
+        return User.builder()
+                .id(UUID.randomUUID())
+                .provider(Provider.valueOf(userInfo.getProvider()))
+                .name(userInfo.getUserName())
+                .email(userInfo.getEmail())
+                .phoneNumber("phoneNumber")
+                .profileImage(userInfo.getImageUrl())
+                .role(Role.USER)
+                .address(Address.of())
+                .build();
+    }
 }
