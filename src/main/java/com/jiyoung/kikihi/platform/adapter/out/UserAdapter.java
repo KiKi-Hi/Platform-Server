@@ -41,5 +41,11 @@ public class UserAdapter implements UserPort {
         return null;
     }
 
+    @Override
+    public boolean existsByEmail(String email) {
+        Optional<UserJpaEntity> userJpaEntity = userJpaRepository.findByEmail(email);
+        return userJpaEntity.isPresent();
+    }
+
 
 }
