@@ -23,6 +23,8 @@ public class UserJpaEntity extends BaseTimeEntity {
 
     private Provider provider;
 
+    private String socialId;
+
     @Column(nullable = false)
     private String name;
 
@@ -52,6 +54,7 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .id(user.getId())
                 .name(user.getName())
                 .provider(user.getProvider())
+                .socialId(user.getSocialId())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
@@ -64,6 +67,7 @@ public class UserJpaEntity extends BaseTimeEntity {
         return User.builder()
                 .id(id)
                 .provider(provider)
+                .socialId(socialId)
                 .name(name)
                 .email(email)
                 .phoneNumber(phoneNumber)

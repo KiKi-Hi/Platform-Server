@@ -72,7 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
 
         // 필터를 적용하지 않을 URI 목록
-        return uri.startsWith("/auth/login/**") ||
+        return uri.startsWith("/oauth2/**") ||
                 uri.startsWith("/");
     }
 
