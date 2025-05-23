@@ -24,9 +24,6 @@ import java.util.List;
 
 public class SwaggerConfig {
 
-    @Value("${kikihi.jwt.access.header}")
-    private String accessHeader;
-
     @Bean
     public OpenAPI openAPI() {
         SecurityScheme accessSecurityScheme = getAccessSecurityScheme();
@@ -46,7 +43,7 @@ public class SwaggerConfig {
                 .scheme("bearer")
                 .bearerFormat("JWT")
                 .in(SecurityScheme.In.HEADER)
-                .name(accessHeader);
+                .name("Authorization");
     }
 
 
