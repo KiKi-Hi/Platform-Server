@@ -3,6 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.out;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.user.UserJpaEntity;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.user.UserJpaRepository;
 import com.jiyoung.kikihi.platform.application.out.user.UserPort;
+import com.jiyoung.kikihi.platform.domain.user.Provider;
 import com.jiyoung.kikihi.platform.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -38,14 +39,15 @@ public class UserAdapter implements UserPort {
     }
 
     @Override
-    public User findByKakaoId(Long kakaoId) {
-        return null;
-    }
-
-    @Override
     public boolean existsByEmail(String email) {
         Optional<UserJpaEntity> userJpaEntity = userJpaRepository.findByEmail(email);
         return userJpaEntity.isPresent();
+    }
+
+    @Override
+    public Optional<User> loadUserBySocialAndSocialId(Provider social, String socialId) {
+        return userJpaRepository.findByProviderAndSocialId(social, socialId)
+                .map(UserJpaEntity::toDomain);
     }
 
 

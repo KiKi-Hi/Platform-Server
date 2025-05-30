@@ -4,14 +4,10 @@ import com.jiyoung.kikihi.security.oauth2.domain.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
-
+@RequiredArgsConstructor
 public class GoogleUserInfo implements OAuth2UserInfo {
 
     private final Map<String, Object> attributes; // getAttributes()
-
-    public GoogleUserInfo(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
 
     @Override
     public String getProvider() {
