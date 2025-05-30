@@ -29,7 +29,7 @@ public class UserService implements AuthUseCase {
 
         setRefreshTokenCookie(jwtTokenDto.refreshToken(), response);
 
-        return null;
+        return jwtTokenDto.accessToken();
     }
 
 
