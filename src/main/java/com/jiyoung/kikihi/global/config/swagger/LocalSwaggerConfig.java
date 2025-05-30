@@ -1,20 +1,17 @@
 package com.jiyoung.kikihi.global.config.swagger;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("prod")
-@OpenAPIDefinition(servers = {@io.swagger.v3.oas.annotations.servers.Server(url = "https://kikihi.store", description = "KIKIHI API 명세서")})
-public class SwaggerConfig {
+@Profile("dev")
+public class LocalSwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
@@ -36,8 +33,6 @@ public class SwaggerConfig {
         return new Info()
                 .version("1.0")
                 .title("키키하이 API")
-                .description("키키하이 개발 서버의 API 입니다");
+                .description("키키하이 로컬 서버의 API 입니다");
     }
-
-
 }

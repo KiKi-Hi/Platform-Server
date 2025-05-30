@@ -1,8 +1,11 @@
 package com.jiyoung.kikihi.global.config;
 
 
-//import com.jiyoung.kikihi.global.auth.jwt.service.JwtTokenProvider;
-//import com.jiyoung.kikihi.global.auth.jwt.filter.TokenAuthenticationFilter;
+import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationDeniedHandler;
+import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFailureHandler;
+import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFilter;
+import com.jiyoung.kikihi.security.oauth2.handler.OAuth2SuccessHandler;
+import com.jiyoung.kikihi.security.oauth2.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-//    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+    private final JwtAuthenticationDeniedHandler jwtAuthenticationDeniedHandler;
+
+    private final OAuth2UserService oauth2UserService;
+    private final OAuth2SuccessHandler oauth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,13 +42,24 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-
+                        /// ! 항상 필터가 돈다. !
                         // 요청 허용
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 헤더 토큰 검사
-//                .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                // 필터 및 핸들러 처리
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception->{
+                    exception.authenticationEntryPoint(jwtAuthenticationFailureHandler)
+                            .accessDeniedHandler(jwtAuthenticationDeniedHandler);
+                })
+                .oauth2Login(
+                        oauth -> // OAuth2 로그인 기능에 대한 여러 설정의 진입점
+                                // OAuth2 로그인 성공 이후 사용자 정보를 가져올 때의 설정을 담당
+                                oauth.userInfoEndpoint(c -> c.userService(oauth2UserService))
+                                        // 로그인 성공 시 핸들러
+                                        .successHandler(oauth2SuccessHandler)
+                )
                 // 서버가 세션을 생성하지 않고 요청하마자 jwt토큰으로 인증을 처리???
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
