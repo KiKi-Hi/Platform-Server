@@ -2,7 +2,7 @@ services:
 
   ### 키키하이 도커 이미지
   spring:
-    image: kikihi/server:latest
+    image: kikihistore/server:latest
     container_name: kkh-app
     ports:
       - "8080:8080"

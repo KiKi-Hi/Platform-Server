@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.in.web;
 
+import com.jiyoung.kikihi.platform.adapter.in.web.swagger.AuthControllerSpec;
 import com.jiyoung.kikihi.platform.application.service.UserService;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,10 +12,10 @@ import static com.jiyoung.kikihi.security.jwt.util.JWTProvider.ACCESS_TOKEN_SUBJ
 import static com.jiyoung.kikihi.security.jwt.util.JWTProvider.REFRESH_TOKEN_SUBJECT;
 
 @Slf4j
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerSpec {
 
     private final UserService userService;
 
