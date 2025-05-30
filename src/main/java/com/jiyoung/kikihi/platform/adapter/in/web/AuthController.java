@@ -12,7 +12,7 @@ import static com.jiyoung.kikihi.security.jwt.util.JWTProvider.ACCESS_TOKEN_SUBJ
 import static com.jiyoung.kikihi.security.jwt.util.JWTProvider.REFRESH_TOKEN_SUBJECT;
 
 @Slf4j
-@RequestMapping("api/v1/user")
+@RequestMapping("/api/v1/user")
 @RestController
 @RequiredArgsConstructor
 public class AuthController implements AuthControllerSpec {
