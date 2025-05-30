@@ -1,6 +1,8 @@
 package com.jiyoung.kikihi.global.config;
 
 
+import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationDeniedHandler;
+import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFailureHandler;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFilter;
 import com.jiyoung.kikihi.security.oauth2.handler.OAuth2SuccessHandler;
 import com.jiyoung.kikihi.security.oauth2.service.OAuth2UserService;
@@ -21,6 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+    private final JwtAuthenticationDeniedHandler jwtAuthenticationDeniedHandler;
+
     private final OAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
@@ -42,8 +47,12 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 헤더 토큰 검사
+                // 필터 및 핸들러 처리
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception->{
+                    exception.authenticationEntryPoint(jwtAuthenticationFailureHandler)
+                            .accessDeniedHandler(jwtAuthenticationDeniedHandler);
+                })
                 .oauth2Login(
                         oauth -> // OAuth2 로그인 기능에 대한 여러 설정의 진입점
                                 // OAuth2 로그인 성공 이후 사용자 정보를 가져올 때의 설정을 담당
