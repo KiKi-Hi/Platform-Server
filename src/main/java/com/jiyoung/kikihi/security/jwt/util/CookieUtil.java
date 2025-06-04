@@ -1,7 +1,5 @@
 package com.jiyoung.kikihi.security.jwt.util;
 
-import com.jiyoung.kikihi.global.response.CustomException;
-import com.jiyoung.kikihi.global.response.ErrorCode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.ACCESS_TOKEN_COOKIE_NAME;
 import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.REFRESH_TOKEN_COOKIE_NAME;
@@ -33,68 +33,75 @@ public class CookieUtil {
     @Value("${kikihi.auth.jwt.cookiePathOption}")
     private String cookiePathOption;
 
-    // 쿠키 설정
+    // 쿠키 저장
     public void setAccessCookie(String accessToken, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, accessToken)
-                .maxAge(accessTokenExpiration)
-                .path(cookiePathOption)
-                .httpOnly(true)
-                .secure(secureOption) // Dev에서는 false, Prod에서는 true
-                .sameSite(sameSiteOption)
-                .build();
-
-        log.info("set access cookie: {}", cookie);
-        response.addHeader("Set-Cookie", cookie.toString());
+        setCookie(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, accessTokenExpiration);
     }
 
-    // 쿠키 설정
     public void setRefreshCookie(String refreshToken, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
-                .maxAge(refreshTokenExpiration)
-                .path(cookiePathOption)
-                .httpOnly(true)
-                .secure(secureOption) //https 적용 시 true
-                .sameSite(sameSiteOption)
-                .build();
-
-        log.info("set refresh cookie: {}", cookie);
-
-        response.addHeader("Set-Cookie", cookie.toString());
+        setCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, refreshTokenExpiration);
     }
 
-    // 쿠키 가져오기
-    private static Cookie[] getCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND_IN_COOKIE);
-        }
-        return cookies;
+    // 쿠키 조회
+    public Optional<String> getAccessTokenFromCookie(HttpServletRequest request) {
+        return getTokenFromCookie(request, ACCESS_TOKEN_COOKIE_NAME);
     }
 
+    public Optional<String> getRefreshTokenFromCookie(HttpServletRequest request) {
+        return getTokenFromCookie(request, REFRESH_TOKEN_COOKIE_NAME);
+    }
+
+    // 쿠키 삭제
     public void deleteAccessTokenCookie(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, "")
-                .maxAge(0)
-                .path(cookiePathOption)
-                .secure(secureOption)
-                .httpOnly(true)
-                .sameSite("None")
-                .build();
-
-        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        deleteCookie(response, ACCESS_TOKEN_COOKIE_NAME);
     }
 
     public void deleteRefreshTokenCookie(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
+        deleteCookie(response, REFRESH_TOKEN_COOKIE_NAME);
+    }
+
+
+
+    // 공통 쿠키 저장 메서드
+    private void setCookie(HttpServletResponse response, String cookieName, String tokenValue, long maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, tokenValue)
+                .maxAge(maxAge)
+                .path(cookiePathOption)
+                .httpOnly(true)
+                .secure(secureOption)  // Dev/Prod 환경에 따라 설정됨
+                .sameSite(sameSiteOption)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+
+    // 공통 쿠키 추출 메서드
+    private Optional<String> getTokenFromCookie(HttpServletRequest request, String cookieName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookieName.equals(cookie.getName())) {
+                    return Optional.ofNullable(cookie.getValue());
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+
+
+    // 공통 쿠키 삭제 메서드
+    private void deleteCookie(HttpServletResponse response, String cookieName) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, "")
                 .maxAge(0)
                 .path(cookiePathOption)
                 .secure(secureOption)
                 .httpOnly(true)
-                .sameSite("None")
+                .sameSite(sameSiteOption)
                 .build();
 
-        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
-
 
 }

@@ -1,7 +1,8 @@
 package com.jiyoung.kikihi.security.jwt.filter;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.security.jwt.util.JWTExtractor;
+import com.jiyoung.kikihi.security.jwt.exception.JwtAuthenticationException;
+import com.jiyoung.kikihi.security.jwt.util.JwtTokenExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +23,9 @@ import static com.jiyoung.kikihi.global.response.ErrorCode.*;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JWTExtractor jwtExtractor;
+    private final JwtTokenExtractor extractor;
     private final JwtAuthenticationFailureHandler failureHandler;
+    private final RequestMatcherHolder requestMatcherHolder;
 
     public final static String JWT_ERROR = "jwtError";
 
@@ -33,49 +35,55 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 토큰 추출
         try {
-            Optional<String> token = jwtExtractor.extractToken(request);
+            Optional<String> token = extractor.extractAccessToken(request);
 
-            // 토큰 검증 (null인지 validate한지 만료되었는지)
+            // 토큰 검증
+            // 비어있는 지
             if (token.isEmpty()) {
                 request.setAttribute(JWT_ERROR, TOKEN_NOT_FOUND);
                 throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND.getMessage());
             }
 
             String accessToken = token.get();
-            if (!jwtExtractor.validateToken(accessToken)) {
+
+            // 타당한지
+            if (!extractor.validateToken(accessToken)) {
                 request.setAttribute(JWT_ERROR, INVALID_TOKEN);
                 throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN.getMessage());
             }
 
-            if (jwtExtractor.isExpired(accessToken)) {
+            // 만료가 안되었는지
+            if (extractor.isExpired(accessToken)) {
                 request.setAttribute(JWT_ERROR, TOKEN_EXPIRED);
                 throw new JwtAuthenticationException(ErrorCode.TOKEN_EXPIRED.getMessage());
             }
 
             // 권한 생성하기
-            var authentication = jwtExtractor.getAuthentication(token.get());
+            var authentication = extractor.getAuthentication(token.get());
 
             /// 시큐리티 홀더에 해당 멤버 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("인증정보 :{}", authentication.getPrincipal().toString());
 
             filterChain.doFilter(request, response);
 
         } catch (JwtAuthenticationException ex) {
-            log.warn("JWT 인증 실패: {}", ex.getMessage());
 
+            /// 실패 핸들러로 이동
             failureHandler.commence(request, response, ex);
         }
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String uri = request.getRequestURI();
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        /// null 인 것 해결
+        boolean matches = requestMatcherHolder.getRequestMatchersByMinRole(null)
+                .matches(request);
 
-        // 필터를 적용하지 않을 URI 목록
-        return uri.startsWith("/oauth2/") ||
-                uri.startsWith("/error") ||
-                uri.startsWith("/login");
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+        log.info("[로그] 주소  {}, 방식 {},결과 {}}", requestURI, method, matches);
+
+        return matches;
     }
 
 }

@@ -3,10 +3,11 @@ package com.jiyoung.kikihi.security.jwt.util;
 import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.platform.application.out.user.UserPort;
 import com.jiyoung.kikihi.platform.domain.user.User;
-import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationException;
+import com.jiyoung.kikihi.security.jwt.exception.JwtAuthenticationException;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import io.jsonwebtoken.*;
-import jakarta.servlet.http.Cookie;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,86 +18,64 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.*;
 
-import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.ACCESS_TOKEN_COOKIE_NAME;
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.*;
+import static org.springframework.security.oauth2.core.OAuth2ErrorCodes.INVALID_TOKEN;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JWTExtractor {
-
-    private static final String BEARER = "Bearer ";
-    private static final String ID_CLAIM = "id";
-    private static final String EMAIL_CLAIM = "email";
-    private static final String ROLE_CLAIM = "role";
+public class JwtTokenExtractor {
 
     @Value("${kikihi.jwt.key}")
-    private String SECRET_KEY;
+    private String key;
 
+    private SecretKey secretKey;
+
+    /// 의존성
     private final UserPort userPort;
+    private final CookieUtil cookieUtil;
 
-    public Optional<String> extractToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
 
-        log.info("쿠키 목록: {}", Arrays.toString(cookies));
-
-        if (cookies == null) {
-            log.info("토큰 비었음");
-            return Optional.empty();
-        }
-
-        Optional<String> token = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN_COOKIE_NAME))
-                .map(Cookie::getValue)
-                .findFirst();
-
-        log.info("토큰 추출 완료: {}", token.orElse("없음"));
-
-        return token;
+    /// JWT 의존성은 SecretKey 필요
+    @PostConstruct
+    private void setSecretKey() {
+        secretKey = Keys.hmacShaKeyFor(key.getBytes());
     }
 
-
-
-    // 사용자 정보 추출
-    public String  getId(String token) {
-        return getIdFromToken(token, ID_CLAIM);
+    /// 토큰 추출하기
+    public Optional<String> extractAccessToken(HttpServletRequest request) {
+        return cookieUtil.getAccessTokenFromCookie(request);
     }
 
-    public String getEmail(String token) {
-        return getClaimFromToken(token, EMAIL_CLAIM);
+    public Optional<String> extractRefreshToken(HttpServletRequest request) {
+        return cookieUtil.getRefreshTokenFromCookie(request);
     }
 
-    public String getRole(String token) {
-        return getClaimFromToken(token, ROLE_CLAIM);
-    }
-
-    public Boolean isExpired(String token) {
-        Claims claims = parseClaims(token);
-        return claims.getExpiration().before(new Date());
-    }
-
-    private String getClaimFromToken(String token, String claimName) {
-        Claims claims = parseClaims(token);
-        return claims.get(claimName, String.class);
-    }
-
-    private String getIdFromToken(String token, String claimName) {
-        Claims claims = parseClaims(token);
-        return claims.get(claimName, String.class);
-    }
-
+    /// 내부 함수
     private Claims parseClaims(String token) {
-        JwtParser parser = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build();
-        return parser.parseClaimsJws(token).getBody();
+        try {
+            // JWT 파서를 빌드하고 서명된 토큰을 파싱
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)  // 서명 키를 설정
+                    .build()
+                    .parseClaimsJws(token)  // 서명된 JWT 토큰을 파싱
+                    .getBody();  // Claims 객체 반환
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+
+        } catch (MalformedJwtException e) {
+            throw new JwtAuthenticationException(INVALID_TOKEN);
+        }
     }
 
+    /// 검증 여부
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
 
@@ -125,8 +104,11 @@ public class JWTExtractor {
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
-        // userId를 Long으로 안전하게 변환
-        UUID userId = claims.get(ID_CLAIM, UUID.class);
+        // userId를 String 변환
+        String claimUserId = claims.get(ID_CLAIM, String.class);
+
+        /// UUID 변환
+        UUID userId = UUID.fromString(claimUserId);
 
         // 해당 userId로 Member를 조회
         User user = userPort.loadUserById(userId)
@@ -138,4 +120,32 @@ public class JWTExtractor {
         return new UsernamePasswordAuthenticationToken(details, token, authorities);
     }
 
+    /// @Getter
+    // 사용자 정보 추출
+    public String getId(String token) {
+        return getIdFromToken(token, ID_CLAIM);
+    }
+
+    public String getEmail(String token) {
+        return getClaimFromToken(token, EMAIL_CLAIM);
+    }
+
+    public String getRole(String token) {
+        return getClaimFromToken(token, ROLE_CLAIM);
+    }
+
+    public Boolean isExpired(String token) {
+        Claims claims = parseClaims(token);
+        return claims.getExpiration().before(new Date());
+    }
+
+    private String getClaimFromToken(String token, String claimName) {
+        Claims claims = parseClaims(token);
+        return claims.get(claimName, String.class);
+    }
+
+    private String getIdFromToken(String token, String claimName) {
+        Claims claims = parseClaims(token);
+        return claims.get(claimName, String.class);
+    }
 }
