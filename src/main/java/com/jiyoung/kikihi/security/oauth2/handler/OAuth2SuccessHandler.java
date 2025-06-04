@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +41,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         /// AccessToken과 Refresh 토큰 생성
         tokenService.generateJwtToken(userTokenDto, response);
+
+        /// 시큐리티 홀더에 해당 멤버 저장
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("인증정보 :{}", authentication.getPrincipal().toString());
 
         // 최종 리다이렉트 (프론트 홈 주소)
         getRedirectStrategy().sendRedirect(request, response, REDIRECT_PATH);

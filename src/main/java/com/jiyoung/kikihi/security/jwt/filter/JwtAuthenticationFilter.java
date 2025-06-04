@@ -1,7 +1,6 @@
 package com.jiyoung.kikihi.security.jwt.filter;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.security.jwt.domain.JWTUserDetails;
 import com.jiyoung.kikihi.security.jwt.util.JWTExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,16 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.jiyoung.kikihi.global.response.ErrorCode.*;
 
@@ -56,8 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 request.setAttribute(JWT_ERROR, TOKEN_EXPIRED);
                 throw new JwtAuthenticationException(ErrorCode.TOKEN_EXPIRED.getMessage());
             }
+
             // 권한 생성하기
-            setAuthenticationToContext(accessToken);
+            var authentication = jwtExtractor.getAuthentication(token.get());
+
+            /// 시큐리티 홀더에 해당 멤버 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("인증정보 :{}", authentication.getPrincipal().toString());
+
             filterChain.doFilter(request, response);
 
         } catch (JwtAuthenticationException ex) {
@@ -73,28 +74,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 필터를 적용하지 않을 URI 목록
         return uri.startsWith("/oauth2/") ||
-                uri.startsWith("/") ||
                 uri.startsWith("/error") ||
                 uri.startsWith("/login");
     }
-
-    // 토큰 받아서 유저정보로 Authentication설정
-    private void setAuthenticationToContext(String token) {
-
-        // 토큰에서 유저정보 추출 (id, email, role)
-        UUID id = jwtExtractor.getId(token);
-        String email = jwtExtractor.getEmail(token);
-        String role = jwtExtractor.getRole(token);
-
-        // AuthenticationManager로 인증받기
-        UserDetails userDetails = JWTUserDetails.of(id, email, role);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-        /// 시큐리티 컨텍스트에 저장하기
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-    }
-
-
 
 }

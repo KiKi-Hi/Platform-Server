@@ -4,6 +4,7 @@ import com.jiyoung.kikihi.platform.domain.user.Provider;
 import com.jiyoung.kikihi.platform.domain.user.User;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserPort {
 
@@ -16,7 +17,7 @@ public interface UserPort {
     /// 조회하기
     boolean checkExistingById(Long userId);
 
-    Optional<User> loadUserById(Long userId);
+    Optional<User> loadUserById(UUID userId);
 
     boolean existsByEmail(String email);
 

@@ -56,7 +56,7 @@ public class JWTService {
             throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
-        UUID userId = jwtExtractor.getId(refreshToken);
+        UUID userId = UUID.fromString(jwtExtractor.getId(refreshToken));
         String redisToken = (String) redisUtil.getRefreshToken(userId);
 
         if (!redisToken.equals(refreshToken)) {

@@ -11,6 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.ACCESS_TOKEN_COOKIE_NAME;
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.REFRESH_TOKEN_COOKIE_NAME;
+
 @Slf4j
 @Component
 public class CookieUtil {
@@ -32,7 +35,7 @@ public class CookieUtil {
 
     // 쿠키 설정
     public void setAccessCookie(String accessToken, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
+        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, accessToken)
                 .maxAge(accessTokenExpiration)
                 .path(cookiePathOption)
                 .httpOnly(true)
@@ -46,7 +49,7 @@ public class CookieUtil {
 
     // 쿠키 설정
     public void setRefreshCookie(String refreshToken, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
                 .maxAge(refreshTokenExpiration)
                 .path(cookiePathOption)
                 .httpOnly(true)
@@ -70,7 +73,7 @@ public class CookieUtil {
     }
 
     public void deleteAccessTokenCookie(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("ACCESS_TOKEN", "")
+        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, "")
                 .maxAge(0)
                 .path(cookiePathOption)
                 .secure(secureOption)
@@ -82,7 +85,7 @@ public class CookieUtil {
     }
 
     public void deleteRefreshTokenCookie(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("REFRESH_TOKEN", "")
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
                 .maxAge(0)
                 .path(cookiePathOption)
                 .secure(secureOption)

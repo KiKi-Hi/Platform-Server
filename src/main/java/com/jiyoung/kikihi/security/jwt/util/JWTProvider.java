@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.UUID;
 
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.ACCESS_TOKEN_COOKIE_NAME;
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.REFRESH_TOKEN_COOKIE_NAME;
+
 @Component
 public class JWTProvider {
 
@@ -34,7 +37,7 @@ public class JWTProvider {
                 .claim(ID_CLAIM, userId)
                 .claim(EMAIL_CLAIM, email)
                 .claim(ROLE_CLAIM, ROLE_PREFIX + role)
-                .claim("tokenType", "ACCESS_TOKEN")
+                .claim("tokenType", ACCESS_TOKEN_COOKIE_NAME)
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration)) // 예: 15분
@@ -46,7 +49,7 @@ public class JWTProvider {
     public String generateRefreshToken(UUID userId, String email, Role role) {
         return Jwts.builder()
                 .claim(ID_CLAIM, userId)
-                .claim("tokenType", "REFRESH_TOKEN")
+                .claim("tokenType", REFRESH_TOKEN_COOKIE_NAME)
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration)) // 예: 7일
