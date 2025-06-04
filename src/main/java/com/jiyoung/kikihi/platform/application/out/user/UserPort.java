@@ -15,7 +15,7 @@ public interface UserPort {
     User updateUser(User user);
 
     /// 조회하기
-    boolean checkExistingById(Long userId);
+    boolean checkExistingById(UUID userId);
 
     Optional<User> loadUserById(UUID userId);
 

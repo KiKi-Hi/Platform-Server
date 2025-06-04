@@ -30,13 +30,14 @@ public class UserAdapter implements UserPort {
     }
 
     @Override
-    public boolean checkExistingById(Long userId) {
-        return false;
+    public boolean checkExistingById(UUID userId) {
+        return userJpaRepository.existsById(userId);
     }
 
     @Override
     public Optional<User> loadUserById(UUID userId) {
-        return Optional.empty();
+        return userJpaRepository.findById(userId)
+                .map(UserJpaEntity::toDomain);
     }
 
     @Override
