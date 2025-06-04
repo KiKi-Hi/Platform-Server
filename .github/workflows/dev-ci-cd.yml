@@ -75,6 +75,7 @@ jobs:
           dockerfile: Dockerfile
           push: true
           tags: ${{secrets.DOCKER_USERNAME}}/server:latest
+          provenance: false
 
 
   CD:
