@@ -24,20 +24,17 @@ public class JwtAuthenticationDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-
-        /// 응답 내용 생성
-        ApiResponse<Object> fail = ApiResponse.fail(
-                new CustomException(ErrorCode.FORBIDDEN, accessDeniedException.getMessage())
-        );
-
+        // 권한 부족 403 Error
+        CustomException exception = new CustomException(ErrorCode.FORBIDDEN);
+        ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 
         /// response 제작
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-
-        objectMapper.writeValue(response.getWriter(), fail);
+        // JSON 응답
+        objectMapper.writeValue(response.getWriter(), apiResponse);
 
     }
 }

@@ -4,6 +4,7 @@ package com.jiyoung.kikihi.global.config;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationDeniedHandler;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFailureHandler;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFilter;
+import com.jiyoung.kikihi.security.jwt.filter.RequestMatcherHolder;
 import com.jiyoung.kikihi.security.oauth2.handler.OAuth2SuccessHandler;
 import com.jiyoung.kikihi.security.oauth2.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static com.jiyoung.kikihi.platform.domain.user.Role.ADMIN;
+import static com.jiyoung.kikihi.platform.domain.user.Role.USER;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,9 +28,10 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
     private final JwtAuthenticationDeniedHandler jwtAuthenticationDeniedHandler;
-
     private final OAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
+
+    private final RequestMatcherHolder requestMatcherHolder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,20 +40,17 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger 접근 허용
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        /// ! 항상 필터가 돈다. !
-                        // 요청 허용
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(null))
+                        .permitAll()
+                        .requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(USER))
+                        .hasAnyAuthority(USER.getRole(), ADMIN.getRole())
+                        .requestMatchers(requestMatcherHolder.getRequestMatchersByMinRole(ADMIN))
+                        .hasAnyAuthority(ADMIN.getRole())
                         .anyRequest().authenticated()
                 )
                 // 필터 및 핸들러 처리
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception->{
+                .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(jwtAuthenticationFailureHandler)
                             .accessDeniedHandler(jwtAuthenticationDeniedHandler);
                 })
@@ -60,19 +61,15 @@ public class SecurityConfig {
                                         // 로그인 성공 시 핸들러
                                         .successHandler(oauth2SuccessHandler)
                 )
-                // 서버가 세션을 생성하지 않고 요청하마자 jwt토큰으로 인증을 처리???
+                /// 세션 무력화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
 }

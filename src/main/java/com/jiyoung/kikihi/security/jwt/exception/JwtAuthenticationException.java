@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.security.jwt.filter;
+package com.jiyoung.kikihi.security.jwt.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

@@ -1,62 +1,107 @@
 package com.jiyoung.kikihi.security.jwt.util;
 
-import com.jiyoung.kikihi.global.response.CustomException;
-import com.jiyoung.kikihi.global.response.ErrorCode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import java.util.Optional;
 
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.ACCESS_TOKEN_COOKIE_NAME;
+import static com.jiyoung.kikihi.security.jwt.util.TokenNameUtil.REFRESH_TOKEN_COOKIE_NAME;
+
+@Slf4j
 @Component
 public class CookieUtil {
 
-    @Value("${kikihi.auth.jwt.cookieMaxAge}")
-    private Long cookieMaxAge;
+    @Value("${kikihi.jwt.access.expiration}")
+    private Long accessTokenExpiration;
+
+    @Value("${kikihi.jwt.refresh.expiration}")
+    private Long refreshTokenExpiration;
 
     @Value("${kikihi.auth.jwt.secureOption}")
     private boolean secureOption;
 
+    @Value("${kikihi.auth.jwt.sameSiteOption}")
+    private String sameSiteOption;
+
     @Value("${kikihi.auth.jwt.cookiePathOption}")
     private String cookiePathOption;
 
-    // 쿠키 설정
-    public void setCookie(String userId, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(userId)
-                .maxAge(cookieMaxAge)
-                .path(cookiePathOption)
-                .secure(secureOption) //https 적용 시 true
-                .httpOnly(true)
-                .sameSite("None")
-                .build();
-        response.setHeader("Set-Cookie", cookie.toString());
+    // 쿠키 저장
+    public void setAccessCookie(String accessToken, HttpServletResponse response) {
+        setCookie(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, accessTokenExpiration);
     }
 
-    // 쿠키 가져오기
-    private static Cookie[] getCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    public void setRefreshCookie(String refreshToken, HttpServletResponse response) {
+        setCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, refreshTokenExpiration);
+    }
 
-        if (cookies == null) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND_IN_COOKIE);
-        }
-        return cookies;
+    // 쿠키 조회
+    public Optional<String> getAccessTokenFromCookie(HttpServletRequest request) {
+        return getTokenFromCookie(request, ACCESS_TOKEN_COOKIE_NAME);
+    }
+
+    public Optional<String> getRefreshTokenFromCookie(HttpServletRequest request) {
+        return getTokenFromCookie(request, REFRESH_TOKEN_COOKIE_NAME);
     }
 
     // 쿠키 삭제
-    public void deleteCookie(HttpServletResponse response, UUID userId) {
-        ResponseCookie cookie = ResponseCookie.from(String.valueOf(userId), "value")
-                .maxAge(0) // 즉시만료
-                .path("/")
-                .secure(true)
+    public void deleteAccessTokenCookie(HttpServletResponse response) {
+        deleteCookie(response, ACCESS_TOKEN_COOKIE_NAME);
+    }
+
+    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+        deleteCookie(response, REFRESH_TOKEN_COOKIE_NAME);
+    }
+
+
+
+    // 공통 쿠키 저장 메서드
+    private void setCookie(HttpServletResponse response, String cookieName, String tokenValue, long maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, tokenValue)
+                .maxAge(maxAge)
+                .path(cookiePathOption)
                 .httpOnly(true)
-                .sameSite("None")
+                .secure(secureOption)  // Dev/Prod 환경에 따라 설정됨
+                .sameSite(sameSiteOption)
                 .build();
 
-        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+
+    // 공통 쿠키 추출 메서드
+    private Optional<String> getTokenFromCookie(HttpServletRequest request, String cookieName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookieName.equals(cookie.getName())) {
+                    return Optional.ofNullable(cookie.getValue());
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+
+
+    // 공통 쿠키 삭제 메서드
+    private void deleteCookie(HttpServletResponse response, String cookieName) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, "")
+                .maxAge(0)
+                .path(cookiePathOption)
+                .secure(secureOption)
+                .httpOnly(true)
+                .sameSite(sameSiteOption)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
 }

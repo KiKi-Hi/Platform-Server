@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -29,13 +30,14 @@ public class UserAdapter implements UserPort {
     }
 
     @Override
-    public boolean checkExistingById(Long userId) {
-        return false;
+    public boolean checkExistingById(UUID userId) {
+        return userJpaRepository.existsById(userId);
     }
 
     @Override
-    public Optional<User> loadUserById(Long userId) {
-        return Optional.empty();
+    public Optional<User> loadUserById(UUID userId) {
+        return userJpaRepository.findById(userId)
+                .map(UserJpaEntity::toDomain);
     }
 
     @Override

@@ -27,10 +27,8 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        ErrorCode errorCode = (ErrorCode) request.getAttribute(JWT_ERROR);
-
-        CustomException exception = new CustomException(errorCode);
-
+        // 로그인 필요 401 Error 발생
+        CustomException exception = new CustomException(ErrorCode.INVALID_LOGIN);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 
         // 응답 설정
@@ -38,7 +36,7 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // Jackson으로 ApiResponse를 JSON으로 직렬화
+        // JSON 응답
         objectMapper.writeValue(response.getWriter(), apiResponse);
     }
 }
