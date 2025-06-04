@@ -12,7 +12,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Value("${spring.front.host}")
-    private String host;
+    private String localHost;
+
+    @Value("${spring.front.prod}")
+    private String frontProd;
+
+    @Value("${spring.back.prod}")
+    private String backProd;
+
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -20,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(host)
+                        .allowedOrigins(localHost, frontProd, backProd)
                         .allowedMethods("*")
                         .allowCredentials(true);
             }
