@@ -34,17 +34,24 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 2. gradle 환경 설치
+      # 3. gradle 환경 설치
       - name: Gradle Wrapper 권한 부여
         run: chmod +x gradlew
 
-      # 4. gradle 환경 설치
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      # 4. 캐싱
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
 
       # 5. 빌드
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew clean build
 
       # 6. JUnit 테스트 결과 게시
       - name: Test 결과 출력
