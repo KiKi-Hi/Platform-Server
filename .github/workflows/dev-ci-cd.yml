@@ -69,13 +69,12 @@ jobs:
 
       #8. 도커 이미지 Push
       - name: Docker 이미지 Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: .
           dockerfile: Dockerfile
           push: true
           tags: ${{secrets.DOCKER_USERNAME}}/server:latest
-          provenance: false
 
 
   CD:
