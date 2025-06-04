@@ -21,13 +21,13 @@ public class RedisUtil {
     private final RedisTemplate<String, String> redisTemplate;
 
 
-    public void setRefreshToken(UUID id, String value) {
-        String key = String.format(TOKEN_FORMAT, id);
+    public void setRefreshToken(UUID userId, String value) {
+        String key = String.format(TOKEN_FORMAT, userId);
         redisTemplate.opsForValue().set(key, value, refreshTokenExpiration, TimeUnit.MILLISECONDS);
     }
 
-    public Object getRefreshToken(UUID id) {
-        String key = String.format(TOKEN_FORMAT, id);
+    public Object getRefreshToken(UUID userId) {
+        String key = String.format(TOKEN_FORMAT, userId);
         Object getObjecet = redisTemplate.opsForValue().get(key);
 
         if (getObjecet == null) {
@@ -37,13 +37,16 @@ public class RedisUtil {
         return getObjecet;
     }
 
-    public boolean hasRefreshTokenKey(Long id) {
-        String key = String.format(TOKEN_FORMAT, id);
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
-    }
+    /// 유저 Id를 통해 리프레쉬 토큰 삭제하기
+    public boolean deleteRefreshTokenByUserId(UUID userId) {
+        String key = String.format(TOKEN_FORMAT, userId);
 
-    public boolean deleteRefreshToken(Long id) {
-        String key = String.format(TOKEN_FORMAT, id);
+        Object getObjecet = redisTemplate.opsForValue().get(key);
+
+        if (getObjecet == null) {
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
+
         return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
 

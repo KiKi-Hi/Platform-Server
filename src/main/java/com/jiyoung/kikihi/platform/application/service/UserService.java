@@ -21,13 +21,10 @@ public class UserService implements AuthUseCase {
 
     /// 외부 의존성
     private final JWTService jwtService;
-    private final CookieUtil cookieUtil;
 
-    /// 재 로그인
+    /// 재발급
     public String reissue(String refreshToken, HttpServletResponse response) {
-        JWTTokenDto jwtTokenDto = jwtService.reissueJwtToken(refreshToken);
-
-        setRefreshTokenCookie(jwtTokenDto.refreshToken(), response);
+        JWTTokenDto jwtTokenDto = jwtService.reissueJwtToken(refreshToken, response);
 
         return jwtTokenDto.accessToken();
     }
@@ -38,10 +35,4 @@ public class UserService implements AuthUseCase {
         return userPort.existsByEmail(email);
     }
 
-
-    // 쿠키에 RefreshToken 설정 (HttpServletResponse 필요)
-    public void setRefreshTokenCookie(String refreshToken, HttpServletResponse response) {
-        cookieUtil.setCookie(refreshToken, response);
-        log.info("🍪 쿠키에 RefreshToken 저장 완료 - key: {}", refreshToken);
-    }
 }

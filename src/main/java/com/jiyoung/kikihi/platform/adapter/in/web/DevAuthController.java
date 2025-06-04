@@ -11,6 +11,7 @@ import com.jiyoung.kikihi.platform.domain.user.User;
 import com.jiyoung.kikihi.security.jwt.dto.JWTTokenDto;
 import com.jiyoung.kikihi.security.jwt.service.JWTService;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +33,8 @@ public class DevAuthController implements DevAuthControllerSpec {
     private final JWTService tokenProvider;
 
     @PostMapping("/dev-login")
-    public ApiResponse<JWTTokenDto> devLogin() {
+    public ApiResponse<JWTTokenDto> devLogin(HttpServletResponse httpServletResponse) {
+
         /// 테스트용 사용자 정보 생성
         User dev = createDev();
 
@@ -47,12 +49,12 @@ public class DevAuthController implements DevAuthControllerSpec {
         );
 
         /// SecurityContextHolder 에 인증 정보 등록
-         SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         /// JWT 토큰 생성
         UserTokenDto userTokenDto = UserTokenDto.from(user);
 
-        JWTTokenDto response = tokenProvider.generateJwtToken(userTokenDto);
+        JWTTokenDto response = tokenProvider.generateJwtToken(userTokenDto, httpServletResponse);
 
         return ApiResponse.ok(response);
     }
