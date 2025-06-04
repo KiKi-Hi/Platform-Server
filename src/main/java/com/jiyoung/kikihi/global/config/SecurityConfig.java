@@ -4,6 +4,7 @@ package com.jiyoung.kikihi.global.config;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationDeniedHandler;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFailureHandler;
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationFilter;
+import com.jiyoung.kikihi.security.oauth2.handler.OAuth2LogoutHandler;
 import com.jiyoung.kikihi.security.oauth2.handler.OAuth2SuccessHandler;
 import com.jiyoung.kikihi.security.oauth2.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
     private final OAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
+    private final OAuth2LogoutHandler oauth2LogoutHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,7 +51,7 @@ public class SecurityConfig {
                 )
                 // 필터 및 핸들러 처리
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception->{
+                .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(jwtAuthenticationFailureHandler)
                             .accessDeniedHandler(jwtAuthenticationDeniedHandler);
                 })
@@ -60,6 +62,10 @@ public class SecurityConfig {
                                         // 로그인 성공 시 핸들러
                                         .successHandler(oauth2SuccessHandler)
                 )
+                .logout(out -> out
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler(oauth2LogoutHandler))
+
                 // 서버가 세션을 생성하지 않고 요청하마자 jwt토큰으로 인증을 처리???
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
