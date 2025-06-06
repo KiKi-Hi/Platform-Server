@@ -6,15 +6,18 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @Profile("prod")
-@OpenAPIDefinition(servers = {@io.swagger.v3.oas.annotations.servers.Server(url = "https://kikihi.store", description = "KIKIHI API 명세서")})
 public class SwaggerConfig {
+
+    @Value("${spring.back.prod}")
+    private String serverUrl;
 
     @Bean
     public OpenAPI openAPI() {
@@ -26,10 +29,16 @@ public class SwaggerConfig {
                 .scheme("Bearer")
                 .bearerFormat("JWT")
         );
+
+        Server server = new Server();
+        server.setUrl(serverUrl);
+        server.setDescription("KIKIHI API 명세서");
+
         return new OpenAPI()
                 .components(components)
                 .info(apiInfo())
-                .addSecurityItem(securityRequirement);
+                .addSecurityItem(securityRequirement)
+                .addServersItem(server);
     }
 
     private Info apiInfo() {
@@ -38,6 +47,4 @@ public class SwaggerConfig {
                 .title("키키하이 API")
                 .description("키키하이 개발 서버의 API 입니다");
     }
-
-
 }
