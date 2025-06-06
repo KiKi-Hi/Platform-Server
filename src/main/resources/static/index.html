@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
     <title>키키하이 개발 서버</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600&display=swap');
@@ -28,6 +29,13 @@
             max-width: 600px;
             width: 90%;
             animation: fadeIn 1.2s ease-in-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 28px;
+            /* 필요에 따라 크기 조정 */
         }
 
         h1 {
@@ -65,10 +73,10 @@
 <body>
 
 <div class="container">
+    <img src="./kikihi.png" alt="키키하이 로고" class="logo" />
     <h1>키키하이 개발 서버에 오신 것을 환영합니다.</h1>
     <p>이곳은 키키하이 프로젝트의 개발 서버입니다.</p>
-    <a href="http://localhost:8080/swagger-ui/index.html#/" class="link-button">로컬 -스웨거로 이동하기</a>
-    <a href="https://kikihi.store/swagger-ui/index.html#/" class="link-button">개발서버 -스웨거로 이동하기</a>
+    <a href="https://api.kikihi.store/swagger-ui/index.html#/" class="link-button">스웨거로 이동하기</a>
 </div>
 
 </body>

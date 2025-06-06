@@ -37,6 +37,7 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/resources/**", null),
             new RequestInfo(GET, "/index.html", null),
             new RequestInfo(GET, "/error", null),
+            new RequestInfo(GET, "/kikihi.png", null),
 
             // Swagger UI 및 API 문서 관련 요청
             new RequestInfo(GET, "/v3/api-docs/**", null),
