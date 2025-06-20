@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.List;
 
 /**
- * 제품 상세 스펙 정보를 담는 클래스입니다.
- * MongoDB의 Embedded Document 용도로 사용됩니다.
+ * 제품 정보를 담는 클래스입니다.
+ * 배치서버에서 DB에 저장한 데이터을 담는 역할을 수행합니다.
  */
 
 @Document(collection = "products")
@@ -46,25 +46,23 @@ public class ProductDocument {
     private List<String> allDetailImages;
 
     @Field("spec_table")
-    private ProductSpecDocument specTable;
+    private ProductSpecDocument spec;
 
-    /// FROM
-    public static ProductDocument from(Product product) {
-        return ProductDocument.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .description(product.getDetailImageList())
-                .thumbnail(product.getThumbnail())
-                .detailPageUrl(product.getDetailPageUrl())
-                .finalPurchaseUrl(product.getFinalPurchaseUrl())
-                .options(product.getOptionList())
-                .allDetailImages(product.getDetailImageList())
-                .specTable(product.getSpecList())
+    /// 도메인 변경
+    public Product toDomain(){
+        return Product.builder()
+                .id(id)
+                .name(name)
+                .manufacturer(spec.getManufacturer())
+                .price(price)
+                .description(description)
+                .thumbnail(thumbnail)
+                .detailPageUrl(detailPageUrl)
+                .actualPurchaseUrl(actualPurchaseUrl)
+                .finalPurchaseUrl(finalPurchaseUrl)
+                .options(options)
+                .allDetailImages(allDetailImages)
                 .build();
     }
-
-    /// 도메인
-
 }
 
