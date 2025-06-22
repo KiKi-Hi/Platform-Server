@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.out;
 
+import com.jiyoung.kikihi.platform.adapter.out.elasticSearch.ProductESRepository;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocumentRepository;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
@@ -19,7 +20,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductMongoAdapter implements ProductPort {
 
-    private final ProductDocumentRepository repository;
+    private final ProductDocumentRepository documentRepository;
+
+    @Override
+    public Page<Product> getProducts(Pageable pageable, String manufacturer, Integer maxPrice, Integer minPrice) {
+
+        // DB 가져오기
+        Page<ProductDocument> responses = documentRepository.findAll(pageable,manufacturer, minPrice, maxPrice);
+        // 변환하기
+        return responses
+                .map(ProductDocument::toDomain);
+    }
+
+    @Override
+    public List<Product> getProducts() {
+
+        // DB 가져오기
+        List<ProductDocument> response = documentRepository.findAll();
+
+        // 변환하기
+        return response.stream()
+                .map(ProductDocument::toDomain)
+                .toList();
+    }
+
 
     @Override
     public Product saveProduct(Product product) {
@@ -31,28 +55,6 @@ public class ProductMongoAdapter implements ProductPort {
         return null;
     }
 
-    @Override
-    public List<Product> getProducts() {
-
-        // DB 가져오기
-        List<ProductDocument> response = repository.findAll();
-
-        // 변환하기
-        return response.stream()
-                .map(ProductDocument::toDomain)
-                .toList();
-    }
-
-    @Override
-    public Page<Product> getProducts(Pageable pageable) {
-
-        // DB 가져오기
-        Page<ProductDocument> responses = repository.findAll(pageable);
-
-        // 변환하기
-        return responses
-                .map(ProductDocument::toDomain);
-    }
 
     @Override
     public void deleteProduct(String productId) {

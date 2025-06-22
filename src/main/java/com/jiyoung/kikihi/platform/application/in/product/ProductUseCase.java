@@ -17,16 +17,11 @@ import java.util.*;
 
 public interface ProductUseCase {
 
-    /// 상품 검색
-    Page<Product> search(String keyword, String category);
+    /// 상품 목록 조회 (페이징- 한번에 20개씩) - mongoDB
+    Page<Product> getProducts(Pageable pageable, String manufacturer, Integer minPrice, Integer maxPrice);
 
-    /// 상품 목록 조회
-
-    // 리스트로 전체 조회(테스트)
+    // 상품 목록 조회 (페이징X) - mongoDB
     List<Product> getProducts();
-
-    // 상품 페이지 처리 (한번에 20개씩)
-    Page<Product> getProducts(Pageable pageable);
 
     // 카테고리별 목록 조회
     Page<Product> getProductsByCategoryId(Pageable pageable, Long categoryId);

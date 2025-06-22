@@ -23,7 +23,7 @@ public interface ProductPort {
     List<Product> getProducts();
 
     // 페이징 처리
-    Page<Product> getProducts(Pageable pageable);
+    Page<Product> getProducts(Pageable pageable,String manufacturer, Integer maxPrice, Integer minPrice);
 
     /// 삭제
     void deleteProduct(String productId);

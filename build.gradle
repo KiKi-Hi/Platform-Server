@@ -54,6 +54,15 @@ dependencies {
 
 	// Swagger 관련
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+	// data-binding
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// elasticSearch
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.18'
+	implementation 'org.elasticsearch:elasticsearch:7.17.18'
+
 }
 
 tasks.named('test') {
