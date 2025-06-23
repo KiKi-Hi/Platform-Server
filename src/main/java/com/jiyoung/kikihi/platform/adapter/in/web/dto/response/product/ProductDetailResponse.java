@@ -9,6 +9,7 @@ import java.util.List;
  *
  * @param id                 상품 ID
  * @param manufacturerName   제조사명
+ * @param category           카테고리
  * @param productName        제품명
  * @param discountRate       할인율 (예: 0.15는 15%)
  * @param originalPrice      최저가
@@ -23,6 +24,7 @@ import java.util.List;
 public record ProductDetailResponse(
         String id,
         String manufacturerName,
+        String category,
         String productName,
         double discountRate,
         int originalPrice,

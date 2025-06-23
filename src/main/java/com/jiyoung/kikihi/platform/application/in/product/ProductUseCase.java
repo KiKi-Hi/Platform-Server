@@ -8,7 +8,6 @@ import java.util.*;
 
 /**
  * 제품의 조회 기능을 담당하는 유즈 케이스입니다.
- * 상품 검색 - 상품 검색 키워드를 입력하고, 검색된 결과를 보여준다.
  * 상품 목록 조회 - 무한 스크롤 방식으로 진행하여, 한번에 20개씩 불러온다.
  * 상품 목록 조회 - [썸네일, 제조사명, 제품명, 할인율, 할인가, 나의 좋아요 여부]를 보여준다.
  * 상품 목록 조회 - 체크박스로 여러 개의 제조사 상품을 조회할 수 있다.
@@ -17,14 +16,19 @@ import java.util.*;
 
 public interface ProductUseCase {
 
-    /// 상품 목록 조회 (페이징- 한번에 20개씩) - mongoDB
-    Page<Product> getProducts(Pageable pageable, String manufacturer, Integer minPrice, Integer maxPrice);
-
+    /// 상품 목록 조회
     // 상품 목록 조회 (페이징X) - mongoDB
     List<Product> getProducts();
 
-    // 카테고리별 목록 조회
-    Page<Product> getProductsByCategoryId(Pageable pageable, Long categoryId);
+    // 카테고리별 목록 조회 (카테고리 포함) - mongoDB
+    Page<Product> getProductsByCategoryId(String categoryId, Pageable pageable);
+
+    // 카테고리별 목록 조회 (카테고리, 제조사 포함)
+    Page<Product> getProductsByCategoryIdAndManufacturerId(String categoryId, List<String> manufacturerId, Pageable pageable);
+
+    // 카테고리별 목록 조회 (카테고리, 제조사, 가격 포함)
+    Page<Product> getProductsByCategoryIdAndManufacturerIdAndPrice(String categoryId, String manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
+
 
     /// 상품 상세 조회
     Product getProduct(String id);
