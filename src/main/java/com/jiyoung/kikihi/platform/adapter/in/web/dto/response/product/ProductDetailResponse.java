@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product;
 
+import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.Builder;
 
 import java.util.List;
@@ -27,11 +28,26 @@ public record ProductDetailResponse(
         String category,
         String productName,
         double discountRate,
-        int originalPrice,
-        int discountedPrice,
+        double originalPrice,
+        double discountedPrice,
         DeliveryInfoResponse deliveryInfo,
         List<RecommendedItemResponse> recommendedItems,
         String cautions,
         List<String> imageUrl
-) {}
+) {
+
+    public static ProductDetailResponse from(Product product) {
+        return ProductDetailResponse.builder()
+                .id(product.getId())
+                .manufacturerName(product.getManufacturer())
+                .category(product.getCategory())
+                .productName(product.getName())
+                .discountRate(0)
+                .originalPrice(product.getPrice())
+                .discountedPrice(product.getPrice())
+                .imageUrl(product.getAllDetailImages())
+                .build();
+    }
+
+}
 
