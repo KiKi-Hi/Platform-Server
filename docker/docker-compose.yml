@@ -96,18 +96,17 @@ services:
     environment:
       - discovery.type=single-node # 단일 노드 모드
       - xpack.security.enabled=false # 가상머신의 메모리 설정
-      - xpack.security.http.ssl.enabled=false
-      - ELASTIC_PASSWORD=kikihi
+      - xpack.security.http.ssl.enabled=false # 인증 끔
     volumes:
       - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
+      - ./elasticSearch/data:/usr/share/elasticsearch/data
+      - ./elasticSearch/logs:/usr/share/elasticsearch/logs
     networks:
       - backend-bridge
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.0
     container_name: kkh-kibana
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
     depends_on:
