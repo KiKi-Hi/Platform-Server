@@ -56,7 +56,7 @@ public class ElasticSearchService implements ProductSearchUseCase {
         return elasticsearchOperations.search(query, ProductESDocument.class)
                 .stream()
                 .map(SearchHit::getContent)
-                .map(this::toDomain)
+                .map(Product::toDomain)
                 .collect(Collectors.toList());
     }
 
@@ -100,21 +100,9 @@ public class ElasticSearchService implements ProductSearchUseCase {
         return elasticsearchOperations.search(nativeQuery, ProductESDocument.class)
                 .stream()
                 .map(SearchHit::getContent)
-                .map(this::toDomain)
+                .map(Product::toDomain)
                 .collect(Collectors.toList());
     }
 
 
-    // Document → 도메인 변환
-    private Product toDomain(ProductESDocument doc) {
-        return Product.builder()
-                .id(doc.getId())
-                .name(doc.getName())
-                .price(doc.getDiscountedPrice())
-                .description(doc.getDescription())
-                .thumbnail(doc.getThumbnail())
-                .manufacturer(doc.getManufacturer())
-                .finalPurchaseUrl(doc.getFinalPurchaseUrl())
-                .build();
-    }
 }

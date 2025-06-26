@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.domain.product;
 
+import com.jiyoung.kikihi.platform.adapter.out.elasticSearch.ProductESDocument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,5 +39,18 @@ public class Product {
     private Map<String, Object> specTable; // spec_table
 
     private List<String> allDetailImages;
+
+    // Document → 도메인 변환
+    public static Product toDomain(ProductESDocument doc) {
+        return Product.builder()
+                .id(doc.getId())
+                .name(doc.getName())
+                .price(doc.getDiscountedPrice())
+                .description(doc.getDescription())
+                .thumbnail(doc.getThumbnail())
+                .manufacturer(doc.getManufacturer())
+                .finalPurchaseUrl(doc.getFinalPurchaseUrl())
+                .build();
+    }
 
 }

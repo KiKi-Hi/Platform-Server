@@ -26,9 +26,7 @@ public class SearchController {
     ) {
 
         List<Product> productList = searchService.searchProducts(keyword, page, size, minScore);
-        System.out.println("✨"+productList);
         List<ProductListResponse> responses = ProductListResponse.from(productList);
-        System.out.println("✨"+responses);
 
         return ApiResponse.ok(responses);
     }
