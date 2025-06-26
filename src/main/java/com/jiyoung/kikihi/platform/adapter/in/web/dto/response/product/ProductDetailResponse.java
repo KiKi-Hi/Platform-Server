@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product;
 
+import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.Builder;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
  *
  * @param id                 상품 ID
  * @param manufacturerName   제조사명
+ * @param category           카테고리
  * @param productName        제품명
  * @param discountRate       할인율 (예: 0.15는 15%)
  * @param originalPrice      최저가
@@ -23,13 +25,29 @@ import java.util.List;
 public record ProductDetailResponse(
         String id,
         String manufacturerName,
+        String category,
         String productName,
         double discountRate,
-        int originalPrice,
-        int discountedPrice,
+        double originalPrice,
+        double discountedPrice,
         DeliveryInfoResponse deliveryInfo,
         List<RecommendedItemResponse> recommendedItems,
         String cautions,
         List<String> imageUrl
-) {}
+) {
+
+    public static ProductDetailResponse from(Product product) {
+        return ProductDetailResponse.builder()
+                .id(product.getId())
+                .manufacturerName(product.getManufacturer())
+                .category(product.getCategory())
+                .productName(product.getName())
+                .discountRate(0)
+                .originalPrice(product.getPrice())
+                .discountedPrice(product.getPrice())
+                .imageUrl(product.getAllDetailImages())
+                .build();
+    }
+
+}
 

@@ -23,6 +23,8 @@ public class ProductDocument {
     @Id
     private String id;
 
+    private String category;
+
     private String name;
 
     private double price;
@@ -45,15 +47,16 @@ public class ProductDocument {
     @Field("all_detail_images")
     private List<String> allDetailImages;
 
-    @Field("spec_table")
-    private ProductSpecDocument spec;
+    @Field("spec_table.제조회사")
+    private String manufacturer;
 
     /// 도메인 변경
     public Product toDomain(){
         return Product.builder()
                 .id(id)
                 .name(name)
-                .manufacturer(spec.getManufacturer())
+                .manufacturer(manufacturer)
+                .category(category)
                 .price(price)
                 .description(description)
                 .thumbnail(thumbnail)

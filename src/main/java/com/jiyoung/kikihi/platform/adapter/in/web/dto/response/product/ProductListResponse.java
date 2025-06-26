@@ -10,6 +10,7 @@ import java.util.List;
  *
  * @param id                상품 아이디
  * @param thumbnail         썸네일 이미지 URL
+ * @param category          카테고리
  * @param manufacturerName  제조사명
  * @param productName       제품명
  * @param discountRate      할인율 (예: 0.2 = 20%)
@@ -21,6 +22,7 @@ import java.util.List;
 public record ProductListResponse(
         String id,
         String thumbnail,
+        String category,
         String manufacturerName,
         String productName,
         double discountRate,
@@ -33,6 +35,7 @@ public record ProductListResponse(
         return ProductListResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
+                .category(product.getCategory())
                 .manufacturerName(product.getManufacturer())
                 .productName(product.getName())
                 .discountRate(0)

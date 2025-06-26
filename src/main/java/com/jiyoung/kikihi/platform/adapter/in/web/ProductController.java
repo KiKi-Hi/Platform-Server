@@ -1,17 +1,18 @@
 package com.jiyoung.kikihi.platform.adapter.in.web;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
+import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.PageResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
-import com.jiyoung.kikihi.platform.adapter.out.elasticSearch.ProductESDocument;
+import com.jiyoung.kikihi.platform.adapter.in.web.swagger.ProductControllerSpec;
 import com.jiyoung.kikihi.platform.application.in.product.ProductUseCase;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,15 +27,16 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
-public class ProductController {
+public class ProductController implements ProductControllerSpec {
 
     private final ProductUseCase productService;
 
-
-    //  1. 상품 목록 조회 & 필터링 - mongoDB
+    /// 상품 목록 조회 API
+    //  상품 목록 조회 & 필터링 - mongoDB
     @GetMapping("/list")
     public ApiResponse<PageResponse<ProductListResponse>> getProductList(PageRequest pageRequest,
-                                                                         @RequestParam(required = false) String manufacturer,
+                                                                         @RequestParam String category,
+                                                                         @RequestParam(required = false) List<String> manufacturer,
                                                                          @RequestParam(required = false) Integer minPrice,
                                                                          @RequestParam(required = false) Integer maxPrice) {
 
@@ -45,8 +47,29 @@ public class ProductController {
                 Sort.by(Sort.Direction.DESC, "id")
         );
 
-        /// 서비스
-        Page<Product> products = productService.getProducts(pageable, manufacturer, minPrice, maxPrice);
+        /// 파라미터에 따라서 분기
+        Page<Product> products;
+
+        // 파라미터 여부에 따라 분기 처리
+        if (manufacturer == null && minPrice == null && maxPrice == null) {
+            /// 카테고리만 있는 경우
+            products = productService.getProductsByCategoryId(category, pageable);
+
+        } else if (manufacturer != null && minPrice == null && maxPrice == null) {
+            /// 카테고리 + 제조사만 있는 경우
+            products = productService.getProductsByCategoryIdAndManufacturerId(category, manufacturer, pageable);
+
+        } else if (manufacturer == null && minPrice != null && maxPrice != null) {
+            /// 카테고리 + 가격만 있는 경우
+            products = productService.getProductsByCategoryIdAndPrice(category, minPrice, maxPrice, pageable);
+
+        } else if (manufacturer != null && minPrice != null && maxPrice != null) {
+            /// 카테고리 + 제조사 + 가격이 있는 경우
+            products = productService.getProductsByCategoryIdAndManufacturerIdAndPrice(
+                    category, manufacturer, minPrice, maxPrice, pageable);
+        }  else {
+            throw new IllegalArgumentException(ErrorCode.BAD_REQUEST.getMessage());
+        }
 
         /// 추출
         List<Product> productList = products.getContent();
@@ -57,24 +80,19 @@ public class ProductController {
         return ApiResponse.ok(new PageResponse<>(responses, pageRequest, responses.size()));
     }
 
-    /// 2. 상품 목록 조회 (페이징 X)
-    @GetMapping()
-    public ApiResponse<List<ProductListResponse>> getProducts() {
+    /// 상품 상세 조회 API
+    @GetMapping
+    public ApiResponse<ProductDetailResponse> getProduct(
+            @RequestParam String id) {
 
         // 서비스
-        List<Product> products = productService.getProducts();
+        Product product = productService.getProduct(id);
 
         // DTO 변환
-        List<ProductListResponse> responses = ProductListResponse.from(products);
+        ProductDetailResponse response = ProductDetailResponse.from(product);
 
-        return ApiResponse.ok(responses);
+        return ApiResponse.ok(response);
     }
-
-
-    // 3. 상품 상세 조회 (상품 이미지 (최대 5개 - 캐러셀 형식), 제조사, 제품명, 할인율, 정가, 할인가, 배송 정보(배송비, 배송 종류, 배송 날짜), 어울리는 상품 추천, 상품 유의사항, 상세 정보 이미지)
-
-    // 4. 상품 옵션 조회
-
 
 }
 

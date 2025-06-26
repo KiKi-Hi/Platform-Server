@@ -31,6 +31,9 @@ public class RequestMatcherHolder {
             new RequestInfo(POST, "/api/v1/auth/reissue", null),
             new RequestInfo(POST, "/api/v1/auth/logout", Role.USER),
 
+            // 상품 관련
+            new RequestInfo(GET, "/api/v1/products/**", null),
+
             // static resources
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),
@@ -54,6 +57,8 @@ public class RequestMatcherHolder {
             new RequestInfo(GET, "/api/v1/search", null)
 
     );
+
+
 
 
     private final ConcurrentHashMap<String, RequestMatcher> reqMatcherCacheMap = new ConcurrentHashMap<>();

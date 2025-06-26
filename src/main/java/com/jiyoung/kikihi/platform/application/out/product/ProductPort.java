@@ -13,17 +13,23 @@ import java.util.*;
 
 public interface ProductPort {
 
-    /// 저장
-    Product saveProduct(Product product);
-
     /// 조회
-    Product getProduct(String productId);
+    Optional<Product> getProduct(String productId);
 
     // 상품 전체 조회
     List<Product> getProducts();
 
-    // 페이징 처리
-    Page<Product> getProducts(Pageable pageable,String manufacturer, Integer maxPrice, Integer minPrice);
+    // 카테고리 기반 상품 목록 조회 (카테고리만)
+    Page<Product> getProducts(String category, Pageable pageable);
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
+    Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable);
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
+    Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable);
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
+    Page<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 삭제
     void deleteProduct(String productId);

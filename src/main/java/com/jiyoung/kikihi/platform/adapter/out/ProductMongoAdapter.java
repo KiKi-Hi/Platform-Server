@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * MongoDB 와 ElasticSearch 통해 기능 구현
@@ -21,16 +22,6 @@ import java.util.List;
 public class ProductMongoAdapter implements ProductPort {
 
     private final ProductDocumentRepository documentRepository;
-
-    @Override
-    public Page<Product> getProducts(Pageable pageable, String manufacturer, Integer maxPrice, Integer minPrice) {
-
-        // DB 가져오기
-        Page<ProductDocument> responses = documentRepository.findAll(pageable,manufacturer, minPrice, maxPrice);
-        // 변환하기
-        return responses
-                .map(ProductDocument::toDomain);
-    }
 
     @Override
     public List<Product> getProducts() {
@@ -44,15 +35,60 @@ public class ProductMongoAdapter implements ProductPort {
                 .toList();
     }
 
-
+    // 카테고리 기반 상품 목록 조회 (카테고리만)
     @Override
-    public Product saveProduct(Product product) {
-        return null;
+    public Page<Product> getProducts(String category, Pageable pageable) {
+
+        /// DB 조회
+        Page<ProductDocument> result = documentRepository
+                .findByCategory(category, pageable);
+
+        return result.
+                map(ProductDocument::toDomain);
+    }
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
+    @Override
+    public Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
+
+        /// DB 조회
+        Page<ProductDocument> result = documentRepository
+                .findByCategoryAndManufacturer(category, manufacturer, pageable);
+
+        return result.
+                map(ProductDocument::toDomain);
+    }
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 가격 포함)
+    @Override
+    public Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        /// DB 조회
+        Page<ProductDocument> result = documentRepository
+                .findByCategoryAndPriceRange(category, minPrice, maxPrice, pageable);
+
+        return result.
+                map(ProductDocument::toDomain);
+    }
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
+    @Override
+    public Page<Product> getProducts(String category, List<String> manufacturer,
+                                     Integer minPrice, Integer maxPrice, Pageable pageable) {
+
+        /// DB 조회
+        Page<ProductDocument> result = documentRepository
+                .findByCategoryAndManufacturerAndPriceRange(category, manufacturer, minPrice, maxPrice, pageable);
+
+        return result.
+                map(ProductDocument::toDomain);
     }
 
     @Override
-    public Product getProduct(String productId) {
-        return null;
+    public Optional<Product> getProduct(String productId) {
+
+        /// DB 조회
+        return documentRepository.findById(productId)
+                .map(ProductDocument::toDomain);
     }
 
 
