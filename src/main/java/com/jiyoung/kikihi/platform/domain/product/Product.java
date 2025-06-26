@@ -21,8 +21,6 @@ public class Product {
 
     private double price;
 
-    private String category;
-
     private List<String> description;
 
     private String thumbnail;
