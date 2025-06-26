@@ -14,6 +14,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 제품 정보를 담는 클래스입니다.
@@ -25,8 +26,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Document(indexName = "products")
-@Mapping(mappingPath = "elasticSearch/dict/mapping.json")
-@Setting(settingPath = "elasticSearch/dict/setting.json")
+@Mapping(mappingPath = "elasticSearch/mapping.json")
+@Setting(settingPath = "elasticSearch/setting.json")
 public class ProductESDocument {
 
     @Id
@@ -34,13 +35,22 @@ public class ProductESDocument {
     private String id;
 
     @Field(type = FieldType.Text)
+    private String name;
+
+    @Field(type = FieldType.Text)
     private String thumbnail;
 
-    @Field(type = FieldType.Text)
-    private String manufacturerName;
+    @Field(type = FieldType.Double)
+    private double price;
+
+    @Field(type = FieldType.Keyword)
+    private String manufacturer;
 
     @Field(type = FieldType.Text)
-    private String productName;
+    private List<String> description;
+
+    @Field(type = FieldType.Text)
+    private String finalPurchaseUrl;
 
     @Field(type = FieldType.Double)
     private double discountRate;
@@ -48,19 +58,44 @@ public class ProductESDocument {
     @Field(type = FieldType.Double)
     private double discountedPrice;
 
-    public ProductESDocument toESDocument(Product product) {
+    // 추가: JSON 데이터에 맞는 필드들
+    @Field(type = FieldType.Keyword)
+    private String category;
+
+    @Field(type = FieldType.Keyword)
+    private List<String> options;
+
+    @Field(type = FieldType.Object)
+    private Map<String, Object> specTable; // spec_table
+
+    @Field(type = FieldType.Text)
+    private List<String> allDetailImages; // all_detail_images
+
+    @Field(type = FieldType.Text)
+    private String detailPageUrl; // detail_page_url
+
+    public static ProductESDocument toESDocument(Product product) {
         double discountRate = 0; // 추후 할인 정책 적용
         double discountedPrice = product.getPrice(); // 추후 할인 반영
 
+        // Product 도메인에 추가 필드가 있다면 여기서 매핑 필요
         return ProductESDocument.builder()
                 .id(product.getId())
+                .name(product.getName())
                 .thumbnail(product.getThumbnail())
-                .manufacturerName(product.getManufacturer())
-                .productName(product.getName())
+                .price(product.getPrice())
+                .manufacturer(product.getManufacturer())
+                .description(product.getDescription())
+                .finalPurchaseUrl(product.getFinalPurchaseUrl())
                 .discountRate(discountRate)
                 .discountedPrice(discountedPrice)
+                // 아래는 Product 도메인에 추가해야 함 (예시)
+                .category(product.getCategory())
+                .options(product.getOptions())
+                .specTable(product.getSpecTable())
+                .allDetailImages(product.getAllDetailImages())
+                .detailPageUrl(product.getDetailPageUrl())
                 .build();
     }
-
-
 }
+

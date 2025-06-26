@@ -17,6 +17,8 @@ public class Product {
 
     private String name;
 
+    private String category;
+
     private double price;
 
     private List<String> description;
@@ -32,6 +34,8 @@ public class Product {
     private String finalPurchaseUrl;
 
     private List<String> options;
+
+    private Map<String, Object> specTable; // spec_table
 
     private List<String> allDetailImages;
 
