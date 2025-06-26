@@ -1,20 +1,14 @@
 package com.jiyoung.kikihi.platform.adapter.in.web;
 
-
 import com.jiyoung.kikihi.global.response.ApiResponse;
-import com.jiyoung.kikihi.platform.adapter.out.elasticSearch.ProductESDocument;
-import com.jiyoung.kikihi.platform.application.ElasticSearchService;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
+import com.jiyoung.kikihi.platform.application.service.ElasticSearchService;
+import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-@Profile("prod")
 @RestController
 @RequestMapping("/api/v1/search")
 @RequiredArgsConstructor
@@ -22,15 +16,31 @@ public class SearchController {
 
     private final ElasticSearchService searchService;
 
-    @GetMapping("/phrase")
-    public ApiResponse<List<ProductESDocument>> searchByPhrase(
-            @RequestParam String phrase
+    // 상품 검색
+    @GetMapping
+    public ApiResponse<List<ProductListResponse>> searchProducts(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0.001") float minScore
     ) {
-        return ApiResponse.ok(searchService.searchByPhrase(phrase));
+
+        List<Product> productList = searchService.searchProducts(keyword, page, size, minScore);
+        System.out.println("✨"+productList);
+        List<ProductListResponse> responses = ProductListResponse.from(productList);
+        System.out.println("✨"+responses);
+
+        return ApiResponse.ok(responses);
     }
 
-
-
-
+    // 상품 필터링
+//    @GetMapping("/filter")
+//    public ApiResponse<List<Product>> filterProducts(
+//            @RequestParam("keyword") String keyword,
+//            @RequestBody SearchRequest req,
+//            PageRequest pageRequest
+//    ) {
+//        List<Product> products = searchService.filterProducts(keyword, req.manufacturer(), req.minPrice(), req.maxPrice(), pageRequest.getPage(), pageRequest.getSize());
+//        return ApiResponse.ok(products);
+//    }
 }
-

@@ -1,8 +1,9 @@
 package com.jiyoung.kikihi.platform.adapter.out.elasticSearch;
 
-import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ProductESRepository extends ElasticsearchRepository<ProductDocument, String> {
+@Repository
+public interface ProductESRepository extends ElasticsearchRepository<ProductESDocument, String> {
 
 }
