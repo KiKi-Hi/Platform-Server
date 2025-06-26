@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.application;
+package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.platform.application.in.product.ProductUseCase;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
@@ -6,7 +6,6 @@ import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

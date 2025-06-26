@@ -48,7 +48,10 @@ public class RequestMatcherHolder {
 
             // 정적 아이콘 요청
             new RequestInfo(GET, "/favicon.ico", null),
-            new RequestInfo(GET, "/apple-touch-icon.png", null)
+            new RequestInfo(GET, "/apple-touch-icon.png", null),
+
+            // 검색 (임시로 개방)
+            new RequestInfo(GET, "/api/v1/search", null)
 
     );
 
