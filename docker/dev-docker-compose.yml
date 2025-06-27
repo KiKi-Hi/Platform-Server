@@ -1,0 +1,79 @@
+services:
+
+  ### 개발 컨테이너 설정을 위한 dev-docker-compose.yml
+  ### 실행 명령어
+  ### docker-compose -f dev-docker-compose.yml up -d
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: kkh-mysql
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+  # Redis
+  redis:
+    image: redis:7.2.5
+    container_name: kkh-redis
+    ports:
+      - '6379:6379'
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.2
+    container_name: kkh-elasticsearch
+    build:
+      context: ./elasticsearch
+      dockerfile: Dockerfile
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    volumes:
+      - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
+      - ./elasticSearch/data:/usr/share/elasticsearch/data
+      - ./elasticSearch/logs:/usr/share/elasticsearch/logs
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.2
+    container_name: kkh-kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    build:
+      context: ./logstash
+      dockerfile: Dockerfile
+    container_name: kkh-logstash
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "5044:5044"      # Beats input 등 사용시
+      - "9600:9600"      # Logstash monitoring API
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      # 필요시 동의어 사전 등 추가 볼륨
+      - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
+    depends_on:
+      - elasticsearch
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - 9090:9090
+    restart: always

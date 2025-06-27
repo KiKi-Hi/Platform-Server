@@ -10,6 +10,7 @@ services:
       - mysql
       - redis
       - mongodb
+      - elasticsearch
     networks:
       - backend-bridge
 
@@ -67,22 +68,57 @@ services:
     networks:
       - backend-bridge
 
-  # MongoDB
-  mongodb:
-    image: mongo:6.0.16
-    container_name: kkh-mongodb
+  ## 배포할 때 -> 비밀번호, github action에 설정, nori 설치(bin/elasticsearch-plugin install analysis-nori)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: kkh-elasticsearch
+    build:
+      context: ./elasticsearch
+      dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
-      - '27017:27017'
-    volumes:
-      - ./mongodb/data:/data
+      - "9200:9200" # 엘라스틱서치 CRUD용 API 포트
+      - "9300:9300" # 엘라스틱서치 클러스터 통신용 포트
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - discovery.type=single-node # 단일 노드 모드
+      - xpack.security.enabled=false # 가상머신의 메모리 설정
+      - xpack.security.http.ssl.enabled=false # 인증 끔
+    volumes:
+      - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
+      - ./elasticSearch/data:/usr/share/elasticsearch/data
+      - ./elasticSearch/logs:/usr/share/elasticsearch/logs
     networks:
       - backend-bridge
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kkh-kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend-bridge
 
+  logstash:
+    build:
+        context: ./logstash
+        dockerfile: Dockerfile
+    container_name: kkh-logstash
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "5044:5044"      # Beats input 등 사용시
+      - "9600:9600"      # Logstash monitoring API
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      # 필요시 동의어 사전 등 추가 볼륨
+      - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend-bridge
 networks:
   backend-bridge:
     driver: bridge

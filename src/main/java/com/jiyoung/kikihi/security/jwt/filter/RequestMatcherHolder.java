@@ -31,6 +31,9 @@ public class RequestMatcherHolder {
             new RequestInfo(POST, "/api/v1/auth/reissue", null),
             new RequestInfo(POST, "/api/v1/auth/logout", Role.USER),
 
+            // 상품 관련
+            new RequestInfo(GET, "/api/v1/products/**", null),
+
             // static resources
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),
@@ -48,9 +51,14 @@ public class RequestMatcherHolder {
 
             // 정적 아이콘 요청
             new RequestInfo(GET, "/favicon.ico", null),
-            new RequestInfo(GET, "/apple-touch-icon.png", null)
+            new RequestInfo(GET, "/apple-touch-icon.png", null),
+
+            // 검색 (임시로 개방)
+            new RequestInfo(GET, "/api/v1/search", null)
 
     );
+
+
 
 
     private final ConcurrentHashMap<String, RequestMatcher> reqMatcherCacheMap = new ConcurrentHashMap<>();

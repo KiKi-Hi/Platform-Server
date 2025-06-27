@@ -1,0 +1,37 @@
+package com.jiyoung.kikihi.platform.application.out.product;
+
+import com.jiyoung.kikihi.platform.domain.product.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.*;
+
+/**
+ * 상품 관련 Port 입니다.
+ * DB 내부 CRUD 담당하는 인터페이스입니다.
+ */
+
+public interface ProductPort {
+
+    /// 조회
+    Optional<Product> getProduct(String productId);
+
+    // 상품 전체 조회
+    List<Product> getProducts();
+
+    // 카테고리 기반 상품 목록 조회 (카테고리만)
+    Page<Product> getProducts(String category, Pageable pageable);
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
+    Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable);
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
+    Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable);
+
+    // 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
+    Page<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
+
+    /// 삭제
+    void deleteProduct(String productId);
+
+}
