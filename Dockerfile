@@ -1,16 +1,13 @@
+# 1. JDK 이미지를 베이스로 설정
 FROM eclipse-temurin:17-jdk
 
+# 2. 작업 디렉토리 설정
 WORKDIR /app
 
+# 3. jar 파일 복사
 ARG JAR_FILE=build/libs/KIKIHI_BE-0.0.1-SNAPSHOT.jar
+
 COPY ${JAR_FILE} app.jar
 
-# CA 인증서 JDK truststore에 추가
-COPY ./config/certs/ca/ca.crt /tmp/ca.crt
-RUN keytool -importcert -noprompt \
-    -alias elasticsearch-ca \
-    -file /tmp/ca.crt \
-    -keystore $JAVA_HOME/lib/security/cacerts \
-    -storepass changeit
-
+# 4. 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
