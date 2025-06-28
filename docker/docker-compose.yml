@@ -66,6 +66,8 @@ services:
   spring:
     image: kikihistore/server:latest
     container_name: kkh-app
+    volumes:
+      - certs:/usr/share/spring/config/certs
     ports:
       - "8080:8080"
     depends_on:
@@ -73,10 +75,10 @@ services:
         condition: service_started
       redis:
         condition: service_started
+      setup:
+        condition: service_started
       es01:
         condition: service_healthy
-    volumes:
-      - ./certs/ca/ca.crt:/etc/ssl/certs/elastic_ca.crt:ro
     networks:
       - backend-bridge
 
@@ -144,9 +146,11 @@ services:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
+      - esdata01:/usr/share/elasticsearch/data
     ports:
       - ${ES_PORT}:9200
     environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
       - discovery.type=single-node
@@ -213,7 +217,7 @@ services:
       - backend-bridge
 
   logstash01:
-    container_name: kkh-logstash
+    container_name: zipte-logstash
     depends_on:
       es01:
         condition: service_healthy
@@ -225,6 +229,7 @@ services:
     user: root
     volumes:
       - certs:/usr/share/logstash/certs
+      - logstashdata01:/usr/share/logstash/data
       - "./logstash/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
       - "./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:

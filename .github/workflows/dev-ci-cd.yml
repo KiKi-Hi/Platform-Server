@@ -80,6 +80,7 @@ jobs:
   CD:
     needs: CI
     runs-on: ubuntu-22.04
+    environment: Oracle
 
     steps:
       - name: 1. Checkout source code

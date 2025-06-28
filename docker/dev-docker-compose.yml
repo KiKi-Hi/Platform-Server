@@ -25,49 +25,54 @@ services:
     ports:
       - '6379:6379'
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.2
-    container_name: kkh-elasticsearch
-    build:
-      context: ./elasticsearch
-      dockerfile: Dockerfile
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: kkh-es01
     environment:
+      - node.name=es01
+      - cluster.name=${CLUSTER_NAME}
       - discovery.type=single-node
+      - bootstrap.memory_lock=true
       - xpack.security.enabled=false
-      - xpack.security.http.ssl.enabled=false
-    volumes:
-      - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
-      - ./elasticSearch/data:/usr/share/elasticsearch/data
-      - ./elasticSearch/logs:/usr/share/elasticsearch/logs
+      - xpack.license.self_generated.type=${LICENSE}
+    ports:
+      - ${ES_PORT}:9200
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200 | grep -q 'You Know, for Search'" ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.17.2
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     container_name: kkh-kibana
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-
-  logstash:
-    build:
-      context: ./logstash
-      dockerfile: Dockerfile
-    container_name: kkh-logstash
     environment:
-      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://es01:9200
     ports:
-      - "5044:5044"      # Beats input 등 사용시
-      - "9600:9600"      # Logstash monitoring API
+      - ${KIBANA_PORT}:5601
+    mem_limit: ${KB_MEM_LIMIT}
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'" ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  logstash01:
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+    container_name: kkh-logstash01
+    user: root
     volumes:
-      - ./logstash/pipeline:/usr/share/logstash/pipeline
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      # 필요시 동의어 사전 등 추가 볼륨
-      - ./elasticSearch/elastic_dict:/usr/share/elasticsearch/config/dict
-    depends_on:
-      - elasticsearch
+      - "./logstash/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+      - "./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+    environment:
+      - xpack.monitoring.enabled=false
+      - ELASTIC_HOSTS=http://es01:9200
 
   prometheus:
     image: prom/prometheus
