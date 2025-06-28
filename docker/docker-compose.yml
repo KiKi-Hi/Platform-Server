@@ -182,6 +182,17 @@ services:
       retries: 120
     networks:
       - backend-bridge
+    command: >
+      sh -c '
+        if [ ! -f /usr/share/elasticsearch/plugins/analysis-nori/plugin-descriptor.properties ]; then
+          echo "==> analysis-nori 플러그인 설치 중...";
+          bin/elasticsearch-plugin install -b analysis-nori;
+        else
+          echo "==> analysis-nori 플러그인이 이미 설치되어 있습니다.";
+        fi;
+        exec /usr/local/bin/docker-entrypoint.sh
+      '
+  
 
   kibana:
     container_name: kkh-kibana
