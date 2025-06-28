@@ -144,8 +144,6 @@ services:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - ./es/es-entrypoint.sh:/usr/local/bin/es-entrypoint.sh
-    entrypoint: [ "sh", "-c", "chmod +x /usr/local/bin/es-entrypoint.sh && exec /usr/local/bin/es-entrypoint.sh" ]
     ports:
       - ${ES_PORT}:9200
     environment:
