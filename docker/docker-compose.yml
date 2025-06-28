@@ -1,3 +1,7 @@
+volumes:
+  certs:
+    driver: local
+
 services:
 
   setup:
@@ -69,7 +73,7 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      elasticsearch:
+      es01:
         condition: service_healthy
     volumes:
       - ./certs/ca/ca.crt:/etc/ssl/certs/elastic_ca.crt:ro
@@ -141,7 +145,7 @@ services:
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - ./es/es-entrypoint.sh:/usr/local/bin/es-entrypoint.sh
-    entrypoint: [ "/usr/local/bin/es-entrypoint.sh" ]
+    entrypoint: [ "sh", "-c", "chmod +x /usr/local/bin/es-entrypoint.sh && exec /usr/local/bin/es-entrypoint.sh" ]
     ports:
       - ${ES_PORT}:9200
     environment:
