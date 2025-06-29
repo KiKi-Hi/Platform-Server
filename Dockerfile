@@ -6,8 +6,11 @@ WORKDIR /app
 
 # 3. jar 파일 복사
 ARG JAR_FILE=build/libs/KIKIHI_BE-0.0.1-SNAPSHOT.jar
-
 COPY ${JAR_FILE} app.jar
 
-# 4. 실행
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 4. entrypoint.sh 복사 및 실행 권한 부여
+COPY ./script/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# 5. Entrypoint 설정
+ENTRYPOINT ["/entrypoint.sh"]

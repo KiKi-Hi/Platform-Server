@@ -66,6 +66,8 @@ services:
   spring:
     image: kikihistore/server:latest
     container_name: kkh-app
+    environment:
+      - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
     volumes:
       - certs:/usr/share/spring/config/certs
     ports:
