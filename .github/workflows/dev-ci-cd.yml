@@ -9,7 +9,7 @@ name: 키키하이 dev CI-CD 파이프라인
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop","feat/product/KIKI-61-ElasticSearch-Dev" ]
 
 jobs:
   #1. 개발 서버 CI, Build 용
@@ -80,6 +80,7 @@ jobs:
   CD:
     needs: CI
     runs-on: ubuntu-22.04
+    environment: Oracle
 
     steps:
       - name: 1. Checkout source code
