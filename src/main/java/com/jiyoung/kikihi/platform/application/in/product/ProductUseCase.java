@@ -1,8 +1,8 @@
 package com.jiyoung.kikihi.platform.application.in.product;
 
 import com.jiyoung.kikihi.platform.domain.product.Product;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.*;
 
@@ -21,16 +21,16 @@ public interface ProductUseCase {
     List<Product> getProducts();
 
     // 카테고리별 목록 조회 (카테고리 포함) - mongoDB
-    Page<Product> getProductsByCategoryId(String categoryId, Pageable pageable);
+    Slice<Product> getProductsByCategoryId(String categoryId, Pageable pageable);
 
     // 카테고리별 목록 조회 (카테고리, 제조사 포함)
-    Page<Product> getProductsByCategoryIdAndManufacturerId(String categoryId, List<String> manufacturerId, Pageable pageable);
+    Slice<Product> getProductsByCategoryIdAndManufacturerId(String categoryId, List<String> manufacturerId, Pageable pageable);
 
     // 카테고리별 목록 조회 (카테고리, 가격 포함)
-    Page<Product> getProductsByCategoryIdAndPrice(String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Slice<Product> getProductsByCategoryIdAndPrice(String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     // 카테고리별 목록 조회 (카테고리, 제조사, 가격 포함)
-    Page<Product> getProductsByCategoryIdAndManufacturerIdAndPrice(String categoryId, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Slice<Product> getProductsByCategoryIdAndManufacturerIdAndPrice(String categoryId, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 상품 상세 조회
     Product getProduct(String id);

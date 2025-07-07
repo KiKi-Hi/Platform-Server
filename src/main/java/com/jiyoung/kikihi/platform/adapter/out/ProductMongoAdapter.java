@@ -1,6 +1,5 @@
 package com.jiyoung.kikihi.platform.adapter.out;
 
-import com.jiyoung.kikihi.platform.adapter.out.elasticSearch.ProductESRepository;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocumentRepository;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
@@ -8,6 +7,7 @@ import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,10 +37,10 @@ public class ProductMongoAdapter implements ProductPort {
 
     // 카테고리 기반 상품 목록 조회 (카테고리만)
     @Override
-    public Page<Product> getProducts(String category, Pageable pageable) {
+    public Slice<Product> getProducts(String category, Pageable pageable) {
 
         /// DB 조회
-        Page<ProductDocument> result = documentRepository
+        Slice<ProductDocument> result = documentRepository
                 .findByCategory(category, pageable);
 
         return result.
@@ -49,7 +49,7 @@ public class ProductMongoAdapter implements ProductPort {
 
     // 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
     @Override
-    public Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
+    public Slice<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
 
         /// DB 조회
         Page<ProductDocument> result = documentRepository
@@ -61,9 +61,9 @@ public class ProductMongoAdapter implements ProductPort {
 
     // 카테고리 기반 상품 목록 조회 (카테고리, 가격 포함)
     @Override
-    public Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public Slice<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         /// DB 조회
-        Page<ProductDocument> result = documentRepository
+        Slice<ProductDocument> result = documentRepository
                 .findByCategoryAndPriceRange(category, minPrice, maxPrice, pageable);
 
         return result.
@@ -72,11 +72,11 @@ public class ProductMongoAdapter implements ProductPort {
 
     // 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
     @Override
-    public Page<Product> getProducts(String category, List<String> manufacturer,
+    public Slice<Product> getProducts(String category, List<String> manufacturer,
                                      Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         /// DB 조회
-        Page<ProductDocument> result = documentRepository
+        Slice<ProductDocument> result = documentRepository
                 .findByCategoryAndManufacturerAndPriceRange(category, manufacturer, minPrice, maxPrice, pageable);
 
         return result.
