@@ -2,7 +2,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
-import com.jiyoung.kikihi.global.response.page.PageResponse;
+import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ public interface ProductControllerSpec {
             summary = "상품 목록 조회 API",
             description = "파라미터에 따라서 상품 목록을 조회할 수 있습니다."
     )
-    ApiResponse<PageResponse<ProductListResponse>> getProductList(
+    ApiResponse<SliceResponse<ProductListResponse>> getProductList(
             PageRequest pageRequest,
 
             @Parameter(description = "카테고리", required = true, example = "keycap")
