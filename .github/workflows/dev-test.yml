@@ -79,7 +79,7 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
 
       - name: application-dev.yml 설정
-        run: echo "${{ secrets.APPLICATION_DEV_YML }}" > ./src/main/resources/application-dev.yml
+        run: echo "${{ secrets.APPLICATION_PROD_YML }}" > ./src/main/resources/application-prod.yml
 
       - name: application-oauth2.yml 설정
         run: echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
