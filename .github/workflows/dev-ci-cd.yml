@@ -9,12 +9,48 @@ name: 키키하이 dev CI-CD 파이프라인
 
 on:
   push:
-    branches: [ "develop","feat/product/KIKI-61-ElasticSearch-Dev" ]
+    branches: [ "develop"]
 
 jobs:
   #1. 개발 서버 CI, Build 용
   CI:
     runs-on: ubuntu-22.04
+    services:
+      runs-on: ubuntu-22.04
+      services:
+        mysql:
+          image: mysql:8.0
+          ports:
+            - '3306:3306'
+          env:
+            MYSQL_DATABASE: kkh_test
+            MYSQL_USER: testuser
+            MYSQL_PASSWORD: testpass
+            MYSQL_ROOT_PASSWORD: root
+
+        redis:
+          image: redis:7.2.5
+          ports:
+            - '6379:6379'
+
+        mongo:
+          image: mongo:6.0
+          ports:
+            - 27017:27017
+
+        elasticsearch:
+          image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+          ports:
+            - 9200:9200
+          options: >-
+            --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 10
+          env:
+            discovery.type: single-node
+            ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+
     permissions:
       contents: write
       checks: write
@@ -40,7 +76,7 @@ jobs:
           echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
           
           mkdir -p src/test/resources
-          echo "${{ secrets.TEST_APPLICATION_YML }}" > ./src/test/resources/application.yml
+          echo "${{ secrets.TEST_APPLICATION_YML }}" > ./src/test/resources/application-test.yml
 
       # 4. gradle 환경 설치
       - name: Gradle Wrapper 권한 부여
@@ -57,6 +93,45 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}
 
+      # 5. 테스트 컨테이너들 작동여부 체크
+      - name: MySQL 체크
+        run: |
+          until nc -z localhost 3306; do
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
+
+      - name: Redis 체크
+        run: |
+          until nc -z localhost 6379; do
+            echo "Waiting for Redis..."
+            sleep 3
+          done
+
+      - name: MongoDB 체크
+        run: |
+          until nc -z localhost 27017; do
+            echo "Waiting for MongoDB..."
+            sleep 3
+          done
+
+      - name: Elasticsearch 체크
+        run: |
+          until curl -sSf http://localhost:9200/_cluster/health; do
+            echo "Waiting for Elasticsearch..."
+            sleep 5
+          done
+
+      # 5-2. Nori 플러그인 설치
+      - name: Install Nori plugin
+        run: |
+          CONTAINER_ID=$(docker ps -q -f ancestor=docker.elastic.co/elasticsearch/elasticsearch:7.17.0)
+          echo "Elasticsearch container ID: $CONTAINER_ID"
+          docker exec $CONTAINER_ID bin/elasticsearch-plugin install analysis-nori --batch
+          docker restart $CONTAINER_ID
+          sleep 30
+
+      # 6. Gradle 빌드
       - name: Gradle 빌드
         run: ./gradlew clean build
 

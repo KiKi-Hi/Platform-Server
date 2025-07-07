@@ -18,6 +18,27 @@ jobs:
   test:
 
     runs-on: ubuntu-22.04
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - '3306:3306'
+        env:
+          MYSQL_DATABASE: kkh_test
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+          MYSQL_ROOT_PASSWORD: root
+
+      redis:
+        image: redis:7.2.5
+        ports:
+          - '6379:6379'
+
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+
     permissions:
       contents: write
       checks: write
@@ -38,7 +59,24 @@ jobs:
       - name: Gradle Wrapper 권한 부여
         run: chmod +x gradlew
 
-      # 4. 캐싱
+      # 4. '*.yml' 파일 세팅
+      - name: application.yml 파일 설정
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+
+      - name: application-dev.yml 설정
+        run: echo "${{ secrets.APPLICATION_DEV_YML }}" > ./src/main/resources/application-dev.yml
+
+      - name: application-oauth2.yml 설정
+        run: echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
+
+      - name: application-test.yml 설정
+        run: |
+          mkdir -p src/test/resources
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/application-test.yml
+
+      # 5. 캐싱
       - name: Gradle Caching
         uses: actions/cache@v3
         with:
@@ -48,8 +86,30 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             gradle-${{ runner.os }}
+      # 1-5. 테스트 컨테이너들 작동여부 체크
+      - name: MySQL 체크
+        run: |
+          until nc -z localhost 3306; do
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
 
-      # 5. 빌드
+
+      - name: Redis 체크
+        run: |
+          until nc -z localhost 6379; do
+            echo "Waiting for Redis..."
+            sleep 3
+          done
+
+      - name: MongoDB 체크
+        run: |
+          until nc -z localhost 27017; do
+            echo "Waiting for MongoDB..."
+            sleep 3
+          done
+
+      # 6. 빌드
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build
 
