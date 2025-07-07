@@ -76,7 +76,7 @@ jobs:
           echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
           
           mkdir -p src/test/resources
-          echo "${{ secrets.TEST_APPLICATION_YML }}" > ./src/test/resources/application-test.yml
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/application-test.yml
 
       # 4. gradle 환경 설치
       - name: Gradle Wrapper 권한 부여
