@@ -39,6 +39,19 @@ jobs:
         ports:
           - 27017:27017
 
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        env:
+          discovery.type: single-node
+          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+
     permissions:
       contents: write
       checks: write
@@ -109,6 +122,21 @@ jobs:
             sleep 3
           done
 
+      - name: Elasticsearch 체크
+        run: |
+          until curl -sSf http://localhost:9200/_cluster/health; do
+            echo "Waiting for Elasticsearch..."
+            sleep 5
+          done
+
+      # 5-2. Nori 플러그인 설치
+      - name: Install Nori plugin
+        run: |
+          CONTAINER_ID=$(docker ps -q -f ancestor=docker.elastic.co/elasticsearch/elasticsearch:7.17.0)
+          echo "Elasticsearch container ID: $CONTAINER_ID"
+          docker exec $CONTAINER_ID bin/elasticsearch-plugin install analysis-nori --batch
+          docker restart $CONTAINER_ID
+          sleep 30
       # 6. 빌드
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build
