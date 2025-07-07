@@ -2,6 +2,8 @@ package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocumentRepository;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
@@ -18,6 +20,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -139,6 +144,7 @@ class BookmarkServiceIntTest {
         void loadBookmark_category_정상() {
 
             // given
+            Pageable pageable = PageRequest.of(0, 10);
             List<Bookmark> savedBookmarks = new ArrayList<>();
 
             List.of(product1, product2, product3).forEach(product -> {
@@ -150,13 +156,15 @@ class BookmarkServiceIntTest {
             });
 
             // when
-            List<Bookmark> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test");
+            Slice<BookmarkResponse> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test", pageable);
 
             // then
             Assertions.assertThat(bookmarks).hasSize(3);
             Assertions.assertThat(bookmarks)
-                    .extracting(Bookmark::getProductId)
+                    .extracting(BookmarkResponse::products)
+                    .extracting(ProductListResponse::id)
                     .containsExactlyInAnyOrder(product1.getId(), product2.getId(), product3.getId());
+
         }
 
         @Test
@@ -171,10 +179,10 @@ class BookmarkServiceIntTest {
             Bookmark saveBookmark = sut.saveBookmark(request);
 
             // when
-            Bookmark bookmark = sut.loadBookmarkById(saveBookmark.getId());
+            BookmarkResponse response = sut.loadBookmarkById(saveBookmark.getId());
 
             // then
-            Assertions.assertThat(bookmark.getProductId()).isEqualTo(product1.getId());
+            Assertions.assertThat(response.products().id()).isEqualTo(product1.getId());
         }
 
         @Test

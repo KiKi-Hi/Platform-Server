@@ -1,6 +1,8 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
+import com.jiyoung.kikihi.global.response.page.PageRequest;
+import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 @Tag(name = "북마크 API", description = "북마크 기능을 수행하는 API 입니다.")
 public interface BookmarkControllerSpec {
 
@@ -43,6 +44,7 @@ public interface BookmarkControllerSpec {
             @RequestBody @Valid BookmarkRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
+
     /**
      * 북마크 상세 정보를 조회합니다.
      *
@@ -57,21 +59,25 @@ public interface BookmarkControllerSpec {
             @Parameter(description = "북마크 Id", example = "1")
             @PathVariable Long id);
 
+
+
     /**
      * 카테고리별 북마크 목록을 조회합니다.
      *
      * @param principalDetails 인증 정보
-     * @param category 카테고리명
+     * @param category         카테고리명
      * @return 북마크 목록 DTO 리스트
      */
     @Operation(
             summary = "카테고리 기반 북마크 목록 조회 API",
             description = "JWT 기반으로 카테고리별 북마크 목록을 조회할 수 있습니다."
     )
-    ApiResponse<List<BookmarkResponse>> loadBookmarkByCategory(
+    ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Parameter(description = "카테고리", example = "keycap")
-            @RequestParam String category);
+            @RequestParam String category,
+            PageRequest pageRequest);
+
 
     String SUCCESS_PAYLOAD = """
             {

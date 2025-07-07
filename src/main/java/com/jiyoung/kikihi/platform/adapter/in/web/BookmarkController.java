@@ -1,19 +1,22 @@
 package com.jiyoung.kikihi.platform.adapter.in.web;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
+import com.jiyoung.kikihi.global.response.page.PageRequest;
+import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.swagger.BookmarkControllerSpec;
 import com.jiyoung.kikihi.platform.application.in.bookmark.BookmarkUseCase;
-import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -56,10 +59,10 @@ public class BookmarkController implements BookmarkControllerSpec {
     public ApiResponse<BookmarkResponse> loadBookmark(@PathVariable Long id) {
 
         // 서비스 계층
-        Bookmark bookmark = service.loadBookmarkById(id);
+        BookmarkResponse response = service.loadBookmarkById(id);
 
         // 리턴
-        return ApiResponse.ok(BookmarkResponse.from(bookmark));
+        return ApiResponse.ok(response);
     }
 
     /**
@@ -70,17 +73,28 @@ public class BookmarkController implements BookmarkControllerSpec {
      * @return 북마크 목록 응답 DTO 리스트
      */
     @GetMapping
-    public ApiResponse<List<BookmarkResponse>> loadBookmarkByCategory(
+    public ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam String category) {
+            @RequestParam String category,
+            PageRequest pageRequest) {
+
+        // Pageable
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPage() - 1,
+                pageRequest.getSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
 
         // 아이디 추출
         UUID userId = principalDetails.getId();
 
         // 서비스 계층
-        List<Bookmark> bookmarks = service.loadBookmarksByUserIdAndCategory(userId, category);
+        Slice<BookmarkResponse> responses = service.loadBookmarksByUserIdAndCategory(userId, category, pageable);
+
+        // SliceDTO 처리
+        SliceResponse<BookmarkResponse> sliceResponse = SliceResponse.from(responses);
 
         // 리턴
-        return ApiResponse.ok(BookmarkResponse.from(bookmarks));
+        return ApiResponse.ok(sliceResponse);
     }
 }

@@ -1,7 +1,10 @@
 package com.jiyoung.kikihi.platform.application.in.bookmark;
 
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.*;
 
@@ -20,9 +23,9 @@ public interface BookmarkUseCase {
     Bookmark saveBookmark(BookmarkRequest request);
 
     /// 조회하기
-    Bookmark loadBookmarkById(Long id);
+    BookmarkResponse loadBookmarkById(Long id);
 
-    List<Bookmark> loadBookmarksByUserIdAndCategory(UUID userId, String category);
+    Slice<BookmarkResponse> loadBookmarksByUserIdAndCategory(UUID userId, String category, Pageable pageable);
 
     /// 삭제하기
     void deleteBookmarkById(Long id, UUID userId);

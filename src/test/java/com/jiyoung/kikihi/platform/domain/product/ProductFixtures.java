@@ -31,7 +31,7 @@ public class ProductFixtures {
 
     public static ProductDocument createProduct() {
         return ProductDocument.builder()
-                .id("prd-001")
+                .id(UUID.randomUUID().toString())
                 .category("test")
                 .name("테스트 전자제품")
                 .price(129000.0)
@@ -51,7 +51,7 @@ public class ProductFixtures {
 
     public static ProductDocument createProduct(String category, String name) {
         return ProductDocument.builder()
-                .id("prd-001")
+                .id(UUID.randomUUID().toString())
                 .category(category)
                 .name(name)
                 .price(129000.0)
