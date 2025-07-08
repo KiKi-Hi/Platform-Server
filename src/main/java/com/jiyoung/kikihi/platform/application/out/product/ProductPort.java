@@ -34,4 +34,10 @@ public interface ProductPort {
     /// 삭제
     void deleteProduct(String productId);
 
+    /**
+     * 외부 의존성에서 사용하는 함수
+     */
+    Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable);
+
+
 }
