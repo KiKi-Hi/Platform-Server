@@ -16,40 +16,38 @@ jobs:
   CI:
     runs-on: ubuntu-22.04
     services:
-      runs-on: ubuntu-22.04
-      services:
-        mysql:
-          image: mysql:8.0
-          ports:
-            - '3306:3306'
-          env:
-            MYSQL_DATABASE: kkh_test
-            MYSQL_USER: testuser
-            MYSQL_PASSWORD: testpass
-            MYSQL_ROOT_PASSWORD: root
+      mysql:
+        image: mysql:8.0
+        ports:
+          - '3306:3306'
+        env:
+          MYSQL_DATABASE: kkh_test
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+          MYSQL_ROOT_PASSWORD: root
 
-        redis:
-          image: redis:7.2.5
-          ports:
-            - '6379:6379'
+      redis:
+        image: redis:7.2.5
+        ports:
+          - '6379:6379'
 
-        mongo:
-          image: mongo:6.0
-          ports:
-            - 27017:27017
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
 
-        elasticsearch:
-          image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
-          ports:
-            - 9200:9200
-          options: >-
-            --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 10
-          env:
-            discovery.type: single-node
-            ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        env:
+          discovery.type: single-node
+          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
 
     permissions:
       contents: write
@@ -195,6 +193,7 @@ jobs:
             cd /home/ubuntu/app/docker/
             docker compose pull spring
             docker compose up -d spring
+
 
 
 
