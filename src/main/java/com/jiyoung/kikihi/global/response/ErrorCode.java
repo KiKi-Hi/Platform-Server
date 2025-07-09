@@ -53,12 +53,14 @@ public enum ErrorCode {
         POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
         COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
         PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-        CART_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
+        BOOKMARK_NOT_FOUND(404_007,HttpStatus.NOT_FOUND,"해당 북마크를 찾을 수 없습니다"),
+        CART_NOT_FOUND(404_008, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
 
 //        ========================
         // 409 Conflict
         // ========================
         DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
+        BOOKMARK_NOT_OWN_USER(409_002, HttpStatus.CONFLICT, "유저가 추가한 북마크가 아닙니다."),
 
 
         // ========================
