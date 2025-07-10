@@ -45,6 +45,9 @@ public record ProductDetailResponse(
                 .discountRate(0)
                 .originalPrice(product.getPrice())
                 .discountedPrice(product.getPrice())
+                .deliveryInfo(null)
+                .recommendedItems(null)
+                .cautions(null)
                 .imageUrl(product.getAllDetailImages())
                 .build();
     }

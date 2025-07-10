@@ -29,8 +29,14 @@ public class ProductController implements ProductControllerSpec {
 
     private final ProductUseCase productService;
 
-    /// 상품 목록 조회 API
-    //  상품 목록 조회 & 필터링 - mongoDB
+    /**
+     * 상품 목록 조회 & 필터링
+     * @param pageRequest       페이지 요청
+     * @param category          카테고리
+     * @param manufacturer      제조사
+     * @param minPrice          최소 가격
+     * @param maxPrice          최대 가격
+     */
     @GetMapping("/list")
     public ApiResponse<SliceResponse<ProductListResponse>> getProductList(PageRequest pageRequest,
                                                                           @RequestParam String category,
@@ -81,18 +87,29 @@ public class ProductController implements ProductControllerSpec {
         return ApiResponse.ok(SliceResponse.from(slice));
     }
 
-    /// 상품 상세 조회 API
+    /**
+     * 상품 상세 조회 API
+     * @param id    상세 조회할 ID
+     */
     @GetMapping
     public ApiResponse<ProductDetailResponse> getProduct(
             @RequestParam String id) {
 
-        // 서비스
-        Product product = productService.getProduct(id);
+        // 서비스 호출
+        ProductDetailResponse product = productService.getProduct(id);
 
-        // DTO 변환
-        ProductDetailResponse response = ProductDetailResponse.from(product);
+        return ApiResponse.ok(product);
+    }
 
-        return ApiResponse.ok(response);
+    /**
+     * 상품 추천 API
+     */
+    @GetMapping("/recommendation")
+    public ApiResponse<ProductListResponse> getProductRecommendation(){
+
+        // 서비스 호출
+
+        return null;
     }
 
 }

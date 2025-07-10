@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.application.in.product;
 
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -33,7 +34,9 @@ public interface ProductUseCase {
     Slice<Product> getProductsByCategoryIdAndManufacturerIdAndPrice(String categoryId, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 상품 상세 조회
-    Product getProduct(String id);
+    ProductDetailResponse getProduct(String id);
 
+    /// 상품 추천
+    List<Product> getProductsByRecommendation();
 
 }
