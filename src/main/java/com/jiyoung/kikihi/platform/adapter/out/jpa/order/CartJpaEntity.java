@@ -7,9 +7,9 @@ import lombok.experimental.SuperBuilder;
 import java.util.UUID;
 
 /*
-* 각 상품에 대한 주문 정보를 담는 클래스입니다.
-*
-* */
+ * 각 상품에 대한 주문 정보를 담는 클래스입니다.
+ *
+ * */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,5 +30,14 @@ public class CartJpaEntity {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public static CartJpaEntity from(String productId, UUID userId, Integer quantity) {
+        return CartJpaEntity.builder()
+                .id(UUID.randomUUID())
+                .productId(productId)
+                .userId(userId)
+                .quantity(quantity)
+                .build();
     }
 }

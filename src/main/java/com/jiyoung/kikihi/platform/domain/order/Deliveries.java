@@ -9,11 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-/*
-*
-
- *
-* */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -26,6 +21,6 @@ public class Deliveries {
     private Address address;
     private String phoneNumber;
     private String message;
-    private String state; // 배송 상태 (예: 준비중, 배송중, 배송완료 등)
+    private DeliveryState state; // 배송 상태 (예: 준비중, 배송중, 배송완료 등)
 
 }

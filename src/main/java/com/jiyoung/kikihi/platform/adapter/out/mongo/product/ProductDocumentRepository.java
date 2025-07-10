@@ -46,9 +46,4 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
-    List<ProductDocument> findByProductIdIn(List<String> productIds);
-   
-     // 아이디 기반 조회
-    Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
-
 }

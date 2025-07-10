@@ -1,9 +1,9 @@
 package com.jiyoung.kikihi.platform.application.out.order;
 
-import com.jiyoung.kikihi.platform.domain.product.Product;
-import org.springframework.data.domain.Page;
+import com.jiyoung.kikihi.platform.adapter.out.jpa.order.CartJpaEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -19,12 +19,18 @@ public interface CartPort {
     void saveCartItem(String productId, Integer quantity, UUID userId);
 
     // 조회
-    List<Product> getCartItems(UUID userId);
+    List<String> getCartProductIds(UUID userId);
 
     // 삭제
     void deleteCartItem(String productId, UUID userId);
 
     // 수량 변경
     void updateCartItemQuantity(String productId, Integer quantity, UUID userId);
+
+    // 장바구니 상품 조회
+    Optional<CartJpaEntity> findCartProductByProductIdAndUserId(String productId, UUID userId);
+
+    // 장바구니 상품 저장
+    void saveCartItem(CartJpaEntity cartItem);
 
 }
