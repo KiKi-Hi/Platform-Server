@@ -9,8 +9,9 @@ import com.jiyoung.kikihi.platform.application.in.order.CartUseCase;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,7 +69,6 @@ public class CartController implements CartControllerSpec {
 
     /**
      * 장바구니에 담긴 상품 수량을 변경합니다.
-     *
      * @param productId 상품 ID (PathVariable)
      * @param quantity 변경할 수량 (RequestParam)
      * @param principalDetails 인증된 사용자 정보
@@ -76,8 +76,8 @@ public class CartController implements CartControllerSpec {
      */
     @PutMapping("/{productId}")
     public ApiResponse<String> updateProductQuantityInCart(
-            @PathVariable String productId,
-            @RequestParam Integer quantity,
+            @PathVariable @NotNull String productId,
+            @RequestParam @Min(value = 1, message = "수량은 1 이상이어야 합니다.") Integer quantity,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
         cartUseCase.updateProductQuantityInCart(productId, quantity, principalDetails.getId());
         return ApiResponse.ok("성공적으로 장바구니 상품의 수량을 변경했습니다.");
