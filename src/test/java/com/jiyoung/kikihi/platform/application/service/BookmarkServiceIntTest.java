@@ -68,9 +68,9 @@ class BookmarkServiceIntTest {
         user = userPort.saveUser(UserFixtures.createUser(id));
 
         /// 상품 정보 저장
-        product1 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품1")).toDomain();
-        product2 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품2")).toDomain();
-        product3 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품3")).toDomain();
+        product1 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품1",100000)).toDomain();
+        product2 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품2",100000)).toDomain();
+        product3 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품3",100000)).toDomain();
     }
 
     @Nested
