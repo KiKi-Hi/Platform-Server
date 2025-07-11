@@ -48,6 +48,11 @@ public class BookmarkAdapter implements BookmarkPort {
     }
 
     @Override
+    public boolean checkBookmarkByProductIdAndUserId(String productId, UUID userId) {
+        return repository.existsByProductIdAndUserId(productId, userId);
+    }
+
+    @Override
     public void deleteBookmarkById(Long bookmarkId) {
         repository.deleteById(bookmarkId);
     }

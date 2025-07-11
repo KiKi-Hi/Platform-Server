@@ -9,4 +9,7 @@ public interface BookmarkJpaRepository extends JpaRepository<BookmarkJpaEntity, 
     List<BookmarkJpaEntity> findByUserIdAndCategory(UUID userId, String category);
 
     boolean existsByUserIdAndId(UUID userId, Long id);
+
+
+    boolean existsByProductIdAndUserId(String productId, UUID userId);
 }

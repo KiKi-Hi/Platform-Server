@@ -98,6 +98,11 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
+    public List<Product> getProductsByRecommendation(String category) {
+        return List.of();
+    }
+
+    @Override
     public Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable) {
         return documentRepository.findByIdIn(productIds, pageable)
                 .map(ProductDocument::toDomain);
