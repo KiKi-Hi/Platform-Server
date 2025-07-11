@@ -23,7 +23,7 @@ public interface ProductControllerSpec {
             description = "ID를 바탕으로 상품 상세정보를 조회할 수 있습니다."
     )
     ApiResponse<ProductDetailResponse> getProduct(
-            @Parameter(description = "상품 ID", example = "68524682518e78c5d8f73e94")
+            @Parameter(description = "상품 ID", example = "686bd26dff7b820865d6e005")
             @RequestParam String id,
 
             @Parameter(hidden = true)
@@ -53,6 +53,13 @@ public interface ProductControllerSpec {
 
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
+
+    @Operation(
+            summary = "인기상품 API_홈",
+            description = "북마크를 바탕으로 8개의 인기 상품을 불러오는 API 입니다."
+
+    )
+    ApiResponse<List<ProductListResponse>> getProductRecommendation();
 
 }
 

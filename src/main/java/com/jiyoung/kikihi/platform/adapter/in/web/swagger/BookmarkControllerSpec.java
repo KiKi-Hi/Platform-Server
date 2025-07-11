@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +43,8 @@ public interface BookmarkControllerSpec {
     )
     ApiResponse<String> saveBookmark(
             @RequestBody @Valid BookmarkRequest request,
+
+            @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 
@@ -73,15 +76,34 @@ public interface BookmarkControllerSpec {
             description = "JWT 기반으로 카테고리별 북마크 목록을 조회할 수 있습니다."
     )
     ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(
+
+            @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails,
+
             @Parameter(description = "카테고리", example = "keycap")
             @RequestParam String category,
             PageRequest pageRequest);
 
 
-    String SUCCESS_PAYLOAD = """
+    @Operation(
+            summary = "북마크를 삭제 API",
+            description = "JWT 기반으로 본인이 기존에 북마크한 상품의 북마크를 해제할 수 있습니다."
+    )
+    @DeleteMapping("/{bookmarkId}")
+    ApiResponse<String> deleteBookmark(
+
+            @Parameter(example = "1")
+            @PathVariable Long bookmarkId,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
+
+
+
+
+        String SUCCESS_PAYLOAD = """
             {
-              "productId": "68628bc0b3ef08a40a70f2d8"
+              "productId": "686bd26dff7b820865d6e005"
             }
             """;
 }
