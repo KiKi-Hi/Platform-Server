@@ -16,10 +16,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -153,12 +150,36 @@ public class ProductService implements ProductUseCase {
 
     /**
      * 추천 서비스를 구현 합니다!
+     * - 북마크가 많은 순서대로 추천합니다.
      */
     @Override
     public List<Product> getProductsByRecommendation() {
-        return List.of();
-    }
 
+        /// 인기 있는 북마크 상품 조회
+        // Map <ProductId, 북마크 개수>
+        Map<String, Long> favoriteBookmarks = bookmarkPort.getFavoriteBookmarks();
+
+        /// 상품 ID 바탕으로 8개 조회
+        List<String> topProductIds = favoriteBookmarks.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(8)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        /// TODO! 순서를 보장한 상태로 한번에 가져오는 방안 구상하기
+
+        /// 상품 목록 가져오기
+        List<Product> products = new ArrayList<>();
+
+        /// 상품 ID 바탕으로 조회, 순서대로 조회해서 정렬 유지
+        topProductIds.forEach(productId -> {
+            Product product = loadProduct(productId);
+            products.add(product);
+        });
+
+        return products;
+
+    }
 
     // 공통 함수
     /**
