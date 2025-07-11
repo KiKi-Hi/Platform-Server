@@ -69,7 +69,7 @@ public class BookmarkController implements BookmarkControllerSpec {
      * 카테고리별 북마크 목록을 조회합니다.
      *
      * @param principalDetails 인증된 사용자 정보
-     * @param category 카테고리명 (Query Parameter)
+     * @param category         카테고리명 (Query Parameter)
      * @return 북마크 목록 응답 DTO 리스트
      */
     @GetMapping
@@ -94,7 +94,23 @@ public class BookmarkController implements BookmarkControllerSpec {
         // SliceDTO 처리
         SliceResponse<BookmarkResponse> sliceResponse = SliceResponse.from(responses);
 
-        // 리턴
         return ApiResponse.ok(sliceResponse);
+    }
+
+    /**
+     * 북마크를 삭제하는 로직입니다.
+     * @param bookmarkId        북마크 ID
+     * @param principalDetails  유저 ID
+     */
+    @DeleteMapping("/{bookmarkId}")
+    public ApiResponse<String> deleteBookmark(@PathVariable Long bookmarkId,@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        // 아이디 추출
+        UUID userId = principalDetails.getId();
+
+        // 서비스 계층
+        service.deleteBookmarkById(bookmarkId, userId);
+
+        return ApiResponse.ok("성공적으로 삭제 되었습니다.");
     }
 }
