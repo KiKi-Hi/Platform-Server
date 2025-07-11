@@ -48,9 +48,9 @@ public record ProductDetailResponse(
                 .originalPrice(product.getPrice())
                 .discountedPrice(product.getPrice())
                 .likedByMe(false)
-                .deliveryInfo(null)
+                .deliveryInfo(DeliveryInfoResponse.of(3000, "일반배송", "3일 이내 발송 예정"))
                 .recommendedItems(null)
-                .cautions(null)
+                .cautions("도착일은 배송지나 배송사 사정으로 변경 또는 지연될 수 있습니다.")
                 .imageUrl(product.getAllDetailImages())
                 .build();
     }
@@ -65,9 +65,9 @@ public record ProductDetailResponse(
                 .originalPrice(product.getPrice())
                 .discountedPrice(product.getPrice())
                 .likedByMe(likedByMe)
-                .deliveryInfo(null)
+                .deliveryInfo(DeliveryInfoResponse.of(3000, "일반배송", "3일 이내 발송 예정"))
                 .recommendedItems(null)
-                .cautions(null)
+                .cautions("도착일은 배송지나 배송사 사정으로 변경 또는 지연될 수 있습니다.")
                 .imageUrl(product.getAllDetailImages())
                 .build();
     }
