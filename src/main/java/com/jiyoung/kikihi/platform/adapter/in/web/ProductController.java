@@ -48,7 +48,8 @@ public class ProductController implements ProductControllerSpec {
                                                                           @RequestParam(required = false) List<String> manufacturer,
                                                                           @RequestParam(required = false) Integer minPrice,
                                                                           @RequestParam(required = false) Integer maxPrice,
-                                                                          @AuthenticationPrincipal Optional<PrincipalDetails> principalDetails) {
+                                                                          @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
 
         /// Pageable
         Pageable pageable = org.springframework.data.domain.PageRequest.of(
@@ -61,7 +62,7 @@ public class ProductController implements ProductControllerSpec {
         Slice<ProductListResponse> products;
 
         /// 유저가 없다면 null 저장
-        UUID userId = principalDetails.map(PrincipalDetails::getId).orElse(null);
+        UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         // 파라미터 여부에 따라 분기 처리
         if (manufacturer == null && minPrice == null && maxPrice == null) {
@@ -94,10 +95,10 @@ public class ProductController implements ProductControllerSpec {
     @GetMapping
     public ApiResponse<ProductDetailResponse> getProduct(
             @RequestParam String id,
-            @AuthenticationPrincipal Optional<PrincipalDetails> principalDetails) {
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 유저가 없다면 null 저장
-        UUID userId = principalDetails.map(PrincipalDetails::getId).orElse(null);
+        UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         // 서비스 호출
         ProductDetailResponse product = productService.getProduct(userId, id);

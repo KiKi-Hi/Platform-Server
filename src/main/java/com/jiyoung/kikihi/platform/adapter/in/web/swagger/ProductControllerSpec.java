@@ -27,7 +27,7 @@ public interface ProductControllerSpec {
             @RequestParam String id,
 
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Optional<PrincipalDetails> principalDetails);
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 
     @Operation(
@@ -52,7 +52,7 @@ public interface ProductControllerSpec {
             @RequestParam(required = false) Integer maxPrice,
 
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Optional<PrincipalDetails> principalDetails);
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 }
 
