@@ -45,6 +45,13 @@ public class BookmarkService implements BookmarkUseCase {
         Product product = productPort.getProduct(request.getProductId())
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
 
+        /// 이미 눌렀다면 예외 처리 발생
+        boolean checked = port.checkBookmarkByUserIdAndProductId(request.getUserId(), request.getProductId());
+
+        if (checked) {
+            throw new IllegalStateException(ErrorCode.BOOKMARK_ALREADY.getMessage());
+        }
+
         /// 상품을 바탕으로 카테고리 저장
         Bookmark bookmark = Bookmark.of(product.getId(), user.getId(), product.getCategory());
 
@@ -124,7 +131,7 @@ public class BookmarkService implements BookmarkUseCase {
         User user = getUser(userId);
 
         /// 해당 유저가 저장한 북마크인지 체크
-        boolean checked = port.checkBookmarkByIdAndUserId(id, userId);
+        boolean checked = port.checkBookmarkByIdAndUserId(id, user.getId());
 
         if (!checked) {
             throw new IllegalStateException(ErrorCode.BOOKMARK_NOT_OWN_USER.getMessage());

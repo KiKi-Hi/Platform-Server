@@ -4,6 +4,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.Builder;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 상품 목록 응답 DTO
@@ -51,4 +52,26 @@ public record ProductListResponse(
                 .toList();
     }
 
+    /// 북마크한 내용이 있을 때, 정적 팩토리 메서드
+    public static List<ProductListResponse> from(List<Product> products, Set<String> bookmarkProductIds) {
+        return products.stream()
+                .map(product -> ProductListResponse.from(
+                        product,
+                        bookmarkProductIds.contains(product.getId())))
+                .toList();
+    }
+
+    /// 북마크한 내용이 있을 때 사용하는, 내부 정적 팩토리 메서드
+    private static ProductListResponse from(Product product, boolean likedByMe) {
+        return ProductListResponse.builder()
+                .id(product.getId())
+                .thumbnail(product.getThumbnail())
+                .category(product.getCategory())
+                .manufacturerName(product.getManufacturer())
+                .productName(product.getName())
+                .discountRate(0)
+                .discountedPrice(product.getPrice())
+                .likedByMe(likedByMe)
+                .build();
+    }
 }

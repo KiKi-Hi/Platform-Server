@@ -8,7 +8,7 @@ public class UserFixtures {
         return User.builder()
                 .id(UUID.randomUUID())
                 .socialId("dev-kakao-id")
-                .email("kikihi_kakao@example.com")
+                .email(UUID.randomUUID() + "@example.com")
                 .profileImage("http://image-url")
                 .phoneNumber("010-1111-1111")
                 .name("kakao개발자")
@@ -22,7 +22,7 @@ public class UserFixtures {
         return User.builder()
                 .id(id)
                 .socialId("dev-kakao-id")
-                .email("kikihi_kakao@example.com")
+                .email(UUID.randomUUID() + "@example.com")
                 .profileImage("http://image-url")
                 .phoneNumber("010-1111-1111")
                 .name("kakao개발자")
@@ -32,12 +32,12 @@ public class UserFixtures {
                 .build();
     }
 
-    public static User createUser(UUID id, String name) {
+    public static User createUser(UUID id, String name,String socialId) {
 
         return User.builder()
                 .id(id)
-                .socialId("dev-kakao-id")
-                .email("kikihi_kakao@example.com")
+                .socialId(socialId)
+                .email(UUID.randomUUID() + "@example.com")
                 .profileImage("http://image-url")
                 .phoneNumber("010-1111-1111")
                 .name(name)

@@ -49,12 +49,12 @@ public class ProductFixtures {
                 .build();
     }
 
-    public static ProductDocument createProduct(String category, String name) {
+    public static ProductDocument createProduct(String category, String name,double price) {
         return ProductDocument.builder()
                 .id(UUID.randomUUID().toString())
                 .category(category)
                 .name(name)
-                .price(129000.0)
+                .price(price)
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
@@ -66,6 +66,27 @@ public class ProductFixtures {
                         "https://example.com/images/prd-001-2.jpg"
                 ))
                 .manufacturer("테스트전자")
+                .build();
+    }
+
+    public static ProductDocument createProduct(String category, String name, String manufacturer, double price) {
+
+        return ProductDocument.builder()
+                .id(UUID.randomUUID().toString())
+                .category(category)
+                .name(name)
+                .price(price)
+                .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
+                .thumbnail("https://example.com/images/prd-001-thumb.jpg")
+                .detailPageUrl("https://example.com/products/prd-001/detail")
+                .actualPurchaseUrl("https://example.com/products/prd-001/buy")
+                .finalPurchaseUrl("https://example.com/products/prd-001/final")
+                .options(Arrays.asList("화이트", "블랙", "실버"))
+                .allDetailImages(Arrays.asList(
+                        "https://example.com/images/prd-001-1.jpg",
+                        "https://example.com/images/prd-001-2.jpg"
+                ))
+                .manufacturer(manufacturer)
                 .build();
     }
 

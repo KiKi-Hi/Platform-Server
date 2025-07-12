@@ -5,12 +5,15 @@ import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
+import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "상품 조회 API", description = "상품 조회를 수행하는 API 입니다.")
 public interface ProductControllerSpec {
@@ -20,8 +23,11 @@ public interface ProductControllerSpec {
             description = "ID를 바탕으로 상품 상세정보를 조회할 수 있습니다."
     )
     ApiResponse<ProductDetailResponse> getProduct(
-            @Parameter(description = "상품 ID", example = "68524682518e78c5d8f73e94")
-            @RequestParam String id);
+            @Parameter(description = "상품 ID", example = "686bd26dff7b820865d6e005")
+            @RequestParam String id,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 
     @Operation(
@@ -43,6 +49,17 @@ public interface ProductControllerSpec {
             @RequestParam(required = false) Integer minPrice,
 
             @Parameter(description = "최대 가격")
-            @RequestParam(required = false) Integer maxPrice);
+            @RequestParam(required = false) Integer maxPrice,
+
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal PrincipalDetails principalDetails);
+
+    @Operation(
+            summary = "인기상품 API_홈",
+            description = "북마크를 바탕으로 8개의 인기 상품을 불러오는 API 입니다."
+
+    )
+    ApiResponse<List<ProductListResponse>> getProductRecommendation();
+
 }
 

@@ -52,8 +52,10 @@ class BookmarkServiceIntTest {
     private ProductDocumentRepository productRepository;
 
     private final UUID id = UUID.fromString("12345678-aaaa-bbbb-cccc-123456789abc");
+    private final UUID id2 = UUID.fromString("02345679-aaaa-bbbb-cccc-123456789abc");
 
     private User user;
+    private User user2;
     private Product product1;
     private Product product2;
     private Product product3;
@@ -66,11 +68,12 @@ class BookmarkServiceIntTest {
 
         /// 유저 정보 저장
         user = userPort.saveUser(UserFixtures.createUser(id));
+        user2 = userPort.saveUser(UserFixtures.createUser(id2));
 
         /// 상품 정보 저장
-        product1 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품1")).toDomain();
-        product2 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품2")).toDomain();
-        product3 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품3")).toDomain();
+        product1 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품1",100000)).toDomain();
+        product2 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품2",100000)).toDomain();
+        product3 = productRepository.save(ProductFixtures.createProduct("test", "테스트 상품3",100000)).toDomain();
     }
 
     @Nested
@@ -132,6 +135,24 @@ class BookmarkServiceIntTest {
             Assertions.assertThatThrownBy(() -> sut.saveBookmark(request))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessageContaining(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("[unhappy] 이미 북마크한 경우, 추가적으로 북마크하려고 할 때 예외 발생")
+        void saveBookmark_throw_product_IllegalStateException() {
+
+            // given
+            var request = BookmarkRequest.builder()
+                    .userId(user.getId())
+                    .productId(product1.getId())
+                    .build();
+
+            sut.saveBookmark(request);
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> sut.saveBookmark(request))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining(ErrorCode.BOOKMARK_ALREADY.getMessage());
         }
     }
 
@@ -197,5 +218,50 @@ class BookmarkServiceIntTest {
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessageContaining(ErrorCode.BOOKMARK_NOT_FOUND.getMessage());
         }
+    }
+
+    @Nested
+    @DisplayName("삭제 테스트")
+    class BookmarkDelete {
+
+        @Test
+        @DisplayName("[happy] 북마크 삭제 처리")
+        public void deleteBookmark(){
+
+            //given
+            var request = BookmarkRequest.builder()
+                    .userId(user.getId())
+                    .productId(product1.getId())
+                    .build();
+
+            Bookmark saveBookmark = sut.saveBookmark(request);
+
+            //when
+            sut.deleteBookmarkById(saveBookmark.getId(), user.getId());
+
+            // then
+            Optional<Bookmark> bookmark = port.getBookmark(saveBookmark.getId());
+            Assertions.assertThat(bookmark.isPresent()).isFalse();
+
+        }
+
+
+        @Test
+        @DisplayName("[unhappy] 북마크 삭제 예외 처리")
+        public void deleteBookmark_throw_otherUser_IllegalStateException(){
+
+            //given
+            var request = BookmarkRequest.builder()
+                    .userId(user.getId())
+                    .productId(product1.getId())
+                    .build();
+            Bookmark saveBookmark = sut.saveBookmark(request);
+
+            //when & then
+            Assertions.assertThatThrownBy(() -> sut.deleteBookmarkById(saveBookmark.getId(), user2.getId()))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining(ErrorCode.BOOKMARK_NOT_OWN_USER.getMessage());
+        }
+
     }
 }

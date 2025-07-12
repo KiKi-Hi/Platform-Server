@@ -33,9 +33,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        boolean isAnonymousAllowed = requestMatcherHolder.getRequestMatchersByMinRole(null)
+                .matches(request);
+
         // 토큰 추출
         try {
             Optional<String> token = extractor.extractAccessToken(request);
+
+            if (isAnonymousAllowed) {
+                // anonymous 허용: 토큰 있으면 인증, 없으면 anonymous로 통과
+                if (token.isPresent()) {
+                    String accessToken = token.get();
+                    if (!extractor.validateToken(accessToken)) {
+                        request.setAttribute(JWT_ERROR, INVALID_TOKEN);
+                        throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN.getMessage());
+                    }
+                    if (extractor.isExpired(accessToken)) {
+                        request.setAttribute(JWT_ERROR, TOKEN_EXPIRED);
+                        throw new JwtAuthenticationException(ErrorCode.TOKEN_EXPIRED.getMessage());
+                    }
+                    var authentication = extractor.getAuthentication(accessToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             // 토큰 검증
             // 비어있는 지
@@ -78,6 +100,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         /// null 인 것 해결
         boolean matches = requestMatcherHolder.getRequestMatchersByMinRole(null)
                 .matches(request);
+
+        /// 상품 조회는 회원/비회원 구분해야되기에 모두 필터를 타도록 설정
+        if (request.getRequestURI().startsWith("/api/v1/products")) {
+            return false;
+        }
 
         String requestURI = request.getRequestURI();
         String method = request.getMethod();

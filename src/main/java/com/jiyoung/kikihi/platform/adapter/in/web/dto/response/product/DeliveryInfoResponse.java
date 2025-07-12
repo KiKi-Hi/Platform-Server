@@ -16,4 +16,12 @@ record DeliveryInfoResponse(
         String shippingType,
         String estimatedDate
 ) {
+    public static DeliveryInfoResponse of(int shippingFee, String shippingType, String estimatedDate) {
+        return DeliveryInfoResponse.builder()
+                .shippingFee(shippingFee)
+                .shippingType(shippingType)
+                .estimatedDate(estimatedDate)
+                .build();
+    }
+
 }

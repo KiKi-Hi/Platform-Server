@@ -60,6 +60,7 @@ public enum ErrorCode {
         // ========================
         DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
         BOOKMARK_NOT_OWN_USER(409_002, HttpStatus.CONFLICT, "유저가 추가한 북마크가 아닙니다."),
+        BOOKMARK_ALREADY(409_003,HttpStatus.CONFLICT,"이미 해당 상품에 북마크를 등록했습니다"),
 
 
         // ========================
