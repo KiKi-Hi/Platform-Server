@@ -18,7 +18,8 @@ public class Order {
     private UUID userId;
     private Long deliveryId;
     private Long paymentId;
-    private Boolean state; // 가주문 테이블 (주문 완료)
     private Double totalPrice;
+    private OrderState state;
+
 
 }
