@@ -1,11 +1,9 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.response;
 
-import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.Role;
 import com.jiyoung.kikihi.platform.domain.user.User;
 import lombok.Builder;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -19,8 +17,7 @@ public record UserResponse(
          String email,
          String phoneNumber,
          Role role,
-         String profileImage,
-         Address address
+         String profileImage
 ) {
     public static UserResponse of(
             UUID id,
@@ -28,8 +25,7 @@ public record UserResponse(
             String email,
             String phoneNumber,
             Role role,
-            String profileImage,
-            Address address
+            String profileImage
     ) {
         return UserResponse.builder()
                 .id(id)
@@ -38,7 +34,6 @@ public record UserResponse(
                 .phoneNumber(phoneNumber)
                 .role(role)
                 .profileImage(profileImage)
-                .address(address)
                 .build();
     }
 
@@ -50,7 +45,6 @@ public record UserResponse(
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .profileImage(user.getProfileImage())
-                .address(user.getAddress())
                 .build();
     }
 }

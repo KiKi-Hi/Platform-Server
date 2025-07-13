@@ -1,10 +1,8 @@
 package com.jiyoung.kikihi.platform.adapter.out.jpa.order;
 
 import com.jiyoung.kikihi.platform.domain.order.DeliveryState;
-import com.jiyoung.kikihi.platform.domain.user.Address;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
@@ -16,29 +14,37 @@ import java.util.UUID;
 @Builder
 public class DeliveryJpaEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Column(name = "order_id", nullable = false)
     private UUID orderId;
 
-    // user의 address와 다름
-    @Column(nullable = false)
-    private String recipient;
+    @Column(name = "delivery_info_id", nullable = false)
+    private UUID deliveryInfoId;
 
-    @Embedded
-    private Address address;
-
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
-
-    @Column(length = 500, nullable = true)
+    @Column(length = 500)
     private String message;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "delivery_state", nullable = false)
     private DeliveryState deliveryState;
 
+    @PrePersist
+    public void prePersist() {
+        if (id == null) id = UUID.randomUUID();
+    }
 
+    public static DeliveryJpaEntity from(
+            UUID orderId,
+            UUID deliveryInfoId,
+            String message,
+            DeliveryState deliveryState) {
+        return DeliveryJpaEntity.builder()
+                .orderId(orderId)
+                .deliveryInfoId(deliveryInfoId)
+                .message(message)
+                .deliveryState(deliveryState)
+                .build();
+    }
 }

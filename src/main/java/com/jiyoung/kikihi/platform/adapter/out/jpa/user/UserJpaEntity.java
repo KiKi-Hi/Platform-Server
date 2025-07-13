@@ -1,7 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.out.jpa.user;
 
 import com.jiyoung.kikihi.platform.adapter.out.jpa.BaseTimeEntity;
-import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.Provider;
 import com.jiyoung.kikihi.platform.domain.user.Role;
 import com.jiyoung.kikihi.platform.domain.user.User;
@@ -31,16 +30,13 @@ public class UserJpaEntity extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
     private String profileImage;
 
-    @Embedded
-    private AddressJpaEntity address;
+    @Column(name = "delivery_info_id", nullable = true)
+    private UUID deliveryInfoId;
 
     @PrePersist
     public void generateUUID() {
@@ -56,10 +52,9 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .provider(user.getProvider())
                 .socialId(user.getSocialId())
                 .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .profileImage(user.getProfileImage())
-                .address(AddressJpaEntity.from(user.getAddress()))
+                .deliveryInfoId(user.getDeliveryInfoId())
                 .build();
     }
 
@@ -70,10 +65,9 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .socialId(socialId)
                 .name(name)
                 .email(email)
-                .phoneNumber(phoneNumber)
                 .role(role)
                 .profileImage(profileImage)
-                .address(address.toDomain())
+                .deliveryInfoId(deliveryInfoId)
                 .build();
     }
 

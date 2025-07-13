@@ -23,7 +23,7 @@ public class User {
     private String phoneNumber;
     private Role role;
     private String profileImage;
-    private Address address;
+    private UUID deliveryInfoId;
 
     public static User of(OAuth2UserInfo userInfo) {
         return User.builder()
@@ -35,7 +35,12 @@ public class User {
                 .phoneNumber("phoneNumber")
                 .profileImage(userInfo.getImageUrl())
                 .role(Role.USER)
-                .address(Address.of())
+                .deliveryInfoId(null) // 초기에는 배송 정보가 없으므로 null
                 .build();
+    }
+
+
+    public void setDeliveryInfoId(UUID deliveryInfoId) {
+        this.deliveryInfoId = deliveryInfoId;
     }
 }

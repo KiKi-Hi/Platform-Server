@@ -16,10 +16,7 @@ import java.util.UUID;
 public class Deliveries {
     private Long id;
     private UUID orderId;
-    // user의 address와 다름
-    private String recipient;
-    private Address address;
-    private String phoneNumber;
+    private DeliveryInfo deliveryInfo;
     private String message;
     private DeliveryState state; // 배송 상태 (예: 준비중, 배송중, 배송완료 등)
 

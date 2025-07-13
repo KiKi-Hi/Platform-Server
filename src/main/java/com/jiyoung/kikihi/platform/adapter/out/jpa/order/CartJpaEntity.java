@@ -28,6 +28,11 @@ public class CartJpaEntity {
 
     private Integer quantity;
 
+    @PrePersist
+    public void prePersist() {
+        if (id == null) id = UUID.randomUUID();
+    }
+
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
