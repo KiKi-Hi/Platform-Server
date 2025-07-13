@@ -55,19 +55,19 @@ public enum ErrorCode {
         PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
         BOOKMARK_NOT_FOUND(404_007,HttpStatus.NOT_FOUND,"해당 북마크를 찾을 수 없습니다"),
         CART_NOT_FOUND(404_008, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-
+        ORDER_NOT_FOUND(404_009, HttpStatus.NOT_FOUND, "해당 주문을 찾을 수 없습니다."),
 //        ========================
         // 409 Conflict
         // ========================
         DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
         BOOKMARK_NOT_OWN_USER(409_002, HttpStatus.CONFLICT, "유저가 추가한 북마크가 아닙니다."),
+        ORDER_ALREADY_PROCESSED(409_003, HttpStatus.CONFLICT, "이미 처리된 주문입니다."),
 
 
         // ========================
         // 500 Internal Server Error
         // ========================
         INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
-
 
         // 기타 공통
 

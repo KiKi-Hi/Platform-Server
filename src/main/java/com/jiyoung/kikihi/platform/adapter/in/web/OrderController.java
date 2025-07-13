@@ -27,12 +27,12 @@ public class OrderController {
         return ApiResponse.ok("배송 정보가 저장되었습니다.");
     }
 
-    // 결제 전 임시 주문 저장 API
-//    @PostMapping("/temporary-order")
-//    public ApiResponse<PaymentReadyResponse> saveTemporaryOrder(@RequestBody @Valid OrderRequest request, @AuthenticationPrincipal PrincipalDetails user) {
-//        PaymentReadyResponse response=orderUseCase.createOrder(request,user.getId());
-//        return ApiResponse.ok(response);
-//    }
+    // 결제 전 redis 임시 주문 저장 API
+    @PostMapping("/temporary-order")
+    public ApiResponse<PaymentReadyResponse> saveTemporaryOrder(@RequestBody @Valid OrderRequest request, @AuthenticationPrincipal PrincipalDetails user) {
+        PaymentReadyResponse response=orderUseCase.createOrder(request,user.getId());
+        return ApiResponse.ok(response);
+    }
 
     // 결제 완료 후 주문 정보 저장 API
 

@@ -4,9 +4,13 @@ package com.jiyoung.kikihi.platform.application.service;
 import com.jiyoung.kikihi.global.response.CustomException;
 import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.order.DeliveryInfoRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.order.OrderProductRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.order.OrderRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.order.OrderResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.order.PaymentReadyResponse;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.order.DeliveryInfoJpaEntity;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.user.UserJpaEntity;
+import com.jiyoung.kikihi.platform.adapter.out.redis.RedisOrder;
 import com.jiyoung.kikihi.platform.application.in.order.OrderUseCase;
 import com.jiyoung.kikihi.platform.application.out.order.DeliveryPort;
 import com.jiyoung.kikihi.platform.application.out.order.OrderPort;
@@ -14,17 +18,22 @@ import com.jiyoung.kikihi.platform.application.out.order.RedisOrderPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
 import com.jiyoung.kikihi.platform.application.out.user.UserPort;
 import com.jiyoung.kikihi.platform.domain.order.DeliveryInfo;
+import com.jiyoung.kikihi.platform.domain.order.OrderProducts;
+import com.jiyoung.kikihi.platform.domain.order.OrderState;
 import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -61,47 +70,80 @@ public class OrderService implements OrderUseCase {
         userPort.saveUser(user);
     }
 
-        // 버튼 클릭- 주문 저장- 결제 결과 페이지를 반환해야함
-//    @Override
-//    @Transactional
-//    public PaymentReadyResponse createOrder(OrderRequest orderRequest, UUID userId) {
-//
-//        // 주문 중복(아이템포턴시) 검증 - redis에서
-//        if (redisport.isProcessed(orderRequest.idempotencyKey())) {
-//            throw new CustomException(ErrorCode.ORDER_ALREADY_PROCESSED);
-//        }
-//
-//        // 수량 한도, 최대 가격
-//        validateOrderRequest(orderRequest);
-//
-//        try {
-//// DeliveryInfo deliveryInfo, List<OrderItem> items, int totalPrice
-//            // 주문 정보 Redis 저장 (주문 ID, 상태 등)
-//            RedisOrder redisOrder= RedisOrder.of(
-//                    orderRequest.deliveryInfoRequest(),
-//                    //
-//                    orderRequest.stream()
-//                            .map(AddToCartRequest::toOrderItem)
-//                            .toList(),
-//                    orderRequest.totalPrice(),
-//                    "주문 생성 중"
-//            );
-//            redisport.saveOrder(redisOrder);
-//
-//            // 9. Idempotency Key 저장 (중복 방지)
-//            redisport.markProcessed(idempotencyKey);
-//
-//            // 10. 응답 반환
-//            User user = getUser(userId);
-//            Double totalPrice = orderRequest.addToCartRequests().stream()
-//                    .mapToDouble(AddToCartRequest::price)
-//                    .sum();
-//            return PaymentReadyResponse.of(redis의.orderId,내가 직접 생성 orderName,user.getEmail(),user.getPhoneNumber(), , idempotencyKey);
-//
-//        } finally {
-//
-//        }
-//    }
+    // redis에 주문 저장
+    @Override
+    @Transactional
+    public PaymentReadyResponse createOrder(OrderRequest orderRequest, UUID userId) {
+        validateIdempotency(orderRequest.idempotencyKey());
+        DeliveryInfo deliveryInfo = toDeliveryInfo(orderRequest);
+
+        List<OrderProducts> orderProducts = toOrderProducts(orderRequest.orderProductList());
+
+        validateOrderProducts(orderProducts);
+
+        String redisOrderId=saveOrderToRedis(deliveryInfo, orderProducts, orderRequest);
+
+        redisport.markProcessed(orderRequest.idempotencyKey());
+
+        return buildPaymentReadyResponse(redisOrderId, orderRequest.totalPrice());
+    }
+
+// --- 아래는 분리된 private 메서드 ---
+
+    private void validateIdempotency(String idempotencyKey) {
+        if (redisport.isProcessed(idempotencyKey)) {
+            throw new CustomException(ErrorCode.ORDER_ALREADY_PROCESSED);
+        }
+    }
+
+    private DeliveryInfo toDeliveryInfo(OrderRequest orderRequest) {
+        Address address = Address.of(
+                orderRequest.deliveryInfoRequest().postCode(),
+                orderRequest.deliveryInfoRequest().address(),
+                orderRequest.deliveryInfoRequest().detailedAddress()
+        );
+        return DeliveryInfo.of(
+                orderRequest.deliveryInfoRequest().recipient(),
+                address,
+                orderRequest.deliveryInfoRequest().phoneNumber()
+        );
+    }
+
+    private List<OrderProducts> toOrderProducts(List<OrderProductRequest> orderProductRequests) {
+        return orderProductRequests.stream()
+                .map(OrderProducts::of)
+                .toList();
+    }
+
+    private void validateOrderProducts(List<OrderProducts> orderProducts) {
+        for (OrderProducts orderProduct : orderProducts) {
+            if (productPort.getProduct(orderProduct.getProductId()).isPresent()) {
+                throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+            }
+            if (orderProduct.getQuantity() <= 0 || orderProduct.getQuantity() > 100) {
+                throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+            }
+        }
+    }
+
+    private String saveOrderToRedis(DeliveryInfo deliveryInfo, List<OrderProducts> orderProducts, OrderRequest orderRequest) {
+        RedisOrder redisOrder = RedisOrder.builder()
+                .deliveryInfo(deliveryInfo)
+                .orderProducts(orderProducts)
+                .totalPrice(orderRequest.totalPrice())
+                .idempotencyKey(orderRequest.idempotencyKey())
+                .orderState(OrderState.PENDING)
+                .orderTime(LocalDateTime.now())
+                .build();
+        return redisport.saveOrder(redisOrder);
+    }
+
+    private PaymentReadyResponse buildPaymentReadyResponse(String redisOrderId, int amount) {
+        String successUrl = "https://yourdomain.com/pay/success";
+        String failUrl = "https://yourdomain.com/pay/fail";
+        return PaymentReadyResponse.of(UUID.fromString(redisOrderId), amount, successUrl, failUrl);
+    }
+
 
 //    private void validateOrderRequest(OrderRequest orderRequest) {
 //        if (orderRequest.addToCartRequests() == null || orderRequest.addToCartRequests().isEmpty()) {
@@ -123,9 +165,8 @@ public class OrderService implements OrderUseCase {
 
     @Override
     public Slice<OrderResponse> getMyOrders(UUID userId, Pageable pageable) {
-        // 사용자 ID를 기반으로 주문 목록을 조회합니다.
-        // 주문 정보는 페이징 처리되어 반환됩니다.
-        // 예시로 빈 페이지를 반환합니다.
+        // 사용자 ID를 기반으로 주문 목록을 조회
+        // 주문 정보는 페이징 처리되어 반환
         return new SliceImpl<>(Collections.emptyList(), pageable, false);
     }
 
