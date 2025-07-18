@@ -1,10 +1,11 @@
 package com.jiyoung.kikihi.global.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@RequiredArgsConstructor
 public enum ErrorCode {
 
 
@@ -33,6 +34,8 @@ public enum ErrorCode {
         REFRESH_TOKEN_NOT_FOUND(401_011, HttpStatus.UNAUTHORIZED, "저장된 리프레시 토큰이 존재하지 않습니다."),
         REFRESH_TOKEN_MISMATCH(401_009, HttpStatus.UNAUTHORIZED, "저장된 리프레시 토큰과 일치하지 않습니다."),
         EXPIRED_REFRESH_TOKEN(401_010, HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
+        TOKEN_NOT_FOUND_COOKIE(401_011, HttpStatus.UNAUTHORIZED, "쿠키에 리프레시 토큰이 존재하지 않습니다."),
+
 
 
         // ========================
@@ -74,11 +77,21 @@ public enum ErrorCode {
         private final HttpStatus httpStatus;
         private final String message;
 
-        ErrorCode(int code, HttpStatus httpStatus, String message) {
-            this.code = code;
-            this.httpStatus = httpStatus;
-            this.message = message;
+        /**
+         * 메시지를 바탕으로 ErrorCode를 반환합니다.
+         * 동일한 메시지가 여러 ErrorCode에 할당된 경우, 첫 번째로 일치하는 ErrorCode를 반환합니다.
+         *
+         * @param message 에러 메시지
+         * @return 일치하는 ErrorCode
+         * @throws IllegalArgumentException 메시지에 해당하는 ErrorCode가 없을 때
+         */
+        public static ErrorCode fromMessage(String message) {
+                for (ErrorCode errorCode : ErrorCode.values()) {
+                        if (errorCode.getMessage().equals(message)) {
+                                return errorCode;
+                        }
+                }
+                throw new IllegalArgumentException("해당 message를 가진 ErrorCode가 존재하지 않습니다: " + message);
         }
-
 
 }
