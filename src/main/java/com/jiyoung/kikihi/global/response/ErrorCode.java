@@ -16,6 +16,12 @@ public enum ErrorCode {
         INVALID_INPUT(400_002, HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
         NULL_VALUE(400_003, HttpStatus.BAD_REQUEST, "Null 값이 들어왔습니다."),
         TEST_ERROR(400_004, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
+        PAYMENT_CONFIRM_FAILED(400_100, HttpStatus.BAD_REQUEST, "결제 승인에 실패하였습니다."),
+        DUPLICATED_PAYMENT(400_101, HttpStatus.CONFLICT, "이미 승인된 결제입니다."),
+        INVALID_PAYMENT_KEY(400_102, HttpStatus.BAD_REQUEST, "유효하지 않은 결제 키입니다."),
+        INVALID_ORDER_ID(400_103, HttpStatus.BAD_REQUEST, "유효하지 않은 주문번호입니다."),
+        AMOUNT_MISMATCH(400_104, HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
+        UNAUTHORIZED_PAYMENT(401_001, HttpStatus.UNAUTHORIZED, "인증되지 않은 결제 요청입니다."),
 
 
         // ========================

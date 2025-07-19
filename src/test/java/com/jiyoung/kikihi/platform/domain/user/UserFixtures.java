@@ -14,7 +14,6 @@ public class UserFixtures {
                 .name("kakao개발자")
                 .provider(Provider.KAKAO) // 테스트용 값 (Enum)
                 .role(Role.ADMIN) // 관리자 권한 부여
-                .address(Address.of())
                 .build();
     }
 
@@ -28,7 +27,6 @@ public class UserFixtures {
                 .name("kakao개발자")
                 .provider(Provider.KAKAO) // 테스트용 값 (Enum)
                 .role(Role.ADMIN) // 관리자 권한 부여
-                .address(Address.of())
                 .build();
     }
 
@@ -43,7 +41,6 @@ public class UserFixtures {
                 .name(name)
                 .provider(Provider.KAKAO) // 테스트용 값 (Enum)
                 .role(Role.ADMIN) // 관리자 권한 부여
-                .address(Address.of())
                 .build();
     }
 

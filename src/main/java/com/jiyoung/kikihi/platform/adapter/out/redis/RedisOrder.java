@@ -34,7 +34,7 @@ public class RedisOrder implements Serializable {
                 .deliveryInfo(deliveryInfo)
                 .orderProducts(orderProducts)
                 .totalPrice(totalPrice)
-                .orderState(OrderState.PENDING)
+                .orderState(OrderState.READY)
                 .orderTime(LocalDateTime.now())
                 .build();
     }

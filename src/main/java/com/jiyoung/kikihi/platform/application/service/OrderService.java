@@ -20,6 +20,7 @@ import com.jiyoung.kikihi.platform.application.out.user.UserPort;
 import com.jiyoung.kikihi.platform.domain.order.DeliveryInfo;
 import com.jiyoung.kikihi.platform.domain.order.OrderProducts;
 import com.jiyoung.kikihi.platform.domain.order.OrderState;
+import com.jiyoung.kikihi.platform.domain.product.Product;
 import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.User;
 import lombok.RequiredArgsConstructor;
@@ -81,14 +82,14 @@ public class OrderService implements OrderUseCase {
 
         validateOrderProducts(orderProducts);
 
-        String redisOrderId=saveOrderToRedis(deliveryInfo, orderProducts, orderRequest);
+        String redisOrderId = saveOrderToRedis(deliveryInfo, orderProducts, orderRequest);
 
         redisport.markProcessed(orderRequest.idempotencyKey());
 
         return buildPaymentReadyResponse(redisOrderId, orderRequest.totalPrice());
     }
 
-// --- 아래는 분리된 private 메서드 ---
+    // private 메서드
 
     private void validateIdempotency(String idempotencyKey) {
         if (redisport.isProcessed(idempotencyKey)) {
@@ -117,7 +118,9 @@ public class OrderService implements OrderUseCase {
 
     private void validateOrderProducts(List<OrderProducts> orderProducts) {
         for (OrderProducts orderProduct : orderProducts) {
-            if (productPort.getProduct(orderProduct.getProductId()).isPresent()) {
+            Optional<Product> product = productPort.getProduct(orderProduct.getProductId());
+
+            if (!product.isPresent()) {
                 throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
             }
             if (orderProduct.getQuantity() <= 0 || orderProduct.getQuantity() > 100) {
@@ -132,7 +135,7 @@ public class OrderService implements OrderUseCase {
                 .orderProducts(orderProducts)
                 .totalPrice(orderRequest.totalPrice())
                 .idempotencyKey(orderRequest.idempotencyKey())
-                .orderState(OrderState.PENDING)
+                .orderState(OrderState.READY)
                 .orderTime(LocalDateTime.now())
                 .build();
         return redisport.saveOrder(redisOrder);

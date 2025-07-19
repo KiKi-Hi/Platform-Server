@@ -21,16 +21,16 @@ public class OrderController {
 
     // 배송 정보 저장 API (update도 가능해야함)
     @PostMapping("/shipping-info")
-    public ApiResponse<String> saveShippingInfo(@RequestBody DeliveryInfoRequest request,@AuthenticationPrincipal PrincipalDetails user) {
+    public ApiResponse<String> saveShippingInfo(@RequestBody DeliveryInfoRequest request, @AuthenticationPrincipal PrincipalDetails user) {
 
-        orderUseCase.saveDeliveryInfo(request,user.getId());
+        orderUseCase.saveDeliveryInfo(request, user.getId());
         return ApiResponse.ok("배송 정보가 저장되었습니다.");
     }
 
     // 결제 전 redis 임시 주문 저장 API
     @PostMapping("/temporary-order")
     public ApiResponse<PaymentReadyResponse> saveTemporaryOrder(@RequestBody @Valid OrderRequest request, @AuthenticationPrincipal PrincipalDetails user) {
-        PaymentReadyResponse response=orderUseCase.createOrder(request,user.getId());
+        PaymentReadyResponse response = orderUseCase.createOrder(request, user.getId());
         return ApiResponse.ok(response);
     }
 
