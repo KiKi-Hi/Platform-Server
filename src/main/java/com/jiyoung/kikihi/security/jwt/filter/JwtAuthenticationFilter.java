@@ -115,7 +115,12 @@
 
             String requestURI = request.getRequestURI();
             String method = request.getMethod();
-            log.info("[로그] 주소  {}, 방식 {},결과 {}}", requestURI, method, matches);
+
+            /// 스웨거 아닐때 로그 출력
+            if (!requestURI.contains("/swagger-ui")) {
+                log.info("[로그] 주소 {}, 방식 {}, 결과 {}", requestURI, method, matches);
+            }
+
 
             return matches;
         }
