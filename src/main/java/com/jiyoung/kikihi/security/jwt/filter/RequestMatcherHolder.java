@@ -34,6 +34,11 @@ public class RequestMatcherHolder {
             // 상품 관련
             new RequestInfo(GET, "/api/v1/products/**", null),
 
+
+            // 결제 관련(임시)
+            new RequestInfo(POST, "/api/v1/payment/**", null),
+            new RequestInfo(GET, "/api/v1/payment/**", null),
+
             // static resources
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),

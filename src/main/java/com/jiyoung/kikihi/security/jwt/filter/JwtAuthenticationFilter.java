@@ -37,6 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Optional<String> token = extractor.extractAccessToken(request);
 
+            if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+                filterChain.doFilter(request, response); // OPTIONS는 무조건 통과
+                return;
+            }
             // 토큰 검증
             // 비어있는 지
             if (token.isEmpty()) {
