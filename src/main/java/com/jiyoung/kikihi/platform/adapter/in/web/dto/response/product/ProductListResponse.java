@@ -62,7 +62,7 @@ public record ProductListResponse(
     }
 
     /// 북마크한 내용이 있을 때 사용하는, 내부 정적 팩토리 메서드
-    private static ProductListResponse from(Product product, boolean likedByMe) {
+    public static ProductListResponse from(Product product, boolean likedByMe) {
         return ProductListResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())

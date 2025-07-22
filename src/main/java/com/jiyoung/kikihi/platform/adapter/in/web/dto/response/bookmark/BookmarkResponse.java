@@ -25,7 +25,7 @@ public record BookmarkResponse(
         return BookmarkResponse.builder()
                 .id(bookmark.getId())
                 .userId(bookmark.getUserId())
-                .products(ProductListResponse.from(product))
+                .products(ProductListResponse.from(product, true))
                 .build();
     }
 }
