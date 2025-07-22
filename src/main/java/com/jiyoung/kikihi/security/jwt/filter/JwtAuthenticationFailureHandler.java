@@ -28,7 +28,9 @@ public class JwtAuthenticationFailureHandler implements AuthenticationEntryPoint
                          AuthenticationException authException) throws IOException {
 
         // 로그인 필요 401 Error 발생
-        CustomException exception = new CustomException(ErrorCode.INVALID_LOGIN);
+        ErrorCode errorCode = ErrorCode.fromMessage(authException.getMessage());
+
+        CustomException exception = new CustomException(errorCode);
         ApiResponse<Object> apiResponse = ApiResponse.fail(exception);
 
         // 응답 설정

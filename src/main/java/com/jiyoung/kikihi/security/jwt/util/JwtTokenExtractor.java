@@ -109,7 +109,7 @@ public class JwtTokenExtractor {
 
         // 해당 userId로 Member를 조회
         User user = userPort.loadUserById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND_IN_COOKIE.getMessage()));
+                .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.USER_NOT_FOUND_IN_COOKIE.getMessage()));
 
         PrincipalDetails details = PrincipalDetails.of(user);
 
