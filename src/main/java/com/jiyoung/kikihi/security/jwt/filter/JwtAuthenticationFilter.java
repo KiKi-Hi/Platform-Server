@@ -104,25 +104,15 @@
 
         @Override
         protected boolean shouldNotFilter(HttpServletRequest request) {
-            /// null 인 것 해결
-            boolean matches = requestMatcherHolder.getRequestMatchersByMinRole(null)
-                    .matches(request);
 
             /// 상품 조회는 회원/비회원 구분해야되기에 모두 필터를 타도록 설정
             if (request.getRequestURI().startsWith("/api/v1/products")) {
                 return false;
             }
 
-            String requestURI = request.getRequestURI();
-            String method = request.getMethod();
-
-            /// 스웨거 아닐때 로그 출력
-            if (!requestURI.contains("/swagger-ui")) {
-                log.info("[로그] 주소 {}, 방식 {}, 결과 {}", requestURI, method, matches);
-            }
-
-
-            return matches;
+            /// null 인 것 해결
+            return requestMatcherHolder.getRequestMatchersByMinRole(null)
+                    .matches(request);
         }
 
     }
