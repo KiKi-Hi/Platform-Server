@@ -83,7 +83,6 @@ public enum ErrorCode {
          *
          * @param message 에러 메시지
          * @return 일치하는 ErrorCode
-         * @throws IllegalArgumentException 메시지에 해당하는 ErrorCode가 없을 때
          */
         public static ErrorCode fromMessage(String message) {
                 for (ErrorCode errorCode : ErrorCode.values()) {
@@ -91,7 +90,7 @@ public enum ErrorCode {
                                 return errorCode;
                         }
                 }
-                throw new IllegalArgumentException("해당 message를 가진 ErrorCode가 존재하지 않습니다: " + message);
+                return ErrorCode.INTERNAL_SERVER_ERROR;
         }
 
 }
