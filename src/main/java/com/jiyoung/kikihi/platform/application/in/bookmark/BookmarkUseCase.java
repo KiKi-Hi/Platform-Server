@@ -22,9 +22,6 @@ public interface BookmarkUseCase {
     /// 저장하기
     Bookmark saveBookmark(BookmarkRequest request);
 
-    /// 조회하기
-    BookmarkResponse loadBookmarkById(Long id);
-
     Slice<BookmarkResponse> loadBookmarksByUserIdAndCategory(UUID userId, String category, Pageable pageable);
 
     /// 삭제하기

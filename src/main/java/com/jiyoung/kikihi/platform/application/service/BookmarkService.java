@@ -58,27 +58,8 @@ public class BookmarkService implements BookmarkUseCase {
         return port.saveBookmark(bookmark);
     }
 
-
     /**
-     * 북마크 상세 조회
-     * @param id 조회할 북마크 Id
-     */
-    @Override
-    public BookmarkResponse loadBookmarkById(Long id) {
-        /// 북마크 조회
-        Bookmark bookmark = port.getBookmark(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.BOOKMARK_NOT_FOUND.getMessage()));
-
-        // 상품 가져오기
-        Product product = productPort.getProduct(bookmark.getProductId())
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
-
-        return BookmarkResponse.from(bookmark, product);
-
-    }
-
-    /**
-     * 카테고리 기반 북마크 조회
+     * 나의 북마크 조회
      * @param userId    북마크 조회할 유저 Id
      * @param category  조회할 상품 카테고리
      */
@@ -93,7 +74,7 @@ public class BookmarkService implements BookmarkUseCase {
         // TODO: 추후 카테고리를 Enum으로 변경후 진행할 예정입니다.
 
         // 유저를 바탕으로 해당 카테고리를 가진 아이템 목록 조회
-        List<Bookmark> bookmarks = port.getBookmarksByUserIdAndCategoryId(userId, category);
+        List<Bookmark> bookmarks = port.getBookmarksByUserIdAndCategoryId(user.getId(), category);
 
         // 상품 Id 목록 가져오기
         List<String> productIds = getProductIds(bookmarks);
