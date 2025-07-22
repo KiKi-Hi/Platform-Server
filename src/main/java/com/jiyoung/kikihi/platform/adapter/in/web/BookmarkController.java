@@ -4,6 +4,7 @@ import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CategoryType;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.swagger.BookmarkControllerSpec;
 import com.jiyoung.kikihi.platform.application.in.bookmark.BookmarkUseCase;
@@ -75,7 +76,7 @@ public class BookmarkController implements BookmarkControllerSpec {
     @GetMapping
     public ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam String category,
+            @RequestParam CategoryType category,
             PageRequest pageRequest) {
 
         // Pageable
@@ -89,7 +90,7 @@ public class BookmarkController implements BookmarkControllerSpec {
         UUID userId = principalDetails.getId();
 
         // 서비스 계층
-        Slice<BookmarkResponse> responses = service.loadBookmarksByUserIdAndCategory(userId, category, pageable);
+        Slice<BookmarkResponse> responses = service.loadBookmarksByUserIdAndCategory(userId, category.getValue(), pageable);
 
         // SliceDTO 처리
         SliceResponse<BookmarkResponse> sliceResponse = SliceResponse.from(responses);

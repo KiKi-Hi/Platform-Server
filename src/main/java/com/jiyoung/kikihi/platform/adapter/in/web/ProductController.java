@@ -4,6 +4,7 @@ import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CategoryType;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.swagger.ProductControllerSpec;
@@ -43,7 +44,7 @@ public class ProductController implements ProductControllerSpec {
      */
     @GetMapping("/list")
     public ApiResponse<SliceResponse<ProductListResponse>> getProductList(PageRequest pageRequest,
-                                                                          @RequestParam String category,
+                                                                          @RequestParam CategoryType category,
                                                                           @RequestParam(required = false) List<String> manufacturer,
                                                                           @RequestParam(required = false) Integer minPrice,
                                                                           @RequestParam(required = false) Integer maxPrice,
@@ -66,20 +67,20 @@ public class ProductController implements ProductControllerSpec {
         // 파라미터 여부에 따라 분기 처리
         if (manufacturer == null && minPrice == null && maxPrice == null) {
             /// 카테고리만 있는 경우
-            products = productService.getProductsByCategoryId(userId, category, pageable);
+            products = productService.getProductsByCategoryId(userId, category.getValue(), pageable);
 
         } else if (manufacturer != null && minPrice == null && maxPrice == null) {
             /// 카테고리 + 제조사만 있는 경우
-            products = productService.getProductsByCategoryIdAndManufacturerId(userId, category, manufacturer, pageable);
+            products = productService.getProductsByCategoryIdAndManufacturerId(userId, category.getValue(), manufacturer, pageable);
 
         } else if (manufacturer == null && minPrice != null && maxPrice != null) {
             /// 카테고리 + 가격만 있는 경우
-            products = productService.getProductsByCategoryIdAndPrice(userId, category, minPrice, maxPrice, pageable);
+            products = productService.getProductsByCategoryIdAndPrice(userId, category.getValue(), minPrice, maxPrice, pageable);
 
         } else if (manufacturer != null && minPrice != null && maxPrice != null) {
             /// 카테고리 + 제조사 + 가격이 있는 경우
             products = productService.getProductsByCategoryIdAndManufacturerIdAndPrice(
-                    userId, category, manufacturer, minPrice, maxPrice, pageable);
+                    userId, category.getValue(), manufacturer, minPrice, maxPrice, pageable);
         }  else {
             throw new IllegalArgumentException(ErrorCode.BAD_REQUEST.getMessage());
         }
