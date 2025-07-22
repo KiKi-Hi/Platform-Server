@@ -189,34 +189,36 @@ class BookmarkServiceIntTest {
         }
 
         @Test
-        @DisplayName("[happy] Id기반으로 북마크 상세 조회")
-        void loadBookmark_정상_조회() {
+        @DisplayName("[happy] 북마크에 좋아요 여부 true 표시")
+        void loadBookmark_좋아요_정상_조회() {
 
             // given
-            var request = BookmarkRequest.builder()
-                    .userId(user.getId())
-                    .productId(product1.getId())
-                    .build();
-            Bookmark saveBookmark = sut.saveBookmark(request);
+            Pageable pageable = PageRequest.of(0, 10);
+            List<Bookmark> savedBookmarks = new ArrayList<>();
+
+            /// 3개의 상품에 북마크 저장
+            List.of(product1, product2, product3).forEach(product -> {
+                var request = BookmarkRequest.builder()
+                        .userId(user.getId())
+                        .productId(product.getId())
+                        .build();
+                savedBookmarks.add(sut.saveBookmark(request));
+            });
 
             // when
-            BookmarkResponse response = sut.loadBookmarkById(saveBookmark.getId());
+            Slice<BookmarkResponse> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test", pageable);
 
             // then
-            Assertions.assertThat(response.products().id()).isEqualTo(product1.getId());
-        }
+            Assertions.assertThat(bookmarks).hasSize(3);
+            Assertions.assertThat(bookmarks)
+                    .extracting(BookmarkResponse::products)
+                    .extracting(ProductListResponse::id)
+                    .containsExactlyInAnyOrder(product1.getId(), product2.getId(), product3.getId());
+            Assertions.assertThat(bookmarks)
+                    .extracting(BookmarkResponse::products)
+                    .extracting(ProductListResponse::likedByMe)
+                    .containsExactlyInAnyOrder(true, true, true);
 
-        @Test
-        @DisplayName("[unhappy] 북마크 상세 조회 실패")
-        void loadBookmark_throw_NoSuchException() {
-
-            // given
-            Long fakeId = 999L;
-
-            // when & then
-            Assertions.assertThatThrownBy(() -> sut.loadBookmarkById(fakeId))
-                    .isInstanceOf(NoSuchElementException.class)
-                    .hasMessageContaining(ErrorCode.BOOKMARK_NOT_FOUND.getMessage());
         }
     }
 

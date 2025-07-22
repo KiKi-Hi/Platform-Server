@@ -50,30 +50,14 @@ public interface BookmarkControllerSpec {
 
 
     /**
-     * 북마크 상세 정보를 조회합니다.
-     *
-     * @param id 북마크 ID
-     * @return 북마크 상세 DTO
-     */
-    @Operation(
-            summary = "북마크 상세 조회 API",
-            description = "북마크 ID를 기반으로 조회할 수 있습니다."
-    )
-    ApiResponse<BookmarkResponse> loadBookmark(
-            @Parameter(description = "북마크 Id", example = "1")
-            @PathVariable Long id);
-
-
-
-    /**
-     * 카테고리별 북마크 목록을 조회합니다.
+     * 나의 카테고리별 북마크 목록을 조회합니다.
      *
      * @param principalDetails 인증 정보
      * @param category         카테고리명
      * @return 북마크 목록 DTO 리스트
      */
     @Operation(
-            summary = "카테고리 기반 북마크 목록 조회 API",
+            summary = "나의 북마크 목록 조회 API",
             description = "JWT 기반으로 카테고리별 북마크 목록을 조회할 수 있습니다."
     )
     ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(

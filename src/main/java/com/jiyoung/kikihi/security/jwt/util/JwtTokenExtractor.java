@@ -79,14 +79,11 @@ public class JwtTokenExtractor {
                     .build()
                     .parseClaimsJws(token);
 
-            log.info("토큰 유효성 검사 성공: {}", claims);
             return true;
         } catch (ExpiredJwtException e) {
-            log.warn("토큰 만료됨", e);
-            throw new JwtAuthenticationException("토큰이 만료되었습니다.");
+            throw new JwtAuthenticationException(ErrorCode.TOKEN_EXPIRED.getMessage());
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("토큰 검증 실패: {}", e.getMessage(), e);
-            throw new JwtAuthenticationException("토큰이 생성되지 않았습니다."); // 여기가 문제라면 메시지 바꿔도 좋음
+            throw new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND.getMessage()); // 여기가 문제라면 메시지 바꿔도 좋음
         }
     }
 
@@ -112,7 +109,7 @@ public class JwtTokenExtractor {
 
         // 해당 userId로 Member를 조회
         User user = userPort.loadUserById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.USER_NOT_FOUND_IN_COOKIE.getMessage()));
 
         PrincipalDetails details = PrincipalDetails.of(user);
 

@@ -1,5 +1,7 @@
 package com.jiyoung.kikihi.security.jwt.service;
 
+import com.jiyoung.kikihi.global.response.ErrorCode;
+import com.jiyoung.kikihi.security.jwt.exception.JwtAuthenticationException;
 import com.jiyoung.kikihi.security.jwt.util.CookieUtil;
 import com.jiyoung.kikihi.security.jwt.util.JwtTokenExtractor;
 import com.jiyoung.kikihi.security.jwt.util.JwtTokenProvider;
@@ -12,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -64,11 +65,11 @@ public class JwtTokenService implements JwtTokenUseCase {
 
         // 쿠키에서 리프레쉬 토큰 가져오기
         String refreshToken = cookieUtil.getRefreshTokenFromCookie(request)
-                .orElseThrow(() -> new NoSuchElementException("쿠키에 RefreshToken 존재하지 않습니다."));
+                .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND_COOKIE.getMessage()));
 
         // 쿠키 검증
         if (!extractor.validateToken(refreshToken)) {
-            throw new SecurityException("유효하지 않은 토큰입니다.");
+            throw new JwtAuthenticationException(ErrorCode.TOKEN_INVALID.getMessage());
         };
 
         // 인증 객체에서 정보 가져오기
@@ -80,7 +81,7 @@ public class JwtTokenService implements JwtTokenUseCase {
         // 유저와 리프레쉬 토큰이 일치하는지 체크한다.
         boolean checked = redisUtil.checkRefreshTokenAndUserId(refreshToken, principalDetails.getId());
         if (!checked) {
-            throw new IllegalStateException("토큰과 유저가 일치하지 않습니다.");
+            throw new JwtAuthenticationException(ErrorCode.INVALID_CREDENTIALS.getMessage());
         }
 
         // 쿠키에 다시 전송하기
@@ -93,12 +94,12 @@ public class JwtTokenService implements JwtTokenUseCase {
 
         // 쿠키에서 리프레쉬 토큰 가져오기
         String refreshToken = cookieUtil.getRefreshTokenFromCookie(request)
-                .orElseThrow(() -> new NoSuchElementException("쿠키에 RefreshToken 존재하지 않습니다."));
+                .orElseThrow(() -> new JwtAuthenticationException(ErrorCode.TOKEN_NOT_FOUND_COOKIE.getMessage()));
 
         // 리프레쉬와 유저가 맞는지 체크
         boolean checked = redisUtil.checkRefreshTokenAndUserId(refreshToken, userId);
         if (!checked) {
-            throw new IllegalStateException("토큰과 유저 정보가 일치하지 않습니다");
+            throw new JwtAuthenticationException(ErrorCode.INVALID_CREDENTIALS.getMessage());
         }
 
         // 리프레쉬 쿠키를 null 설정

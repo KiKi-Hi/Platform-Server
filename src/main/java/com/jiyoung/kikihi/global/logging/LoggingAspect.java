@@ -1,6 +1,7 @@
 package com.jiyoung.kikihi.global.logging;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
@@ -9,26 +10,35 @@ import java.util.Arrays;
 
 @Aspect
 @Component
+@Slf4j
 public class LoggingAspect {
 
-    @Pointcut("execution(* com.jiyoung.kikihi.*Service.*(..))")
-    public void logPointcut() {}
-
-    @Before("logPointcut()")
-    public void logBefore(JoinPoint joinPoint) {
-        System.out.println(" BEFORE: " + joinPoint.getSignature().toShortString());
-        System.out.println(" Arguments: " + Arrays.toString(joinPoint.getArgs()));
+    @Pointcut("execution(* com.jiyoung.kikihi.platform.application.service.*Service.*(..))")
+    private void applicationLayer() {
     }
 
-    @AfterReturning(pointcut = "logPointcut()", returning = "result")
-    public void logAfterReturning(JoinPoint joinPoint, Object result) {
-//        System.out.println(" AFTER RETURN: " + joinPoint.getSignature().toShortString());
-        System.out.println(" Returned: " + result);
+    @Before("applicationLayer()")
+    public void logMethodEntry(JoinPoint joinPoint) {
+        log.info("[서비스 로깅] 메서드 진입: {}.{}({})",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName(),
+                Arrays.toString(joinPoint.getArgs()));
     }
 
-    @AfterThrowing(pointcut = "logPointcut()", throwing = "e")
-    public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-        System.out.println("❌ EXCEPTION in: " + joinPoint.getSignature().toShortString());
-        System.out.println("⚠️ Exception: " + e.getMessage());
+    @AfterReturning(pointcut = "applicationLayer()", returning = "result")
+    public void logMethodExit(JoinPoint joinPoint, Object result) {
+        log.info("[서비스 로깅] 메서드 종료: {}.{} => 반환: {}",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName(),
+                result);
+    }
+
+    @AfterThrowing(pointcut = "applicationLayer()")
+    public void logException(JoinPoint joinPoint) {
+        log.info("[서비스 로깅] 예외 발생: {}.{}",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName());
     }
 }
+
+

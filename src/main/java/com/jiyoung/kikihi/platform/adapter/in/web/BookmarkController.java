@@ -51,23 +51,7 @@ public class BookmarkController implements BookmarkControllerSpec {
     }
 
     /**
-     * 북마크 상세 정보를 조회합니다.
-     *
-     * @param id 북마크 ID (PathVariable)
-     * @return 북마크 상세 응답 DTO
-     */
-    @GetMapping("/{id}")
-    public ApiResponse<BookmarkResponse> loadBookmark(@PathVariable Long id) {
-
-        // 서비스 계층
-        BookmarkResponse response = service.loadBookmarkById(id);
-
-        // 리턴
-        return ApiResponse.ok(response);
-    }
-
-    /**
-     * 카테고리별 북마크 목록을 조회합니다.
+     * 나의 북마크 목록을 조회합니다.
      *
      * @param principalDetails 인증된 사용자 정보
      * @param category         카테고리명 (Query Parameter)
