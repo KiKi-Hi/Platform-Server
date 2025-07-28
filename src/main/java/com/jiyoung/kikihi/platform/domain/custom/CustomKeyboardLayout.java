@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 
 @RequiredArgsConstructor
-@Getter
 public enum CustomKeyboardLayout {
-    PERCENT_60("60배열"),
-    PERCENT_75("75배열"),
-    TENKEYLESS("텐키리스"),
-    FULLSIZE("풀배열");
+    PERCENT_60("60배열","미니멀의 정점"),
+    PERCENT_75("75배열","컴팩트한 사이즈의 깔끔함"),
+    TENKEYLESS("텐키리스","넘버패드없이 깔끔한 키보드"),
+    FULLSIZE("풀배열","원조의 품격");
 
     private final String name;
+    private final String description;
 
     /// 리스트 목록 조회
     public static List<CustomKeyboardLayout> getKeyboardLayouts() {
@@ -25,6 +25,11 @@ public enum CustomKeyboardLayout {
     @JsonIgnore
     public String getLayoutName() {
         return name;
+    }
+
+    @JsonIgnore
+    public String getDescription() {
+        return description;
     }
 
 }

@@ -1,10 +1,14 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
+import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
+import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Tag(name = "커스텀 키보드 API", description = "커스텀 키보드 관련 API입니다.")
 public interface CustomKeyboardControllerSpec {
@@ -65,6 +72,41 @@ public interface CustomKeyboardControllerSpec {
     ApiResponse<SliceResponse<CustomKeyboardListResponse>> getMyCustoms(
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
+
+    /**
+     * 키보드 배열 종류 조회
+     */
+    @Operation(
+            summary = "키보드 배열 목록 조회 API",
+            description = "키보드 배열의 목록을 조회합니다."
+    )
+    ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyBoardLayout();
+
+
+    /**
+     *
+     */
+
+    @Operation(
+            summary = "키보드 배열에 따른 가능한 부품 조회 API",
+            description = "키보드 배열에 따라서 가능한 상품 목록을 조회합니다. 유저의 정보가 들어온다면 북마크 여부 또한 제공합니다."
+    )
+    ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyBoardProductsByLayout(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam String categoryId,
+            @RequestParam CustomKeyboardLayout layout,
+            PageRequest pageRequest
+    );
+
+
+    @Operation(
+            summary = "커스텀 키보드 삭제 API",
+            description = "JWT를 기반으로 커스텀 키보드를 삭제합니다."
+    )
+    ApiResponse<String> deleteCustomKeyBoard(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
 
     String REQUEST = """
             {

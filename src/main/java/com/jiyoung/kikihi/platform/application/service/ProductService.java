@@ -7,6 +7,7 @@ import com.jiyoung.kikihi.platform.application.in.product.ProductUseCase;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
 import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
+import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,7 +159,7 @@ public class ProductService implements ProductUseCase {
     }
 
     // ========================
-    // <홈 화면> 상품 추천 목록 조회
+    // 외부 의존성
     // ========================
 
     /**
@@ -193,6 +194,29 @@ public class ProductService implements ProductUseCase {
         }
 
         return products;
+    }
+
+    /**
+     * 커스텀 키보드에 맞는 부품들 조회
+     * @param userId        북마크 체크를 위한 유저ID
+     * @param categoryId    카테고리 ID
+     * @param layout        생성할 커스텀 키보드 배열
+     * @param pageable      페이징
+     */
+    @Override
+    public Slice<ProductListResponse> getProductsByLayout(UUID userId, String categoryId, CustomKeyboardLayout layout, Pageable pageable) {
+
+        /// Port에서 조회
+        Slice<Product> products = productPort.getProducts(categoryId, pageable);
+
+        // TODO!필터 작업이 필요하다!!
+        /// 필터를 통해 해당 제품이 특정 배열이 가능한 것만 가져오기
+//        products.stream()
+//                .filter()...
+
+        /// 결과 리턴
+        ///
+        return toProductListResponse(userId, categoryId, products);
     }
 
     // =================
