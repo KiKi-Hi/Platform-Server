@@ -6,6 +6,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ProductDocumentRepository extends MongoRepository<ProductDocument, String> {
@@ -48,6 +49,8 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
 
     // 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
+
+    List<ProductDocument> findByIdIn(Collection<String> ids);
 
     // 랜덤
     @Query("""

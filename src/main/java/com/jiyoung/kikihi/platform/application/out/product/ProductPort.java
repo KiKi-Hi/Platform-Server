@@ -43,4 +43,5 @@ public interface ProductPort {
      */
     Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable);
 
+    Map<String, Product> getProductsByIds(List<String> productIds);
 }

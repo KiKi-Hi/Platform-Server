@@ -44,6 +44,8 @@ public enum ErrorCode {
         FORBIDDEN(403_000, HttpStatus.FORBIDDEN, "접속 권한이 없습니다."),
         ACCESS_DENY(403_001, HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
         UNAUTHORIZED_POST_ACCESS(403_002, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
+        UNAUTHORIZED_DELETE_BOOKMARK(403_003, HttpStatus.FORBIDDEN, "해당 북마크를 삭제할 권한이 없습니다."),
+        UNAUTHORIZED_DELETE_CUSTOM(403_004, HttpStatus.FORBIDDEN, "해당 커스텀을 삭제할 권한이 없습니다."),
 
 
         // ========================
@@ -55,14 +57,14 @@ public enum ErrorCode {
         POST_NOT_FOUND(404_003, HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
         POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
         COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
-        PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-        BOOKMARK_NOT_FOUND(404_007,HttpStatus.NOT_FOUND,"해당 북마크를 찾을 수 없습니다"),
+        PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "요청한 상품을 찾을 수 없습니다."),
+        BOOKMARK_NOT_FOUND(404_007,HttpStatus.NOT_FOUND,"요청한 북마크를 찾을 수 없습니다."),
+        CUSTOM_NOT_FOUND(404_008,HttpStatus.NOT_FOUND,"요청한 커스텀 키보드를 찾을 수 없습니다."),
 
         // ========================
         // 409 Conflict
         // ========================
         DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
-        BOOKMARK_NOT_OWN_USER(409_002, HttpStatus.CONFLICT, "유저가 추가한 북마크가 아닙니다."),
         BOOKMARK_ALREADY(409_003,HttpStatus.CONFLICT,"이미 해당 상품에 북마크를 등록했습니다"),
 
 
