@@ -115,7 +115,7 @@ public class BookmarkService implements BookmarkUseCase {
         boolean checked = port.checkBookmarkByIdAndUserId(id, user.getId());
 
         if (!checked) {
-            throw new IllegalStateException(ErrorCode.BOOKMARK_NOT_OWN_USER.getMessage());
+            throw new IllegalStateException(ErrorCode.UNAUTHORIZED_DELETE_BOOKMARK.getMessage());
         }
 
         /// 삭제

@@ -262,7 +262,7 @@ class BookmarkServiceIntTest {
             //when & then
             Assertions.assertThatThrownBy(() -> sut.deleteBookmarkById(saveBookmark.getId(), user2.getId()))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining(ErrorCode.BOOKMARK_NOT_OWN_USER.getMessage());
+                    .hasMessageContaining(ErrorCode.UNAUTHORIZED_DELETE_BOOKMARK.getMessage());
         }
 
     }
