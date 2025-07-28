@@ -19,18 +19,27 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 상품 서비스
+ * - 목록 조회 기능을 수행합니다.
+ * - 상세 조회 기능을 수행합니다.
+ */
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ProductService implements ProductUseCase {
 
+    /// 상품 DB 관련 처리
     private final ProductPort productPort;
 
     /// 북마크 의존성 처리
     private final BookmarkPort bookmarkPort;
 
-    // 상품 목록 조회
+    // =================
+    //  상품 목록 조회
+    // =================
+
     /**
      * 최신 상품 목록 조회
      */
@@ -117,7 +126,9 @@ public class ProductService implements ProductUseCase {
         return toProductListResponse(userId, categoryId, products);
     }
 
-    // 상품 상세 조회
+    // =================
+    //  상품 상세 조회
+    // =================
 
     /**
      * 상품 상세 조회
@@ -137,7 +148,7 @@ public class ProductService implements ProductUseCase {
         }
 
         /// 북마크 의존성 추가
-        boolean bookmark = bookmarkPort.checkBookmarkByProductIdAndUserId(id, userId);
+        boolean bookmark = bookmarkPort.checkBookmarkByUserIdAndProductId(userId, id);
 
         // TODO! 배송정보, 추천 아이템, 등등 추가로 설정하기
 
@@ -146,7 +157,9 @@ public class ProductService implements ProductUseCase {
 
     }
 
-    // 상품 추천 목록 조회
+    // ========================
+    // <홈 화면> 상품 추천 목록 조회
+    // ========================
 
     /**
      * 추천 서비스를 구현 합니다!
@@ -155,33 +168,36 @@ public class ProductService implements ProductUseCase {
     @Override
     public List<Product> getProductsByRecommendation() {
 
-        /// 인기 있는 북마크 상품 조회
-        // Map <ProductId, 북마크 개수>
+        // 인기 북마크 상품 조회
         Map<String, Long> favoriteBookmarks = bookmarkPort.getFavoriteBookmarks();
 
-        /// 상품 ID 바탕으로 8개 조회
-        List<String> topProductIds = favoriteBookmarks.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(8)
-                .map(Map.Entry::getKey)
-                .toList();
-
-        /// TODO! 순서를 보장한 상태로 한번에 가져오는 방안 구상하기
-
-        /// 상품 목록 가져오기
         List<Product> products = new ArrayList<>();
 
-        /// 상품 ID 바탕으로 조회, 순서대로 조회해서 정렬 유지
-        topProductIds.forEach(productId -> {
-            Product product = loadProduct(productId);
-            products.add(product);
-        });
+        if (!favoriteBookmarks.isEmpty()) {
+            // 북마크 많은 순서대로 8개 상품 ID 추출
+            List<String> topProductIds = favoriteBookmarks.entrySet().stream()
+                    .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                    .limit(8)
+                    .map(Map.Entry::getKey)
+                    .toList();
+
+            // TODO: 한번에 쿼리로 순서 보장하며 조회하는 방법 고민
+
+            // 순서 유지하며 로딩
+            for (String productId : topProductIds) {
+                products.add(loadProduct(productId));
+            }
+        } else {
+            // 북마크가 없을 경우, 랜덤 상품 8개 조회
+            return productPort.getRandomProductIds(8);
+        }
 
         return products;
-
     }
 
-    // 공통 함수
+    // =================
+    //  공통 함수
+    // =================
     /**
      * 상품 목록 조회를 진행할때, 북마크 여부를 파악하는 함수입니다.
      * @param userId        유저 ID

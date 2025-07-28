@@ -14,11 +14,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @Tag(name = "상품 조회 API", description = "상품 조회를 수행하는 API 입니다.")
 public interface ProductControllerSpec {
 
+    /**
+     * 상품 상세 조회 API
+     * @param id                상품 아이디
+     * @param principalDetails  유저
+     */
     @Operation(
             summary = "상품 상세 조회 API",
             description = "ID를 바탕으로 상품 상세정보를 조회할 수 있습니다."
@@ -30,7 +34,15 @@ public interface ProductControllerSpec {
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
-
+    /**
+     * 상품 목록 조회 API
+     * @param pageRequest           페이지
+     * @param category              카테고리
+     * @param manufacturer          제조사
+     * @param minPrice              최소 금액
+     * @param maxPrice              최대 금액
+     * @param principalDetails      유저
+     */
     @Operation(
             summary = "상품 목록 조회 API",
             description = "파라미터에 따라서 상품 목록을 조회할 수 있습니다."
@@ -55,6 +67,9 @@ public interface ProductControllerSpec {
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
+    /**
+     * 홈화면에서 인기 상품 조회하기
+     */
     @Operation(
             summary = "인기상품 API_홈",
             description = "북마크를 바탕으로 8개의 인기 상품을 불러오는 API 입니다."

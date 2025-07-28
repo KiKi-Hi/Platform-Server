@@ -21,6 +21,7 @@ public record BookmarkResponse(
         ProductListResponse products
 ) {
 
+    /// 정적 팩토리 메서드
     public static BookmarkResponse from(Bookmark bookmark, Product product) {
         return BookmarkResponse.builder()
                 .id(bookmark.getId())

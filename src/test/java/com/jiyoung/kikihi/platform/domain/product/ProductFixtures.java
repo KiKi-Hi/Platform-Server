@@ -18,8 +18,6 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .actualPurchaseUrl("https://example.com/products/prd-001/buy")
-                .finalPurchaseUrl("https://example.com/products/prd-001/final")
                 .options(Arrays.asList("화이트", "블랙", "실버"))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
@@ -38,8 +36,6 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .actualPurchaseUrl("https://example.com/products/prd-001/buy")
-                .finalPurchaseUrl("https://example.com/products/prd-001/final")
                 .options(Arrays.asList("화이트", "블랙", "실버"))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
@@ -58,8 +54,6 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .actualPurchaseUrl("https://example.com/products/prd-001/buy")
-                .finalPurchaseUrl("https://example.com/products/prd-001/final")
                 .options(Arrays.asList("화이트", "블랙", "실버"))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
@@ -79,8 +73,6 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .actualPurchaseUrl("https://example.com/products/prd-001/buy")
-                .finalPurchaseUrl("https://example.com/products/prd-001/final")
                 .options(Arrays.asList("화이트", "블랙", "실버"))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",

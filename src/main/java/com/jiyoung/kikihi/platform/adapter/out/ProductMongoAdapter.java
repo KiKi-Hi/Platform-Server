@@ -103,6 +103,13 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
+    public List<Product> getRandomProductIds(int row) {
+        return documentRepository.findRandomProducts(row).stream()
+                .map(ProductDocument::toDomain)
+                .toList();
+    }
+
+    @Override
     public Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable) {
         return documentRepository.findByIdIn(productIds, pageable)
                 .map(ProductDocument::toDomain);

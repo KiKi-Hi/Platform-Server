@@ -56,7 +56,7 @@ public class ElasticSearchService implements ProductSearchUseCase {
         return elasticsearchOperations.search(query, ProductESDocument.class)
                 .stream()
                 .map(SearchHit::getContent)
-                .map(Product::toDomain)
+                .map(ProductESDocument::toDomain)
                 .collect(Collectors.toList());
     }
 
@@ -100,7 +100,7 @@ public class ElasticSearchService implements ProductSearchUseCase {
         return elasticsearchOperations.search(nativeQuery, ProductESDocument.class)
                 .stream()
                 .map(SearchHit::getContent)
-                .map(Product::toDomain)
+                .map(ProductESDocument::toDomain)
                 .collect(Collectors.toList());
     }
 

@@ -14,43 +14,26 @@ import java.util.*;
 @Builder
 public class Product {
 
-    private String id;
+    private String id; //
 
-    private String name;
+    private String name; //
 
-    private String category;
+    private String category; //
 
-    private double price;
+    private double price; //
 
-    private List<String> description;
+    private List<String> description; //
 
-    private String thumbnail;
+    private String thumbnail; //
 
-    private String manufacturer;
+    private String manufacturer; //
 
-    private String detailPageUrl;
+    private String detailPageUrl; //
 
-    private String actualPurchaseUrl;
-
-    private String finalPurchaseUrl;
-
-    private List<String> options;
+    private List<String> options; //
 
     private Map<String, Object> specTable; // spec_table
 
-    private List<String> allDetailImages;
-
-    // Document → 도메인 변환
-    public static Product toDomain(ProductESDocument doc) {
-        return Product.builder()
-                .id(doc.getId())
-                .name(doc.getName())
-                .price(doc.getDiscountedPrice())
-                .description(doc.getDescription())
-                .thumbnail(doc.getThumbnail())
-                .manufacturer(doc.getManufacturer())
-                .finalPurchaseUrl(doc.getFinalPurchaseUrl())
-                .build();
-    }
+    private List<String> allDetailImages; //
 
 }

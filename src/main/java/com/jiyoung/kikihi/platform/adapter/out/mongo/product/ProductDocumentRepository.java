@@ -49,4 +49,14 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     // 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
+    // 랜덤
+    @Query("""
+    {
+      'category': ?0,
+      'spec_table.제조회사': { $in: ?1 },
+      'price': { $gte: ?2, $lte: ?3 }
+    }
+    """)
+    List<ProductDocument> findRandomProducts(int limit);
+
 }

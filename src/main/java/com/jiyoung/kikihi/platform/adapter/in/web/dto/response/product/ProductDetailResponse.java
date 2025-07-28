@@ -9,6 +9,7 @@ import java.util.List;
  * 상품 상세 응답 DTO
  *
  * @param id                 상품 ID
+ * @param thumbnail          상품 썸네일
  * @param manufacturerName   제조사명
  * @param category           카테고리
  * @param productName        제품명
@@ -25,6 +26,7 @@ import java.util.List;
 @Builder
 public record ProductDetailResponse(
         String id,
+        String thumbnail,
         String manufacturerName,
         String category,
         String productName,
@@ -38,9 +40,11 @@ public record ProductDetailResponse(
         List<String> imageUrl
 ) {
 
+    /// 정적 팩토리 메서드
     public static ProductDetailResponse from(Product product) {
         return ProductDetailResponse.builder()
                 .id(product.getId())
+                .thumbnail(product.getThumbnail())
                 .manufacturerName(product.getManufacturer())
                 .category(product.getCategory())
                 .productName(product.getName())
@@ -55,6 +59,7 @@ public record ProductDetailResponse(
                 .build();
     }
 
+    /// 정적 팩토리 메서드
     public static ProductDetailResponse from(Product product, boolean likedByMe) {
         return ProductDetailResponse.builder()
                 .id(product.getId())

@@ -37,6 +37,7 @@ public interface ProductPort {
     /// 추천 기능 구현
     List<Product> getProductsByRecommendation(String category);
 
+    List<Product> getRandomProductIds(int row);
     /**
      * 외부 의존성에서 사용하는 함수
      */
