@@ -3,8 +3,9 @@ package com.jiyoung.kikihi.platform.adapter.in.web;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyBoardDetailResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyBoardListResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.swagger.CustomKeyboardControllerSpec;
 import com.jiyoung.kikihi.platform.application.in.custom.CustomKeyboardUseCase;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardWithName;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/custom")
 @RequiredArgsConstructor
-public class CustomKeyboardController {
+public class CustomKeyboardController implements CustomKeyboardControllerSpec {
 
     private final CustomKeyboardUseCase service;
 
@@ -45,14 +46,14 @@ public class CustomKeyboardController {
      * @param customKeyboardId  키보드 상세 조회 ID
      */
     @GetMapping("/{customKeyboardId}")
-    public ApiResponse<CustomKeyBoardDetailResponse> getCustomKeyBoard(
+    public ApiResponse<CustomKeyboardDetailResponse> getCustomKeyBoard(
             @PathVariable Long customKeyboardId
     ) {
         /// 서비스
         CustomKeyboardWithName keyBoard = service.getCustomKeyBoard(customKeyboardId);
 
         /// DTO 변경
-        var response = CustomKeyBoardDetailResponse.from(keyBoard);
+        var response = CustomKeyboardDetailResponse.from(keyBoard);
 
         /// 결과 응답
         return ApiResponse.created(response);
@@ -63,7 +64,7 @@ public class CustomKeyboardController {
      * @param principalDetails  유저
      */
     @GetMapping("/myCustoms")
-    public ApiResponse<SliceResponse<CustomKeyBoardListResponse>> getMyCustoms(
+    public ApiResponse<SliceResponse<CustomKeyboardListResponse>> getMyCustoms(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
@@ -71,11 +72,11 @@ public class CustomKeyboardController {
         Slice<CustomKeyboardWithName> boards = service.getCustomKeyBoards(principalDetails.getId());
 
         /// DTO로 변환
-        List<CustomKeyBoardListResponse> content = boards.getContent().stream()
-                .map(CustomKeyBoardListResponse::from)
+        List<CustomKeyboardListResponse> content = boards.getContent().stream()
+                .map(CustomKeyboardListResponse::from)
                 .toList();
 
-        Slice<CustomKeyBoardListResponse> dtoSlice = new SliceImpl<>(
+        Slice<CustomKeyboardListResponse> dtoSlice = new SliceImpl<>(
                 content,
                 boards.getPageable(),
                 boards.hasNext()

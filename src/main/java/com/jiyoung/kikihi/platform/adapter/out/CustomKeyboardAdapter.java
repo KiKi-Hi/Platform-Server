@@ -4,16 +4,12 @@ import com.jiyoung.kikihi.platform.adapter.out.jpa.custom.CustomKeyboardJpaEntit
 import com.jiyoung.kikihi.platform.adapter.out.jpa.custom.CustomKeyboardJpaRepository;
 import com.jiyoung.kikihi.platform.application.out.custom.CustomKeyboardPort;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboard;
-import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +27,10 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      */
     @Override
     public CustomKeyboard saveCustomKeyBoard(CustomKeyboard customKeyBoard) {
-        return null;
+        var entity = CustomKeyboardJpaEntity.from(customKeyBoard);
+
+        return repository.save(entity)
+                .toDomain();
     }
 
 
@@ -45,7 +44,8 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      */
     @Override
     public Optional<CustomKeyboard> loadCustomKeyBoard(Long id) {
-        return Optional.empty();
+        return repository.findById(id)
+                .map(CustomKeyboardJpaEntity::toDomain);
     }
 
     /**
@@ -54,7 +54,8 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      */
     @Override
     public Slice<CustomKeyboard> loadCustomKeyBoardsByUserID(UUID userID) {
-        return null;
+        return repository.findByUserId(userID)
+                .map(CustomKeyboardJpaEntity::toDomain);
     }
 
     /**
@@ -64,7 +65,7 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      */
     @Override
     public boolean existCustomKeyBoardByUserIdAndId(UUID userId, Long id) {
-        return false;
+        return repository.existsByUserIdAndId(userId, id);
     }
 
 
@@ -91,6 +92,6 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      */
     @Override
     public void deleteCustomKeyBoard(Long id) {
-
+        repository.deleteById(id);
     }
 }

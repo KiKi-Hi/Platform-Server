@@ -30,14 +30,14 @@ public class CustomKeyboard extends BaseDomain {
 
     private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
     private CustomKeyboardLayout layout;
 
     /// 정적 팩토리 메서드
-    public static CustomKeyboard of(UUID userId, String frameId, String switchId, String keyCapId, String name, String imageUrl) {
+    public static CustomKeyboard of(UUID userId, CustomKeyboardLayout layout, String frameId, String switchId, String keyCapId, String name, String imageUrl) {
 
         return CustomKeyboard.builder()
                 .userId(userId)
+                .layout(layout)
                 .frameId(frameId)
                 .switchId(switchId)
                 .keyCapId(keyCapId)

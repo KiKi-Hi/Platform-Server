@@ -2,6 +2,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom;
 
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardWithName;
 import lombok.Builder;
+import java.util.List;
 
 /**
  * 커스텀 키보드 목록 조회 DTO
@@ -15,7 +16,7 @@ import lombok.Builder;
  * @param price                 가격
  */
 @Builder
-public record CustomKeyBoardDetailResponse(
+public record CustomKeyboardListResponse(
         Long customId,
         String customName,
         String customKeyboardType,
@@ -27,8 +28,8 @@ public record CustomKeyBoardDetailResponse(
 ) {
 
     /// 정적 팩토리 메서드
-    public static CustomKeyBoardDetailResponse from(CustomKeyboardWithName entity){
-        return CustomKeyBoardDetailResponse.builder()
+    public static CustomKeyboardListResponse from(CustomKeyboardWithName entity){
+        return CustomKeyboardListResponse.builder()
                 .customId(entity.id())
                 .customName(entity.name())
                 .customKeyboardType(entity.layout())
@@ -38,6 +39,13 @@ public record CustomKeyBoardDetailResponse(
                 .thumbnail(entity.imageUrl())
                 .price(entity.totalPrice())
                 .build();
+    }
+
+    /// 정적 팩토리 메서드
+    public static List<CustomKeyboardListResponse> from(List<CustomKeyboardWithName> entities){
+        return entities.stream()
+                .map(CustomKeyboardListResponse::from)
+                .toList();
     }
 
 }

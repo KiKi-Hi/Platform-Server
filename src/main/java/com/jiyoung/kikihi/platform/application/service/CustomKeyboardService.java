@@ -26,7 +26,7 @@ import java.util.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CustomKeyBoardService implements CustomKeyboardUseCase {
+public class CustomKeyboardService implements CustomKeyboardUseCase {
 
     /// DB 포트
     private final CustomKeyboardPort port;
@@ -48,15 +48,12 @@ public class CustomKeyBoardService implements CustomKeyboardUseCase {
     public CustomKeyboard saveCustomKeyBoard(CustomKeyBoardRequest request, UUID userId) {
 
         /// 상품 예외 처리
-        var frameProduct = getProduct(request.getFrameId());
+        var frameProduct = getProduct(request.getHousingId());
         var switchProduct = getProduct(request.getSwitchId());
         var keyCapProduct = getProduct(request.getKeyCapId());
 
-        /// 가격 합치기
-        double totalPrice = frameProduct.getPrice() + switchProduct.getPrice() + keyCapProduct.getPrice();
-
         /// 객체 생성
-        var customKeyBoard = CustomKeyboard.of(userId, frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), request.getName(), "thumbnail");
+        var customKeyBoard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), request.getName(), "thumbnail");
 
         /// 저장 후 리턴
         return port.saveCustomKeyBoard(customKeyBoard);
@@ -84,6 +81,11 @@ public class CustomKeyBoardService implements CustomKeyboardUseCase {
 
         /// 커스텀 키보드 목록 조회
         Slice<CustomKeyboard> keyboards = port.loadCustomKeyBoardsByUserID(user.getId());
+
+        /// 비었다면 빈 값 출력
+        if (keyboards == null) {
+            keyboards = new SliceImpl<>(Collections.emptyList());
+        }
 
         /// 필요한 모든 productId를 한 번에 수집
         Set<String> allProductIds = new HashSet<>();

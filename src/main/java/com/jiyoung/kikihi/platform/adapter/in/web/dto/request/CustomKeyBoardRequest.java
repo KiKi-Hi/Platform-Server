@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.request;
 
+import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import lombok.Data;
 
 /**
@@ -8,7 +9,9 @@ import lombok.Data;
 @Data
 public class CustomKeyBoardRequest {
 
-    private String frameId;
+    private CustomKeyboardLayout layout;
+
+    private String housingId;
 
     private String switchId;
 
