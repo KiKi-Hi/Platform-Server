@@ -168,32 +168,32 @@ public class ProductService implements ProductUseCase {
     @Override
     public List<Product> getProductsByRecommendation() {
 
-        // 인기 북마크 상품 조회
         Map<String, Long> favoriteBookmarks = bookmarkPort.getFavoriteBookmarks();
-
         List<Product> products = new ArrayList<>();
 
-        if (!favoriteBookmarks.isEmpty()) {
-            // 북마크 많은 순서대로 8개 상품 ID 추출
-            List<String> topProductIds = favoriteBookmarks.entrySet().stream()
-                    .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                    .limit(8)
-                    .map(Map.Entry::getKey)
-                    .toList();
+        // 북마크 많은 순서대로 최대 8개 추출
+        List<String> topProductIds = favoriteBookmarks.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(8)
+                .map(Map.Entry::getKey)
+                .toList();
 
-            // TODO: 한번에 쿼리로 순서 보장하며 조회하는 방법 고민
+        // 북마크 상품 로딩
+        for (String productId : topProductIds) {
+            products.add(loadProduct(productId));
+        }
 
-            // 순서 유지하며 로딩
-            for (String productId : topProductIds) {
-                products.add(loadProduct(productId));
-            }
-        } else {
-            // 북마크가 없을 경우, 랜덤 상품 8개 조회
-            return productPort.getRandomProductIds(8);
+        int remainCount = 8 - products.size();
+        if (remainCount > 0) {
+            // 이미 조회된 productId 제외하고 랜덤 상품 ID 조회
+            List<String> excludedIds = new ArrayList<>(topProductIds);
+            List<Product> randomProducts = productPort.getRandomProductsExcludeIds(excludedIds, remainCount);
+            products.addAll(randomProducts);
         }
 
         return products;
     }
+
 
     // =================
     //  공통 함수

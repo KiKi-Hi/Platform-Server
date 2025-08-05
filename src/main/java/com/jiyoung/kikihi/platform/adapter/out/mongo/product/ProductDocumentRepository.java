@@ -50,11 +50,11 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     // 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
-    // 랜덤
     @Aggregation(pipeline = {
-            "{ $sample: { size: ?0 } }"
+            "{ $match: { _id: { $nin: ?0 } } }",
+            "{ $sample: { size: ?1 } }"
     })
-    List<ProductDocument> findRandomProducts(int limit);
+    List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
 
 }
