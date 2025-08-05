@@ -3,6 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.out.mongo.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -50,13 +51,10 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
     // 랜덤
-    @Query("""
-    {
-      'category': ?0,
-      'spec_table.제조회사': { $in: ?1 },
-      'price': { $gte: ?2, $lte: ?3 }
-    }
-    """)
+    @Aggregation(pipeline = {
+            "{ $sample: { size: ?0 } }"
+    })
     List<ProductDocument> findRandomProducts(int limit);
+
 
 }
