@@ -28,69 +28,72 @@ public class ProductESDocument {
 
     @Id
     @Field(name = "id", type = FieldType.Keyword)
-    private String id;
-
-    @Field(type = FieldType.Text)
-    private String name;
-
-    @Field(type = FieldType.Text)
-    private String thumbnail;
-
-    @Field(type = FieldType.Double)
-    private double price;
+    private String id;  //
 
     @Field(type = FieldType.Keyword)
-    private String manufacturer;
+    private String category;    //
 
     @Field(type = FieldType.Text)
-    private List<String> description;
+    private String name;    //
+
+    @Field(type = FieldType.Double)
+    private double price;   //
 
     @Field(type = FieldType.Text)
-    private String finalPurchaseUrl;
+    private List<String> description;   //
 
-    @Field(type = FieldType.Double)
-    private double discountRate;
-
-    @Field(type = FieldType.Double)
-    private double discountedPrice;
-
-    // 추가: JSON 데이터에 맞는 필드들
-    @Field(type = FieldType.Keyword)
-    private String category;
+    @Field(type = FieldType.Text)
+    private String thumbnailUrl;
 
     @Field(type = FieldType.Keyword)
-    private List<String> options;
+    private String manufacturer;    //
+
+    @Field(type = FieldType.Text)
+    private String detailPageUrl;   //
+
+    @Field(type = FieldType.Keyword)
+    private List<String> options;   //
 
     @Field(type = FieldType.Object)
-    private Map<String, Object> specTable; // spec_table
+    private Map<String, Object> specTable;  //
 
     @Field(type = FieldType.Text)
-    private List<String> allDetailImages; // all_detail_images
+    private List<String> allDetailImages;   //
 
-    @Field(type = FieldType.Text)
-    private String detailPageUrl; // detail_page_url
 
-    public static ProductESDocument toESDocument(Product product) {
-        double discountRate = 0; // 추후 할인 정책 적용
-        double discountedPrice = product.getPrice(); // 추후 할인 반영
+    /// 정적 팩토리 메서드
+    public static ProductESDocument from(Product product) {
 
         // Product 도메인에 추가 필드가 있다면 여기서 매핑 필요
         return ProductESDocument.builder()
                 .id(product.getId())
-                .name(product.getName())
-                .thumbnail(product.getThumbnail())
-                .price(product.getPrice())
-                .manufacturer(product.getManufacturer())
-                .description(product.getDescription())
-                .finalPurchaseUrl(product.getFinalPurchaseUrl())
-                .discountRate(discountRate)
-                .discountedPrice(discountedPrice)
-                // 아래는 Product 도메인에 추가해야 함 (예시)
                 .category(product.getCategory())
+                .name(product.getName())
+                .price(product.getPrice())
+                .description(product.getDescription())
+                .thumbnailUrl(product.getThumbnail())
+                .manufacturer(product.getManufacturer())
+                .detailPageUrl(product.getDetailPageUrl())
                 .options(product.getOptions())
                 .specTable(product.getSpecTable())
                 .allDetailImages(product.getAllDetailImages())
-                .detailPageUrl(product.getDetailPageUrl())
+                .build();
+    }
+
+    /// 정적 팩토리 메서드
+    public Product toDomain() {
+        return Product.builder()
+                .id(id)
+                .name(name)
+                .category(category)
+                .price(price)
+                .description(description)
+                .thumbnail(thumbnailUrl)
+                .manufacturer(manufacturer)
+                .detailPageUrl(detailPageUrl)
+                .options(options)
+                .specTable(specTable)
+                .allDetailImages(allDetailImages)
                 .build();
     }
 }

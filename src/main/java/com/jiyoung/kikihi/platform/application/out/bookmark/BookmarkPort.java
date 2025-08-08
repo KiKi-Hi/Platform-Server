@@ -28,10 +28,6 @@ public interface BookmarkPort {
     /// 삭제하기
     void deleteBookmarkById(Long bookmarkId);
 
-
-    /// 서비스 외부 의존성 추가
-    boolean checkBookmarkByProductIdAndUserId(String productId, UUID userId);
-
     /// 북마크 인기순
     Map<String, Long> getFavoriteBookmarks();
 

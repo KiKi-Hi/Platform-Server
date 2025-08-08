@@ -20,6 +20,10 @@ public record ApiResponse<T>(
         return new ApiResponse<>(HttpStatus.CREATED, true, data, null);
     }
 
+    public static <T> ApiResponse<T> deleted(@Nullable final T data) {
+        return new ApiResponse<>(HttpStatus.NO_CONTENT, true, data, null);
+    }
+
     public static <T> ApiResponse<T> fail(final CustomException e) {
         return new ApiResponse<>(
                 e.getErrorCode().getHttpStatus(), false, null, ExceptionDto.of(e.getErrorCode(), e.getMessage()) // 예외 메시지 추가

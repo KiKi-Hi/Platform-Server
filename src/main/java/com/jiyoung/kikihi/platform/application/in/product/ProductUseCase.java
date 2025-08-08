@@ -2,6 +2,7 @@ package com.jiyoung.kikihi.platform.application.in.product;
 
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
+import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -39,5 +40,10 @@ public interface ProductUseCase {
 
     /// 상품 추천
     List<Product> getProductsByRecommendation();
+
+    /// 외부 의존성
+    // 커스텀 키보드에 맞는 부품들 조회
+    Slice<ProductListResponse> getProductsByLayout(UUID userId, String categoryId, CustomKeyboardLayout layout, Pageable pageable);
+
 
 }

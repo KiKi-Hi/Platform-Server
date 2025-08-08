@@ -21,48 +21,40 @@ import java.util.List;
 public class ProductDocument {
 
     @Id
-    private String id;
+    private String id;  //
 
-    private String category;
+    private String category;    //
 
-    private String name;
+    private String name;    //
 
-    private double price;
+    private double price;   //
 
-    private List<String> description;
+    private List<String> description;   //
 
-    private String thumbnail;
-
-    @Field("detail_purchase_url")
-    private String detailPageUrl;
-
-    @Field("actual_purchase_url")
-    private String actualPurchaseUrl;
-
-    @Field("final_purchase_url")
-    private String finalPurchaseUrl;
-
-    private List<String> options;
-
-    @Field("all_detail_images")
-    private List<String> allDetailImages;
+    private String thumbnail;   //
 
     @Field("spec_table.제조회사")
-    private String manufacturer;
+    private String manufacturer;    //
+
+    @Field("detail_purchase_url")
+    private String detailPageUrl;   //
+
+    private List<String> options;   //
+
+    @Field("all_detail_images")
+    private List<String> allDetailImages;   //
 
     /// 도메인 변경
     public Product toDomain(){
         return Product.builder()
                 .id(id)
-                .name(name)
-                .manufacturer(manufacturer)
                 .category(category)
+                .name(name)
                 .price(price)
                 .description(description)
                 .thumbnail(thumbnail)
+                .manufacturer(manufacturer)
                 .detailPageUrl(detailPageUrl)
-                .actualPurchaseUrl(actualPurchaseUrl)
-                .finalPurchaseUrl(finalPurchaseUrl)
                 .options(options)
                 .allDetailImages(allDetailImages)
                 .build();
