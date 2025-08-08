@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ProductDocumentRepository extends MongoRepository<ProductDocument, String> {
@@ -56,5 +57,16 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     })
     List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
+    List<ProductDocument> findByIdIn(Collection<String> ids);
+
+    // 랜덤
+    @Query("""
+    {
+      'category': ?0,
+      'spec_table.제조회사': { $in: ?1 },
+      'price': { $gte: ?2, $lte: ?3 }
+    }
+    """)
+    List<ProductDocument> findRandomProducts(int limit);
 
 }

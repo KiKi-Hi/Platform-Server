@@ -11,7 +11,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * MongoDB 와 ElasticSearch 통해 기능 구현
@@ -115,5 +118,11 @@ public class ProductMongoAdapter implements ProductPort {
                 .map(ProductDocument::toDomain);
     }
 
+    @Override
+    public Map<String, Product> getProductsByIds(List<String> productIds) {
+        return documentRepository.findByIdIn(productIds).stream()
+                .map(ProductDocument::toDomain)
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+    }
 
 }
