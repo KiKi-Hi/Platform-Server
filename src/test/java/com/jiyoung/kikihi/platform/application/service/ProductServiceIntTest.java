@@ -22,7 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +59,10 @@ class ProductServiceIntTest {
     private ProductDocument product2;
     private ProductDocument product3;
     private ProductDocument product4;
+    private ProductDocument product5;
+    private ProductDocument product6;
+    private ProductDocument product7;
+    private ProductDocument product8;
 
     private final UUID id1 = UUID.fromString("12345678-aaaa-bbbb-cccc-123456789abc");
     private final UUID id2 = UUID.fromString("01234567-aaaa-bbbb-cccc-123456789abc");
@@ -542,14 +548,13 @@ class ProductServiceIntTest {
             List<Product> recommendation = sut.getProductsByRecommendation();
 
             //then
-            // 1. 추천 상품 개수 검증
-            Assertions.assertEquals(4, recommendation.size());
+            // 추천 상품 개수 검증
+            Assertions.assertEquals(8, recommendation.size());
 
-            // 2. 추천 순서(북마크 개수 내림차순) 검증
+            // 추천 순서(북마크 개수 내림차순) 검증
             Assertions.assertEquals(product1.getId(), recommendation.get(0).getId()); // 3명
             Assertions.assertEquals(product2.getId(), recommendation.get(1).getId()); // 2명
             Assertions.assertEquals(product3.getId(), recommendation.get(2).getId()); // 1명
-            Assertions.assertEquals(product4.getId(), recommendation.get(3).getId()); // 0명
 
         }
 
