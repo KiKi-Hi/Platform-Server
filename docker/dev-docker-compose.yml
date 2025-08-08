@@ -69,7 +69,7 @@ services:
     user: root
     volumes:
       - "./logstash/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      - "./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+      - "./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
       - xpack.monitoring.enabled=false
       - ELASTIC_HOSTS=http://es01:9200

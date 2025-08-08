@@ -106,8 +106,8 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
-    public List<Product> getRandomProductIds(int row) {
-        return documentRepository.findRandomProducts(row).stream()
+    public List<Product> getRandomProductsExcludeIds(List<String> excludedIds, int limit) {
+        return documentRepository.findRandomExcludeIds(excludedIds, limit).stream()
                 .map(ProductDocument::toDomain)
                 .toList();
     }

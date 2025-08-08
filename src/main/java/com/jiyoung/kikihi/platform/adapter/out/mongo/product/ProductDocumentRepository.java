@@ -3,6 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.out.mongo.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -49,6 +50,12 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
 
     // 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
+
+    @Aggregation(pipeline = {
+            "{ $match: { _id: { $nin: ?0 } } }",
+            "{ $sample: { size: ?1 } }"
+    })
+    List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
     List<ProductDocument> findByIdIn(Collection<String> ids);
 
