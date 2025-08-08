@@ -543,12 +543,14 @@ class ProductServiceIntTest {
 
             //then
             // 1. 추천 상품 개수 검증
-            Assertions.assertEquals(3, recommendation.size());
+            Assertions.assertEquals(4, recommendation.size());
 
             // 2. 추천 순서(북마크 개수 내림차순) 검증
             Assertions.assertEquals(product1.getId(), recommendation.get(0).getId()); // 3명
             Assertions.assertEquals(product2.getId(), recommendation.get(1).getId()); // 2명
             Assertions.assertEquals(product3.getId(), recommendation.get(2).getId()); // 1명
+            Assertions.assertEquals(product4.getId(), recommendation.get(3).getId()); // 0명
+
         }
 
     }
