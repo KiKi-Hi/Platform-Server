@@ -101,11 +101,6 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
-    public List<Product> getProductsByRecommendation(String category) {
-        return List.of();
-    }
-
-    @Override
     public List<Product> getRandomProductsExcludeIds(List<String> excludedIds, int limit) {
         return documentRepository.findRandomExcludeIds(excludedIds, limit).stream()
                 .map(ProductDocument::toDomain)
@@ -123,6 +118,12 @@ public class ProductMongoAdapter implements ProductPort {
         return documentRepository.findByIdIn(productIds).stream()
                 .map(ProductDocument::toDomain)
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
+    }
+    @Override
+    public List<Product> getProductsRandomly(int recommendCount) {
+        return documentRepository.findRandomProducts(recommendCount).stream()
+                .map(ProductDocument::toDomain)
+                .toList();
     }
 
 }

@@ -24,6 +24,9 @@ public interface CustomKeyboardPort {
     // 존재 여부 판단
     boolean existCustomKeyBoardByUserIdAndId(UUID userId, Long id);
 
+    // 존재 여부 판단
+    Optional<CustomKeyboard> loadCustomKeyBoardByUserId(UUID userId);
+
     /// 수정
     void updateCustomKeyBoard(CustomKeyboard customKeyBoard);
 

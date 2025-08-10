@@ -12,13 +12,23 @@ import java.util.List;
 
 public interface ProductDocumentRepository extends MongoRepository<ProductDocument, String> {
 
+    // =================
+    //  생성 함수
+    // =================
+
+
+    // =================
+    //  조회 함수
+    // =================
+
+    /// 카테고리 기반 목록 조회 (카테고리)
     Slice<ProductDocument> findByCategory(String category, Pageable pageable);
 
-    // 카테고리 기반 목록 조회 (카테고리, 제조사 포함)
+    /// 카테고리 기반 목록 조회 (카테고리, 제조사 포함)
     @Query("{ 'category': ?0, 'spec_table.제조회사': { $in: ?1 } }")
     Page<ProductDocument> findByCategoryAndManufacturer(String category, List<String> manufacturer, Pageable pageable);
 
-    // 카테고리 기반 목록 조회 (카테고리, 가격 포함)
+    /// 카테고리 기반 목록 조회 (카테고리, 가격 포함)
     @Query("""
     {
       'category': ?0,
@@ -32,7 +42,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
-    // 카테고리 기반 목록 조회 (카테고리, 제조사, 가격 포함)
+    /// 카테고리 기반 목록 조회 (카테고리, 제조사, 가격 포함)
     @Query("""
     {
       'category': ?0,
@@ -48,25 +58,26 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
-    // 아이디 기반 조회
+    /// 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
+    /// 한번에 상품 여러개 조회
+    List<ProductDocument> findByIdIn(Collection<String> ids);
+
+    /// 랜덤 기반 조회
+    @Aggregation(pipeline = {
+            "{ $sample: { size: ?0 } }"
+    })
+    List<ProductDocument> findRandomProducts(int limit);
+
+    /// 특정아이디 제외한, 랜덤 기반 조회
     @Aggregation(pipeline = {
             "{ $match: { _id: { $nin: ?0 } } }",
             "{ $sample: { size: ?1 } }"
     })
     List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
-    List<ProductDocument> findByIdIn(Collection<String> ids);
-
-    // 랜덤
-    @Query("""
-    {
-      'category': ?0,
-      'spec_table.제조회사': { $in: ?1 },
-      'price': { $gte: ?2, $lte: ?3 }
-    }
-    """)
-    List<ProductDocument> findRandomProducts(int limit);
-
+    // =================
+    //  삭제 함수
+    // =================
 }

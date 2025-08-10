@@ -2,9 +2,11 @@ package com.jiyoung.kikihi.platform.adapter.out;
 
 import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.BookmarkJpaEntity;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.BookmarkJpaRepository;
+import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.projection.ProductIdWithCount;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
 import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,10 @@ public class BookmarkAdapter implements BookmarkPort {
     /// JPA 레포지토리 주입
     private final BookmarkJpaRepository repository;
 
+    // =================
+    //  저장 함수
+    // =================
+
     /**
      * 저장 기능
      * @param bookmark  저장할 북마크 도메인
@@ -33,6 +39,10 @@ public class BookmarkAdapter implements BookmarkPort {
         return repository.save(entity)
                 .toDomain();
     }
+
+    // =================
+    //  조회 함수
+    // =================
 
     /**
      * 아이디 기반 상세 조회
@@ -77,23 +87,25 @@ public class BookmarkAdapter implements BookmarkPort {
     }
 
     /**
-     * 인기 있는 북마크 상품 조회
+     * limit 만큼 인기있는 상품 목록 조회
+     * @param limit 조회할 개수
      */
     @Override
-    public Map<String, Long> getFavoriteBookmarks() {
-
-        ///  북마크 많은 순서로 DB 조회
-        List<Object[]> result = repository.findProductIdAndBookmarkCountOrderByCountDesc();
-
-        /// 맵 생성
-        Map<String, Long> map = new HashMap<>();
-
-        /// 맵 데이터 넣기
-        for (Object[] o : result) {
-            map.put(String.valueOf(o[0]), (Long) o[1]);
-        }
-        return map;
+    public List<ProductIdWithCount> listTopBookmarks(int limit) {
+        return repository.findBookmarkAndCount(Pageable.ofSize(limit));
     }
+
+    /**
+     * 북마크가 몇 개 되어있는지 체크
+     */
+    @Override
+    public Long countBookmarks() {
+        return repository.count();
+    }
+
+    // =================
+    //  삭제 함수
+    // =================
 
     /**
      * 북마크 삭제하기

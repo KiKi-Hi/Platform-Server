@@ -1,5 +1,7 @@
 package com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark;
 
+import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.projection.ProductIdWithCount;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,7 +18,15 @@ public interface BookmarkJpaRepository extends JpaRepository<BookmarkJpaEntity, 
 
     boolean existsByUserIdAndProductId(UUID userId, String productId);
 
-    @Query("select b.productId, count(b) from BookmarkJpaEntity b group by b.productId order by count(b) desc")
-    List<Object[]> findProductIdAndBookmarkCountOrderByCountDesc();
+    /**
+     * 북마크 상위 인기 개수 조회
+     * @param pageable  페이징
+     */
+    @Query("select b.productId as productId , count(b) as count " +
+            "from BookmarkJpaEntity b " +
+            "group by b.productId " +
+            "order by count(b) desc ")
+    List<ProductIdWithCount> findBookmarkAndCount(Pageable pageable);
+
 
 }

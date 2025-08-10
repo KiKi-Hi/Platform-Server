@@ -1,5 +1,6 @@
 package com.jiyoung.kikihi.platform.application.out.bookmark;
 
+import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.projection.ProductIdWithCount;
 import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
 
 import java.util.*;
@@ -29,6 +30,8 @@ public interface BookmarkPort {
     void deleteBookmarkById(Long bookmarkId);
 
     /// 북마크 인기순
-    Map<String, Long> getFavoriteBookmarks();
+    List<ProductIdWithCount> listTopBookmarks(int limit);
+
+    Long countBookmarks();
 
 }
