@@ -20,9 +20,6 @@ import java.util.*;
 public interface ProductUseCase {
 
     /// 상품 목록 조회
-    // 상품 목록 조회 (페이징X) - mongoDB
-    List<Product> getProducts();
-
     // 카테고리별 목록 조회 (카테고리 포함) - mongoDB
     Slice<ProductListResponse> getProductsByCategoryId(UUID userId, String categoryId, Pageable pageable);
 
@@ -37,9 +34,6 @@ public interface ProductUseCase {
 
     /// 상품 상세 조회
     ProductDetailResponse getProduct(UUID userId, String id);
-
-    /// 상품 추천
-    List<Product> getProductsByRecommendation();
 
     /// 외부 의존성
     // 커스텀 키보드에 맞는 부품들 조회

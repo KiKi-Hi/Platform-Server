@@ -42,14 +42,6 @@ public class ProductService implements ProductUseCase {
     // =================
 
     /**
-     * 최신 상품 목록 조회
-     */
-    @Override
-    public List<Product> getProducts() {
-        return productPort.getProducts();
-    }
-
-    /**
      * 카테고리별 목록 조회 (카테고리 포함)
      * 유저가 로그인했다면, 북마크한 내용까지 확인 되어야합니다.
      *
@@ -161,41 +153,6 @@ public class ProductService implements ProductUseCase {
     // ========================
     // 외부 의존성
     // ========================
-
-    /**
-     * 추천 서비스를 구현 합니다!
-     * - 북마크가 많은 순서대로 추천합니다.
-     */
-    @Override
-    public List<Product> getProductsByRecommendation() {
-
-        Map<String, Long> favoriteBookmarks = bookmarkPort.getFavoriteBookmarks();
-        List<Product> products = new ArrayList<>();
-
-        // 북마크 많은 순서대로 최대 8개 추출
-        List<String> topProductIds = favoriteBookmarks.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(8)
-                .map(Map.Entry::getKey)
-                .toList();
-
-        // 북마크 상품 로딩
-        for (String productId : topProductIds) {
-            products.add(loadProduct(productId));
-        }
-
-        int remainCount = 8 - products.size();
-        if (remainCount > 0) {
-            // 이미 조회된 productId 제외하고 랜덤 상품 ID 조회
-            List<String> excludedIds = new ArrayList<>(topProductIds);
-            List<Product> randomProducts = productPort.getRandomProductsExcludeIds(excludedIds, remainCount);
-            products.addAll(randomProducts);
-        }
-
-        return products;
-    }
-
-
     /**
      * 커스텀 키보드에 맞는 부품들 조회
      * @param userId        북마크 체크를 위한 유저ID

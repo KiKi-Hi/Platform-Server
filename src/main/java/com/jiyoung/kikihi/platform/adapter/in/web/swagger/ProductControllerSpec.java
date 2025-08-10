@@ -66,16 +66,5 @@ public interface ProductControllerSpec {
 
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
-
-    /**
-     * 홈화면에서 인기 상품 조회하기
-     */
-    @Operation(
-            summary = "인기상품 API_홈",
-            description = "북마크를 바탕으로 8개의 인기 상품을 불러오는 API 입니다."
-
-    )
-    ApiResponse<List<ProductListResponse>> getProductRecommendation();
-
 }
 
