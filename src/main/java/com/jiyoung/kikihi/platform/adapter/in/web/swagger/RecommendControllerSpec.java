@@ -2,8 +2,10 @@ package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
+import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -18,7 +20,9 @@ public interface RecommendControllerSpec {
             description = "북마크를 바탕으로 8개의 인기 상품을 불러오는 API 입니다."
 
     )
-    ApiResponse<List<ProductListResponse>> getProductRecommendation();
+    ApiResponse<List<ProductListResponse>> getProductRecommendation(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
 
 
 }
