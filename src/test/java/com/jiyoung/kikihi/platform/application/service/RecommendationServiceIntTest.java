@@ -5,7 +5,6 @@ import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocumentRepository;
 import com.jiyoung.kikihi.platform.application.in.recommendation.RecommendationUseCase;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
-import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
 import com.jiyoung.kikihi.platform.application.out.user.UserPort;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import com.jiyoung.kikihi.platform.domain.product.ProductFixtures;
@@ -17,8 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,9 +37,6 @@ class RecommendationServiceIntTest {
 
     @Autowired
     private BookmarkPort bookmarkPort;
-
-    @Autowired
-    private ProductPort productPort;
 
     /// 세팅을 위한 의존성
     @Autowired
@@ -88,6 +87,7 @@ class RecommendationServiceIntTest {
     @AfterEach
     void tearDown() {
         repository.deleteAll();
+        bookmarkPort.deleteAllBookmarks();
     }
 
     @Nested()
@@ -95,56 +95,271 @@ class RecommendationServiceIntTest {
     class recommendation {
 
         @Test
-        @DisplayName("[happy] 추천 조회")
+        @DisplayName("[happy] 북마크 기반 추천 조회_전체_북마크_랜덤")
         public void loadRecommendation_preview() throws Exception {
 
             //given
 
-            // 상품1에 3명의 유저가 북마크 설정
-            var request1 = getBookmarkRequest(user1.getId(), product1.getId());
-            var request2 = getBookmarkRequest(user2.getId(), product1.getId());
-            var request3 = getBookmarkRequest(user3.getId(), product1.getId());
-
-            // 상품 2에 2명의 유저가 북마크 설정
-            var request4 = getBookmarkRequest(user1.getId(), product2.getId());
-            var request5 = getBookmarkRequest(user2.getId(), product2.getId());
-
-            // 상품 3에 1명의 유저가 북마크 설정
-            var request6 = getBookmarkRequest(user3.getId(), product3.getId());
-
-            // 상품 4에 0명의 유저가 북마크 설정
-
-            // 북마크 저장
-            List.of(request1, request2, request3, request4, request5, request6)
-                    .forEach(req -> bookmarkService.saveBookmark(req));
 
             //when
-            List<Product> recommendation = sut.getProductsByRecommendation();
+
 
             //then
-            // 추천 상품 개수 검증
-            Assertions.assertEquals(8, recommendation.size());
 
-            // 추천 순서(북마크 개수 내림차순) 검증
-            Assertions.assertEquals(product1.getId(), recommendation.get(0).getId()); // 3명
-            Assertions.assertEquals(product2.getId(), recommendation.get(1).getId()); // 2명
-            Assertions.assertEquals(product3.getId(), recommendation.get(2).getId()); // 1명
 
         }
 
-    }
+        @Test
+        @DisplayName("[happy] 북마크 기반 추천 조회_전체_북마크_8개_이하")
+        public void recommendation_under_8() throws Exception {
+            // given
+            /// 총 북마크 상품 2개 (< 8) -> 북마크 가중 2개, 새로운 랜덤 6개 추천
+            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product1.getId()));
+            bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), product1.getId()));
+            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product2.getId()));
 
-    /**
-     * 공통 북마크 DTO 생성 함수
-     * @param userId        유저 ID
-     * @param productId     상품 ID
-     */
-    private BookmarkRequest getBookmarkRequest(UUID userId, String productId) {
-        return BookmarkRequest.builder()
-                .userId(userId)
-                .productId(productId)
-                .build();
-    }
+            Set<String> bookmarkedProductIds = Set.of(product1.getId(), product2.getId());
 
+            // when
+            List<Product> recommendation = sut.getProductsByRecommendation(null);
+
+            // then
+            Assertions.assertEquals(8, recommendation.size(), "총 8개의 상품이 추천되어야 합니다.");
+
+            // 북마크 기반 2개 포함 검증
+            long countFromBookmarks = recommendation.stream()
+                    .map(Product::getId)
+                    .filter(bookmarkedProductIds::contains)
+                    .count();
+
+            /// 북마크 상품이 최소 6개 이상 포함되는지 검증(랜덤 추가분에서 북마크 상품이 포함될 수 있음)
+            Assertions.assertTrue(countFromBookmarks >= 2, "북마크 기반 추천 상품이 2개 이상 포함되어야 합니다.");
+        }
+
+
+        @Test
+        @DisplayName("[happy] 북마크 기반 추천 조회_전체_북마크_20개_이하")
+        public void recommendation_under_20() throws Exception {
+            // given
+            /// 북마크 가중 4개, 새로운 랜덤 4개 추천
+
+            /// 새로운 상품 10개 목록 저장
+            List<ProductDocument> products = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                products.add(ProductFixtures.createProduct("bulk", "bulk" + i, 1000));
+            }
+            List<ProductDocument> documents = repository.saveAll(products);
+
+            /// 북마크 10개 저장 bookmarks
+            for (ProductDocument p : documents) {
+                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
+                bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), p.getId()));
+            }
+
+            Set<String> bookmarkedProductIds = documents.stream()
+                    .map(ProductDocument::getId)
+                    .collect(Collectors.toSet());
+
+            // when
+            List<Product> recommendation = sut.getProductsByRecommendation(null);
+
+            // then
+            Assertions.assertEquals(8, recommendation.size(), "총 8개의 상품이 추천되어야 합니다.");
+
+            // 북마크 기반 6개 포함 검증
+            long countFromBookmarks = recommendation.stream()
+                    .map(Product::getId)
+                    .filter(bookmarkedProductIds::contains)
+                    .count();
+
+            /// 북마크 상품이 최소 4개 이상 포함되는지 검증(랜덤 추가분에서 북마크 상품이 포함될 수 있음)
+            Assertions.assertTrue(countFromBookmarks >= 4, "북마크 기반 추천 상품이 4개 이상 포함되어야 합니다.");
+        }
+
+        @Test
+        @DisplayName("[happy] 북마크 기반 추천 조회_전체_북마크_20_50개_사이")
+        public void recommendation_20_50() throws Exception {
+            // given
+            /// 북마크 가중 6개, 새로운 랜덤 2개
+
+            /// 기존 8 개 + 새로운 상품 30개 목록 저장
+            List<ProductDocument> products = new ArrayList<>();
+            for (int i = 0; i < 30; i++) {
+                products.add(ProductFixtures.createProduct("bulk", "bulk" + i, 1000));
+            }
+            /// 저장
+            List<ProductDocument> documents = repository.saveAll(products);
+
+            /// 총 북마크 30개 (20 <= 30 <= 50)
+            for (ProductDocument p : documents) {
+                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
+                bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), p.getId()));
+            }
+
+            /// 북마크를 한 상품 ID 목록
+            List<String> bookmarkedProductIds = documents.stream()
+                    .map(ProductDocument::getId)
+                    .toList();
+
+            // when
+            List<Product> recommendation = sut.getProductsByRecommendation(null);
+
+            // then
+            Assertions.assertEquals(8, recommendation.size(), "총 8개의 상품이 추천되어야 합니다.");
+
+            // 북마크 기반 6개 포함 검증
+            long countFromBookmarks = recommendation.stream()
+                    .map(Product::getId)
+                    .filter(bookmarkedProductIds::contains)
+                    .count();
+
+            /// 북마크 상품이 최소 6개 이상 포함되는지 검증(랜덤 추가분에서 북마크 상품이 포함될 수 있음)
+            Assertions.assertTrue(countFromBookmarks >= 6, "북마크 기반 추천 상품이 6개 이상 포함되어야 합니다.");
+        }
+
+        @Test
+        @DisplayName("[happy] 북마크 기반 추천 조회_전체_북마크_50개_이상")
+        public void recommendation_upper_50() throws Exception {
+            // given
+            /// 북마크 상위 50개 중 가중치 랜덤 8개
+
+            // 테스트용 상품 60개 추가 생성 및 저장
+            List<ProductDocument> products = new ArrayList<>();
+            for (int i = 0; i < 60; i++) {
+                products.add(ProductFixtures.createProduct("bulk", "bulk" + i, 1000));
+            }
+
+            /// 저장
+            List<ProductDocument> documents = repository.saveAll(products);
+
+            // 총 북마크 60개 (60 > 50)
+            for (ProductDocument p : documents) {
+                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
+                bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), p.getId()));
+                bookmarkService.saveBookmark(getBookmarkRequest(user3.getId(), p.getId()));
+            }
+
+            List<String> productIds = documents.stream()
+                    .map(ProductDocument::getId)
+                    .toList();
+
+            // when
+            List<Product> recommendation = sut.getProductsByRecommendation(null);
+
+            // then
+            Assertions.assertEquals(8, recommendation.size(), "총 8개의 상품이 추천되어야 합니다.");
+
+            // 8개 모두 북마크된 상품인지 검증
+
+            boolean allRecommendedAreBookmarked = recommendation.stream()
+                    .map(Product::getId)
+                    .allMatch(productIds::contains);
+            Assertions.assertTrue(allRecommendedAreBookmarked, "추천된 모든 상품은 북마크된 상품이어야 합니다.");
+        }
+
+        @Test
+        @DisplayName("[happy] 커스텀 기반 추천 조회")
+        public void recommendation_preview() throws Exception {
+
+        }
+
+
+        @Test
+        @DisplayName("[happy] 북마크 기반 추천 조회_전체_북마크_50개_이상_북마크 유저 수 기반 추천 가중치 빈도 테스트")
+        void recommend_weightedByBookmarkUserCount() {
+            // given
+            /// 북마크 상위 50개 중 가중치 랜덤 8개
+
+            // 테스트용 상품 60개 추가 생성 및 저장
+            List<ProductDocument> products = new ArrayList<>();
+            for (int i = 0; i < 60; i++) {
+                products.add(ProductFixtures.createProduct("bulk", "bulk" + i, 1000));
+            }
+
+            /// 저장
+            List<ProductDocument> documents = repository.saveAll(products);
+
+            // 최소 총 북마크 60개
+            for (ProductDocument p : documents) {
+                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
+            }
+
+            /// 상품A: 100명 유저가 북마크
+            List<User> users = new ArrayList<>();
+            for (int i = 0; i < 100; i++) {
+                User u = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userA" + i, "socialA" + i));
+                users.add(u);
+                bookmarkService.saveBookmark(getBookmarkRequest(u.getId(), product1.getId()));
+            }
+
+            /// 상품B: 2명이 북마크
+            User userB1 = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userB1", "socialB1"));
+            User userB2 = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userB2", "socialB2"));
+
+            bookmarkService.saveBookmark(getBookmarkRequest(userB1.getId(), product2.getId()));
+            bookmarkService.saveBookmark(getBookmarkRequest(userB2.getId(), product2.getId()));
+
+            /// 상품C: 1명이 북마크
+            User userC = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userC1", "socialC1"));
+            bookmarkService.saveBookmark(getBookmarkRequest(userC.getId(), product3.getId()));
+
+            /// 제대로된 추천을 위해 8개의 상품에 대해서 진행해야된다.
+
+            // when
+            int repeatCount = 200;
+            int countA = 0, countB = 0, countC = 0;
+            for (int i = 0; i < repeatCount; i++) {
+                List<Product> recs = sut.getProductsByRecommendation(null);
+                List<String> ids = recs.stream()
+                        .map(Product::getId)
+                        .toList();
+                if (ids.contains(product1.getId())) countA++;
+                if (ids.contains(product2.getId())) countB++;
+                if (ids.contains(product3.getId())) countC++;
+            }
+
+            // then
+            /// 상품A(북마크 유저 100명) > 상품B(2명) > 상품C(1명)가 추천 빈도가 높아야 합니다.
+            assertTrue(countA > countB && countB > countC,
+                    String.format("가중치 추천 결과(유저당 1회 북마크): A:%d B:%d C:%d", countA, countB, countC));
+        }
+
+
+        @Test
+        @DisplayName("[happy ]추천 상품 중복 없음 테스트")
+        void recommendation_noDuplicates() {
+            // given
+            /// 북마크/랜덤 추천 데이터 준비(여러 상황에서 호출할 수 있으나, 추천 결과 유일성만 체크)
+
+            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product1.getId()));
+            bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), product1.getId()));
+            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product2.getId()));
+
+            /// when
+            List<Product> recommended = sut.getProductsByRecommendation(null);
+
+            // then
+            /// 중복 없는지 검증: 추천 리스트와 distinct된 추천 리스트의 size가 같아야 함
+            long uniqueCount = recommended.stream()
+                    .map(Product::getId)
+                    .distinct()
+                    .count();
+
+            Assertions.assertEquals(recommended.size(), uniqueCount, "추천 결과에 상품 중복이 없어야 합니다.");
+        }
+
+        /**
+         * 공통 북마크 DTO 생성 함수
+         *
+         * @param userId    유저 ID
+         * @param productId 상품 ID
+         */
+        private BookmarkRequest getBookmarkRequest(UUID userId, String productId) {
+            return BookmarkRequest.builder()
+                    .userId(userId)
+                    .productId(productId)
+                    .build();
+        }
+    }
 
 }
