@@ -112,7 +112,7 @@ public class BookmarkService implements BookmarkUseCase {
         User user = getUser(userId);
 
         /// 해당 유저가 저장한 북마크인지 체크
-        boolean checked = port.checkBookmarkByIdAndUserId(id, user.getId());
+        boolean checked = port.checkBookmarkByUserIdAndId(user.getId(), id);
 
         if (!checked) {
             throw new IllegalStateException(ErrorCode.UNAUTHORIZED_DELETE_BOOKMARK.getMessage());

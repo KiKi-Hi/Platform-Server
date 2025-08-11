@@ -69,11 +69,12 @@ public class BookmarkAdapter implements BookmarkPort {
 
     /**
      * 북마크ID 와 유저가 존재하는지 체크
-     * @param bookmarkId    북마크 ID
-     * @param userId        유저 ID
+     *
+     * @param bookmarkId 북마크 ID
+     * @param userId     유저 ID
      */
     @Override
-    public boolean checkBookmarkByIdAndUserId(Long bookmarkId, UUID userId) {
+    public boolean checkBookmarkByUserIdAndId(UUID userId, Long bookmarkId) {
         return repository.existsByUserIdAndId(userId, bookmarkId);
     }
 

@@ -7,6 +7,7 @@ import com.jiyoung.kikihi.platform.application.out.bookmark.dto.TopBookmark;
 import com.jiyoung.kikihi.platform.application.out.custom.CustomKeyboardPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboard;
+import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import com.jiyoung.kikihi.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,10 @@ public class RecommendationService implements RecommendationUseCase {
     private static final int RECOMMEND_COUNT = 8;
     private static final int BOOKMARK_BOUND_1 = 20;
     private static final int BOOKMARK_BOUND_2 = 50;
+
+    // =================
+    //  상품 추천 조회
+    // =================
 
     /**
      * 북마크 많은 순서 상위 N개(기본: 50개) 내에서 북마크 수 기반 가중치 확률 랜덤으로 M개 추천합니다.
@@ -178,10 +183,25 @@ public class RecommendationService implements RecommendationUseCase {
     }
 
     /**
-     * 커스텀 상품을 만든 유저에게 추천하는 내부 로직
+     * 커스텀 상품을 만든 유저에게 커스텀 특성과 유사한 상품을 추천하는 로직입니다.
+     * - 커스텀 키보드의 스위치, 키캡, 레이아웃 등 주요 옵션과 유사한 상품에서 추천합니다.
+     * @param customKeyboard 유저의 커스텀 상품 정보
+     * @return 추천 상품 리스트
      */
     private List<Product> recommendForCustomUser(CustomKeyboard customKeyboard) {
-        return List.of();
+        ///커스텀 특성 획득
+        String switchId = customKeyboard.getSwitchId();
+        String keycapId = customKeyboard.getKeyCapId();
+        CustomKeyboardLayout layout = customKeyboard.getLayout();
+
+        /// 유사 상품 필터링
+        List<Product> similarProducts = productPort.findProductsByAttributes(switchId, keycapId, layout);
+
+        /// 최종 리스트 구성
+        return similarProducts.stream()
+                .distinct()
+                .limit(RECOMMEND_COUNT)
+                .toList();
     }
 
 
