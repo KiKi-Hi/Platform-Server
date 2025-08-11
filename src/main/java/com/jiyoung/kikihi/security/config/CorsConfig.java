@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.global.config;
+package com.jiyoung.kikihi.security.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

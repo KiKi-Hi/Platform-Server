@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.global.config;
+package com.jiyoung.kikihi.security.config;
 
 
 import com.jiyoung.kikihi.security.jwt.filter.JwtAuthenticationDeniedHandler;
