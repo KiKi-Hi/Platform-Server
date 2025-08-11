@@ -35,7 +35,6 @@ public class DevAuthController implements DevAuthControllerSpec {
     private final UUID id = UUID.fromString("12345678-aaaa-bbbb-cccc-123456789abc");
 
 
-
     @PostMapping("/dev-login")
     public ApiResponse<String> devLogin(HttpServletResponse httpServletResponse) {
 
@@ -62,7 +61,7 @@ public class DevAuthController implements DevAuthControllerSpec {
         tokenService.createAccessToken(httpServletResponse, authentication);
         tokenService.createRefreshToken(httpServletResponse, authentication);
 
-        return ApiResponse.ok("토큰이 쿠키로 발급되었습니다.");
+        return ApiResponse.created();
     }
 
     /// 임시 유저 생성

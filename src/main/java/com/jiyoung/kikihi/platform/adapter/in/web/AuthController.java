@@ -27,7 +27,7 @@ public class AuthController implements AuthControllerSpec {
         /// 재발급 하기
         tokenService.reissueByRefreshToken(request, response);
 
-        return ApiResponse.ok("성공적으로 재발급되었습니다.");
+        return ApiResponse.created();
     }
 
     @PostMapping("/logout")
@@ -39,7 +39,6 @@ public class AuthController implements AuthControllerSpec {
         // 리프레쉬 토큰 삭제하기
         tokenService.logout(userId, request, response);
 
-        return ApiResponse.ok("성공적으로 로그아웃되었습니다.");
+        return ApiResponse.deleted();
     }
-
 }

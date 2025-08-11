@@ -96,6 +96,6 @@ public class BookmarkController implements BookmarkControllerSpec {
         // 서비스 계층
         service.deleteBookmarkById(bookmarkId, userId);
 
-        return ApiResponse.ok("성공적으로 삭제 되었습니다.");
+        return ApiResponse.deleted();
     }
 }
