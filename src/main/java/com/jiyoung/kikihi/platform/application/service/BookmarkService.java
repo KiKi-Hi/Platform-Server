@@ -2,7 +2,7 @@ package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import com.jiyoung.kikihi.platform.application.in.bookmark.BookmarkUseCase;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
@@ -64,7 +64,7 @@ public class BookmarkService implements BookmarkUseCase {
      * @param category  조회할 상품 카테고리
      */
     @Override
-    public Slice<BookmarkResponse> loadBookmarksByUserIdAndCategory(UUID userId, String category, Pageable pageable) {
+    public Slice<BookmarkListResponse> loadBookmarksByUserIdAndCategory(UUID userId, String category, Pageable pageable) {
 
         // 유저 검증
         User user = getUser(userId);
@@ -90,10 +90,10 @@ public class BookmarkService implements BookmarkUseCase {
         Map<String, Bookmark> bookmarkMap = bookmarks.stream()
                 .collect(Collectors.toMap(Bookmark::getProductId, b -> b));
 
-        List<BookmarkResponse> content = products.getContent().stream()
+        List<BookmarkListResponse> content = products.getContent().stream()
                 .map(product -> {
                     Bookmark bookmark = bookmarkMap.get(product.getId());
-                    return BookmarkResponse.from(bookmark, product);
+                    return BookmarkListResponse.from(bookmark, product);
                 })
                 .toList();
 

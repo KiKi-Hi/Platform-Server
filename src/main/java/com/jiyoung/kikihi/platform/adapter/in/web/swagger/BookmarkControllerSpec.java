@@ -5,7 +5,7 @@ import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.product.CategoryType;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -60,7 +60,7 @@ public interface BookmarkControllerSpec {
             summary = "나의 북마크 목록 조회 API",
             description = "JWT 기반으로 카테고리별 북마크 목록을 조회할 수 있습니다."
     )
-    ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(
+    ApiResponse<SliceResponse<BookmarkListResponse>> loadBookmarkByCategory(
 
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails,
