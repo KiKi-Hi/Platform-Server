@@ -33,7 +33,6 @@ public class ProductDocument {
 
     private String thumbnail;   //
 
-    @Field("spec_table.제조회사")
     private String manufacturer;    //
 
     @Field("detail_purchase_url")
