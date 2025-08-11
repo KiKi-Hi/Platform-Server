@@ -120,8 +120,8 @@ public class ProductMongoAdapter implements ProductPort {
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
     }
     @Override
-    public List<Product> getProductsRandomly(int recommendCount) {
-        return documentRepository.findRandomProducts(recommendCount).stream()
+    public List<Product> getProductsRandomly(int limit) {
+        return documentRepository.findRandomProducts(limit).stream()
                 .map(ProductDocument::toDomain)
                 .toList();
     }

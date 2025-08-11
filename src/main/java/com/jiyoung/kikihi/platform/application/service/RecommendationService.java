@@ -1,9 +1,9 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.projection.ProductIdWithCount;
 import com.jiyoung.kikihi.platform.application.in.recommendation.RecommendationUseCase;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
+import com.jiyoung.kikihi.platform.application.out.bookmark.dto.TopBookmark;
 import com.jiyoung.kikihi.platform.application.out.custom.CustomKeyboardPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboard;
@@ -102,7 +102,7 @@ public class RecommendationService implements RecommendationUseCase {
         int bookmarkPick = Math.min(2, bookmarkSize.intValue()); // 북마크 2개까지, 실제 상품 수보다 많지 않게
 
         /// 조회
-        List<ProductIdWithCount> bookmarks = bookmarkPort.listTopBookmarks(bookmarkSize.intValue());
+        List<TopBookmark> bookmarks = bookmarkPort.listTopBookmarks(bookmarkSize.intValue());
 
         /// 북마크 수 기준 랜덤 셀렉션
         List<Product> products = weightedRandomProductsFromBookmarks(bookmarks, bookmarkPick);
@@ -128,7 +128,7 @@ public class RecommendationService implements RecommendationUseCase {
     private List<Product> recommendForSmallBookmarks(Long bookmarkSize) {
 
         /// 상위 N개 조회
-        List<ProductIdWithCount> topN = bookmarkPort.listTopBookmarks(Math.toIntExact(bookmarkSize));
+        List<TopBookmark> topN = bookmarkPort.listTopBookmarks(Math.toIntExact(bookmarkSize));
 
         /// 가중치 바탕으로 조회
         List<Product> products = weightedRandomProductsFromBookmarks(topN, 4);
@@ -150,7 +150,7 @@ public class RecommendationService implements RecommendationUseCase {
     private List<Product> recommendForRegularBookmarks(Long bookmarkSize) {
 
         /// 상위 N개 조회
-        List<ProductIdWithCount> topN = bookmarkPort.listTopBookmarks(Math.toIntExact(bookmarkSize));
+        List<TopBookmark> topN = bookmarkPort.listTopBookmarks(Math.toIntExact(bookmarkSize));
 
         /// 가중치 바탕으로 조회
         List<Product> products = weightedRandomProductsFromBookmarks(topN, 6);
@@ -171,7 +171,7 @@ public class RecommendationService implements RecommendationUseCase {
     private List<Product> recommendForManyBookmarks() {
 
         /// 북마크 상위 TOP 50개 조회
-        List<ProductIdWithCount> top50 = bookmarkPort.listTopBookmarks(50);
+        List<TopBookmark> top50 = bookmarkPort.listTopBookmarks(50);
 
         /// 가중치 바탕으로 조회
         return weightedRandomProductsFromBookmarks(top50, RECOMMEND_COUNT);
@@ -195,7 +195,7 @@ public class RecommendationService implements RecommendationUseCase {
      * @param pickCount 뽑을 개수
      * @return 선정 상품 리스트
      */
-    private List<Product> weightedRandomProductsFromBookmarks(List<ProductIdWithCount> bookmarks, int pickCount) {
+    private List<Product> weightedRandomProductsFromBookmarks(List<TopBookmark> bookmarks, int pickCount) {
 
         /// 북마크가 없다면 빈 값
         if (bookmarks.isEmpty()) {
@@ -205,11 +205,11 @@ public class RecommendationService implements RecommendationUseCase {
         List<String> pool = new ArrayList<>();
 
         /// for 반복문 실행
-        for (ProductIdWithCount bookmark: bookmarks) {
-            for (int i = 0; i < bookmark.getCount(); i++) {
+        for (TopBookmark bookmark: bookmarks) {
+            for (int i = 0; i < bookmark.count(); i++) {
 
                 /// 좋아요 수 만큼 해당 북마크 ID를 가중치 더하기
-                pool.add(bookmark.getProductId());
+                pool.add(bookmark.productId());
             }
         }
 

@@ -4,6 +4,7 @@ import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.BookmarkJpaEntity;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.BookmarkJpaRepository;
 import com.jiyoung.kikihi.platform.adapter.out.jpa.bookmark.projection.ProductIdWithCount;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;
+import com.jiyoung.kikihi.platform.application.out.bookmark.dto.TopBookmark;
 import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -91,8 +92,15 @@ public class BookmarkAdapter implements BookmarkPort {
      * @param limit 조회할 개수
      */
     @Override
-    public List<ProductIdWithCount> listTopBookmarks(int limit) {
-        return repository.findBookmarkAndCount(Pageable.ofSize(limit));
+    public List<TopBookmark> listTopBookmarks(int limit) {
+
+        /// DB에 조회
+        List<ProductIdWithCount> bookmarkAndCount = repository.findBookmarkAndCount(Pageable.ofSize(limit));
+
+        /// 서비스로직에서 DTO로 수정
+        return bookmarkAndCount.stream()
+                .map(bc -> TopBookmark.of(bc.getProductId(), bc.getCount()))
+                .toList();
     }
 
     /**

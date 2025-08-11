@@ -42,5 +42,5 @@ public interface ProductPort {
 
     Map<String, Product> getProductsByIds(List<String> productIds);
 
-    List<Product> getProductsRandomly(int recommendCount);
+    List<Product> getProductsRandomly(int limit);
 }
