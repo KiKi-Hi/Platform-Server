@@ -2,6 +2,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product;
 
 
 import com.jiyoung.kikihi.platform.domain.product.Product;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import java.util.List;
 import java.util.Set;
@@ -20,14 +21,31 @@ import java.util.Set;
  */
 
 @Builder
+@Schema(name = "[응답][상품] 상품 목록 조회 Response", description = "상품 목록 조회를 위한 DTO입니다.")
 public record ProductListResponse(
+
+        @Schema(description = "상품 아이디", example = "101")
         String id,
+
+        @Schema(description = "상품 썸네일 이미지 URL", example = "https://example.com/product/101.jpg")
         String thumbnail,
+
+        @Schema(description = "카테고리명", example = "keycap")
         String category,
+
+        @Schema(description = "제조사명", example = "애플")
         String manufacturerName,
+
+        @Schema(description = "제품명", example = "맥북 키보드")
         String productName,
+
+        @Schema(description = "할인율 (0.2 = 20%)", example = "0.15")
         double discountRate,
+
+        @Schema(description = "할인가 (정상가에서 할인 적용된 가격)", example = "339000.0")
         double discountedPrice,
+
+        @Schema(description = "내가 좋아요(북마크)한 상품 여부", example = "true")
         boolean likedByMe
 ) {
 

@@ -1,6 +1,7 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom;
 
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardWithName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 /**
@@ -15,14 +16,33 @@ import lombok.Builder;
  * @param price                 가격
  */
 @Builder
+@Schema(
+        name = "[응답][커스텀] 커스텀 키보드 상세 조회 Response",
+        description = "커스텀 키보드의 상세 정보를 조회하는 응답 DTO입니다."
+)
 public record CustomKeyboardDetailResponse(
+        @Schema(description = "커스텀 키보드 ID", example = "101")
         Long customId,
+
+        @Schema(description = "커스텀 키보드 이름", example = "타건감 좋은 65키 키보드")
         String customName,
+
+        @Schema(description = "커스텀 키보드 타입", example = "65%")
         String customKeyboardType,
+
+        @Schema(description = "하우징(프레임) 이름", example = "TX-65")
         String housingName,
+
+        @Schema(description = "키캡 이름", example = "GMK Red Samurai")
         String keyCapName,
+
+        @Schema(description = "스위치 이름", example = "Gateron Ink Black v2")
         String switchName,
+
+        @Schema(description = "썸네일 이미지 URL", example = "https://example.com/custom/101.jpg")
         String thumbnail,
+
+        @Schema(description = "총 가격(원)", example = "375000.0")
         double price
 ) {
 

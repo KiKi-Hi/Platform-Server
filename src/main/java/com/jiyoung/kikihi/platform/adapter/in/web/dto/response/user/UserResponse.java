@@ -3,23 +3,40 @@ package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.user;
 import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.Role;
 import com.jiyoung.kikihi.platform.domain.user.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.UUID;
 
 /**
- * 유저 정보 반환
- * **/
-
+ * 유저 정보 반환 응답 DTO
+ **/
 @Builder
+@Schema(
+        name = "[응답][유저] 유저 정보 조회 Response",
+        description = "유저의 상세 정보를 반환하는 응답 DTO입니다."
+)
 public record UserResponse(
-         UUID id,
-         String name,
-         String email,
-         String phoneNumber,
-         Role role,
-         String profileImage,
-         Address address
+        @Schema(description = "사용자 UUID", example = "95ea60b2-f63b-434e-afc5-d5e5d6a505e7")
+        UUID id,
+
+        @Schema(description = "사용자 이름", example = "홍길동")
+        String name,
+
+        @Schema(description = "사용자 이메일", example = "honggildong@example.com")
+        String email,
+
+        @Schema(description = "휴대폰 번호", example = "010-1234-5678")
+        String phoneNumber,
+
+        @Schema(description = "권한(ROLE_USER, ROLE_ADMIN 등)", example = "ROLE_USER", implementation = Role.class)
+        Role role,
+
+        @Schema(description = "프로필 이미지 URL", example = "https://example.com/profile/95ea60b2.jpg")
+        String profileImage,
+
+        @Schema(description = "사용자 주소 정보", implementation = Address.class)
+        Address address
 ) {
     public static UserResponse of(
             UUID id,
