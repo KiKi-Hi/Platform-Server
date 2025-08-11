@@ -34,4 +34,6 @@ public interface BookmarkPort {
 
     Long countBookmarks();
 
+    void deleteAllBookmarks();
+
 }

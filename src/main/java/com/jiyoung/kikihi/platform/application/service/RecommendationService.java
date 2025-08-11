@@ -56,23 +56,23 @@ public class RecommendationService implements RecommendationUseCase {
             }
         }
 
-        /// 북마크 사이즈 조회
-        Long bookmarkSize = bookmarkPort.countBookmarks();
+        /// 북마크되어있는 상품의 사이즈 조회
+        Long bookmarkProductSize = bookmarkPort.countBookmarks();
 
         /// 커스텀을 만들지 않았다면,
-        if (bookmarkSize == 0) {
+        if (bookmarkProductSize == 0) {
             /// 북마크 없음: 전체 랜덤 추천
             return getRandomProducts();
-        } else if (bookmarkSize < RECOMMEND_COUNT) {
+        } else if (bookmarkProductSize < RECOMMEND_COUNT) {
             /// 8개 미만 : 북마크 기반(가중치) 2개 + 랜덤 K개
-            return recommendForFewBookmarks(bookmarkSize);
+            return recommendForFewBookmarks(bookmarkProductSize);
         }
-        else if (bookmarkSize < BOOKMARK_BOUND_1) {
+        else if (bookmarkProductSize < BOOKMARK_BOUND_1) {
             /// 20개 미만: 북마크 기반(가중치) 4개 + 랜덤 4개
-            return recommendForSmallBookmarks(bookmarkSize);
-        } else if (bookmarkSize <= BOOKMARK_BOUND_2) {
+            return recommendForSmallBookmarks(bookmarkProductSize);
+        } else if (bookmarkProductSize <= BOOKMARK_BOUND_2) {
             /// 20-50개: 북마크 기반(가중치) 6개 + 랜덤 2개
-            return recommendForRegularBookmarks(bookmarkSize);
+            return recommendForRegularBookmarks(bookmarkProductSize);
         } else {
             /// 51개 이상: 상위 50개 내에서 가중치 랜덤 비복원 8개
             return recommendForManyBookmarks();
@@ -131,13 +131,13 @@ public class RecommendationService implements RecommendationUseCase {
         List<ProductIdWithCount> topN = bookmarkPort.listTopBookmarks(Math.toIntExact(bookmarkSize));
 
         /// 가중치 바탕으로 조회
-        List<Product> products = weightedRandomProductsFromBookmarks(topN, 6);
+        List<Product> products = weightedRandomProductsFromBookmarks(topN, 4);
 
         /// 이미 존재하는 것 빼고 조회
-        List<String> productIds = getProductIds(products);
+        List<String> excludeIds = getProductIds(products);
 
         /// 랜덤으로 조회
-        List<Product> randomly = productPort.getRandomProductsExcludeIds(productIds,4);
+        List<Product> randomly = productPort.getRandomProductsExcludeIds(excludeIds,4);
 
         products.addAll(randomly);
         return products;
@@ -156,10 +156,10 @@ public class RecommendationService implements RecommendationUseCase {
         List<Product> products = weightedRandomProductsFromBookmarks(topN, 6);
 
         /// 이미 존재하는 것 빼고 조회
-        List<String> productIds = getProductIds(products);
+        List<String> excludeIds = getProductIds(products);
 
         /// 랜덤으로 조회
-        List<Product> randomly = productPort.getRandomProductsExcludeIds(productIds,2);
+        List<Product> randomly = productPort.getRandomProductsExcludeIds(excludeIds,2);
 
         products.addAll(randomly);
         return products;

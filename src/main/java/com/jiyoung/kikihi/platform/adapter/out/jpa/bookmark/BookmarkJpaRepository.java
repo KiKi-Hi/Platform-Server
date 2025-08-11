@@ -28,5 +28,11 @@ public interface BookmarkJpaRepository extends JpaRepository<BookmarkJpaEntity, 
             "order by count(b) desc ")
     List<ProductIdWithCount> findBookmarkAndCount(Pageable pageable);
 
+    /**
+     * 북마크 상품의 총 개수 조회
+     */
+    @Query("select COUNT(distinct b.productId) from BookmarkJpaEntity b")
+    Long countByProductId();
+
 
 }

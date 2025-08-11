@@ -100,7 +100,7 @@ public class BookmarkAdapter implements BookmarkPort {
      */
     @Override
     public Long countBookmarks() {
-        return repository.count();
+        return repository.countByProductId();
     }
 
     // =================
@@ -114,5 +114,13 @@ public class BookmarkAdapter implements BookmarkPort {
     @Override
     public void deleteBookmarkById(Long bookmarkId) {
         repository.deleteById(bookmarkId);
+    }
+
+    /**
+     * 북마크 전체 삭제하기
+     */
+    @Override
+    public void deleteAllBookmarks() {
+        repository.deleteAll();
     }
 }
