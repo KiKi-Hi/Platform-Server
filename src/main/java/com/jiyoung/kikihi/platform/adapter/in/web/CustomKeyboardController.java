@@ -3,7 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
@@ -42,11 +42,11 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      */
     @PostMapping()
     public ApiResponse<Void> createCustomKeyboard(
-            @RequestBody @Valid CustomKeyBoardRequest request,
+            @RequestBody @Valid CustomKeyboardRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 서비스
-        service.saveCustomKeyBoard(request, principalDetails.getId());
+        service.saveCustomKeyboard(request, principalDetails.getId());
 
         return ApiResponse.created();
     }
@@ -57,11 +57,11 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * @param customKeyboardId 키보드 상세 조회 ID
      */
     @GetMapping("/{customKeyboardId}")
-    public ApiResponse<CustomKeyboardDetailResponse> getCustomKeyBoard(
+    public ApiResponse<CustomKeyboardDetailResponse> getCustomKeyboard(
             @PathVariable Long customKeyboardId
     ) {
         /// 서비스
-        CustomKeyboardWithName keyBoard = service.getCustomKeyBoard(customKeyboardId);
+        CustomKeyboardWithName keyBoard = service.getCustomKeyboard(customKeyboardId);
 
         /// DTO 변경
         var response = CustomKeyboardDetailResponse.from(keyBoard);
@@ -81,7 +81,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     ) {
 
         /// 서비스
-        Slice<CustomKeyboardWithName> boards = service.getCustomKeyBoards(principalDetails.getId());
+        Slice<CustomKeyboardWithName> boards = service.getCustomKeyboards(principalDetails.getId());
 
         /// DTO로 변환
         List<CustomKeyboardListResponse> content = boards.getContent().stream()
@@ -102,7 +102,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * 키보드 배열 종류 조회
      */
     @GetMapping("/layout")
-    public ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyBoardLayout() {
+    public ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyboardLayout() {
 
         /// 서비스
         List<CustomKeyboardLayout> layouts = service.getKeyboardLayouts();
@@ -117,7 +117,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * 배열에 맞는 상품 조회
      */
     @GetMapping("/products")
-    public ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyBoardProductsByLayout(
+    public ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyboardProductsByLayout(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam String categoryId,
             @RequestParam CustomKeyboardLayout layout,
@@ -151,12 +151,12 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * @param principalDetails  유저
      */
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteCustomKeyBoard(
+    public ApiResponse<Void> deleteCustomKeyboard(
             @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 서비스
-        service.deleteCustomKeyBoard(id, principalDetails.getId());
+        service.deleteCustomKeyboard(id, principalDetails.getId());
 
         /// 응답
         return ApiResponse.deleted();

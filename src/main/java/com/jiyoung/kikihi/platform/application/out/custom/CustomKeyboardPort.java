@@ -1,34 +1,31 @@
 package com.jiyoung.kikihi.platform.application.out.custom;
 
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboard;
-import com.jiyoung.kikihi.platform.domain.product.Product;
 import org.springframework.data.domain.Slice;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public interface CustomKeyboardPort {
 
     /// 저장
-    CustomKeyboard saveCustomKeyBoard(CustomKeyboard customKeyBoard);
+    CustomKeyboard saveCustomKeyboard(CustomKeyboard customKeyboard);
 
     /// 조회
     // 상세 조회
-    Optional<CustomKeyboard> loadCustomKeyBoard(Long id);
+    Optional<CustomKeyboard> loadCustomKeyboard(Long id);
 
     // 목록 조회
-    Slice<CustomKeyboard> loadCustomKeyBoardsByUserID(UUID userID);
+    Slice<CustomKeyboard> loadCustomKeyboardsByUserID(UUID userID);
 
     // 존재 여부 판단
-    boolean existCustomKeyBoardByUserIdAndId(UUID userId, Long id);
+    boolean existCustomKeyboardByUserIdAndId(UUID userId, Long id);
 
     /// 수정
-    void updateCustomKeyBoard(CustomKeyboard customKeyBoard);
+    void updateCustomKeyboard(CustomKeyboard customKeyboard);
 
 
     /// 삭제
-    void deleteCustomKeyBoard(Long id);
+    void deleteCustomKeyboard(Long id);
 
 }

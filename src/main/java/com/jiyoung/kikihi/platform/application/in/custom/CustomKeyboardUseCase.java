@@ -1,6 +1,6 @@
 package com.jiyoung.kikihi.platform.application.in.custom;
 
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboard;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardWithName;
@@ -23,23 +23,23 @@ import java.util.*;
 public interface CustomKeyboardUseCase {
 
     /// 생성
-    CustomKeyboard saveCustomKeyBoard(CustomKeyBoardRequest request, UUID userId);
+    CustomKeyboard saveCustomKeyboard(CustomKeyboardRequest request, UUID userId);
 
     /// 조회
     // 배열 조회
     List<CustomKeyboardLayout> getKeyboardLayouts();
 
     // 나의 커스텀 키보드 목록 조회
-    Slice<CustomKeyboardWithName> getCustomKeyBoards(UUID userId);
+    Slice<CustomKeyboardWithName> getCustomKeyboards(UUID userId);
 
     // 나의 커스텀 키보드 목록 조회
-    CustomKeyboardWithName getCustomKeyBoard(Long customKeyBoardId);
+    CustomKeyboardWithName getCustomKeyboard(Long customKeyboardId);
 
     // 부품 추가하기
 
 
     /// 삭제
-    void deleteCustomKeyBoard(Long customKeyBoardId, UUID userId);
+    void deleteCustomKeyboard(Long customKeyboardId, UUID userId);
 
 
 }

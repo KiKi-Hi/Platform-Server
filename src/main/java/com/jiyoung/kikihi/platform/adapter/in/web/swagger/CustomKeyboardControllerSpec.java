@@ -3,7 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
@@ -45,7 +45,7 @@ public interface CustomKeyboardControllerSpec {
             )
     )
     ApiResponse<Void> createCustomKeyboard(
-            @RequestBody @Valid CustomKeyBoardRequest request,
+            @RequestBody @Valid CustomKeyboardRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 
@@ -57,7 +57,7 @@ public interface CustomKeyboardControllerSpec {
             summary = "커스텀 키보드 상세 조회 API",
             description = "커스텀 키보드를 상세 조회합니다."
     )
-    ApiResponse<CustomKeyboardDetailResponse> getCustomKeyBoard(
+    ApiResponse<CustomKeyboardDetailResponse> getCustomKeyboard(
             @PathVariable Long customKeyboardId);
 
 
@@ -80,7 +80,7 @@ public interface CustomKeyboardControllerSpec {
             summary = "키보드 배열 목록 조회 API",
             description = "키보드 배열의 목록을 조회합니다."
     )
-    ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyBoardLayout();
+    ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyboardLayout();
 
 
     /**
@@ -91,7 +91,7 @@ public interface CustomKeyboardControllerSpec {
             summary = "키보드 배열에 따른 가능한 부품 조회 API",
             description = "키보드 배열에 따라서 가능한 상품 목록을 조회합니다. 유저의 정보가 들어온다면 북마크 여부 또한 제공합니다."
     )
-    ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyBoardProductsByLayout(
+    ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyboardProductsByLayout(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam String categoryId,
             @RequestParam CustomKeyboardLayout layout,
@@ -103,7 +103,7 @@ public interface CustomKeyboardControllerSpec {
             summary = "커스텀 키보드 삭제 API",
             description = "JWT를 기반으로 커스텀 키보드를 삭제합니다."
     )
-    ApiResponse<Void> deleteCustomKeyBoard(
+    ApiResponse<Void> deleteCustomKeyboard(
             @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );

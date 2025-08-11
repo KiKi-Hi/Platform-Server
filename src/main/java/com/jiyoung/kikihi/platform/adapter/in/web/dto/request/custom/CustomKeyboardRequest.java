@@ -12,7 +12,7 @@ import lombok.Data;
         name = "[요청][커스텀] 커스텀 키보드 생성 Request",
         description = "사용자가 직접 커스텀 키보드를 생성할 때 사용하는 요청 DTO입니다."
 )
-public class CustomKeyBoardRequest {
+public class CustomKeyboardRequest {
 
     @Schema(description = "커스텀 키보드 레이아웃 정보", implementation = CustomKeyboardLayout.class)
     private CustomKeyboardLayout layout;
