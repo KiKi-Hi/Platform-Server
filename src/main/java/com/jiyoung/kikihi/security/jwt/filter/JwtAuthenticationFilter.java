@@ -110,6 +110,11 @@
                 return false;
             }
 
+            /// 추천 상품은 회원/비회원 구분해야되기에 모두 필터를 타도록 설정
+            if (request.getRequestURI().startsWith("/api/v1/recommend")) {
+                return false;
+            }
+
             /// null 인 것 해결
             return requestMatcherHolder.getRequestMatchersByMinRole(null)
                     .matches(request);

@@ -34,6 +34,9 @@ public class RequestMatcherHolder {
             // 상품 관련
             new RequestInfo(GET, "/api/v1/products/**", null),
 
+            //추천 관련
+            new RequestInfo(GET, "/api/v1/recommend/**", null),
+
             // static resources
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),

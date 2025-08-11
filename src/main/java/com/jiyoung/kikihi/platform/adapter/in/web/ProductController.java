@@ -105,19 +105,5 @@ public class ProductController implements ProductControllerSpec {
 
         return ApiResponse.ok(product);
     }
-
-    /**
-     * 상품 추천 API
-     */
-    @GetMapping("/recommendation")
-    public ApiResponse<List<ProductListResponse>> getProductRecommendation() {
-
-        // 북마크 인기순, 서비스 호출
-        List<Product> recommendation = productService.getProductsByRecommendation();
-
-        // 응답 주기
-        return ApiResponse.ok(ProductListResponse.from(recommendation));
-    }
-
 }
 

@@ -57,10 +57,6 @@ class ProductServiceIntTest {
     private ProductDocument product2;
     private ProductDocument product3;
     private ProductDocument product4;
-    private ProductDocument product5;
-    private ProductDocument product6;
-    private ProductDocument product7;
-    private ProductDocument product8;
 
     private final UUID id1 = UUID.fromString("12345678-aaaa-bbbb-cccc-123456789abc");
     private final UUID id2 = UUID.fromString("01234567-aaaa-bbbb-cccc-123456789abc");
@@ -513,51 +509,6 @@ class ProductServiceIntTest {
         }
 
     }
-
-
-    @Nested()
-    @DisplayName("북마크에 따른 인기 순서 조회")
-    class recommendation {
-
-        @Test
-        public void loadRecommendation_preview() throws Exception {
-
-            //given
-
-            // 상품1에 3명의 유저가 북마크 설정
-            var request1 = getBookmarkRequest(user1.getId(), product1.getId());
-            var request2 = getBookmarkRequest(user2.getId(), product1.getId());
-            var request3 = getBookmarkRequest(user3.getId(), product1.getId());
-
-            // 상품 2에 2명의 유저가 북마크 설정
-            var request4 = getBookmarkRequest(user1.getId(), product2.getId());
-            var request5 = getBookmarkRequest(user2.getId(), product2.getId());
-
-            // 상품 3에 1명의 유저가 북마크 설정
-            var request6 = getBookmarkRequest(user3.getId(), product3.getId());
-
-            // 상품 4에 0명의 유저가 북마크 설정
-
-            // 북마크 저장
-            List.of(request1, request2, request3, request4, request5, request6)
-                    .forEach(req -> bookmarkService.saveBookmark(req));
-
-            //when
-            List<Product> recommendation = sut.getProductsByRecommendation();
-
-            //then
-            // 추천 상품 개수 검증
-            Assertions.assertEquals(8, recommendation.size());
-
-            // 추천 순서(북마크 개수 내림차순) 검증
-            Assertions.assertEquals(product1.getId(), recommendation.get(0).getId()); // 3명
-            Assertions.assertEquals(product2.getId(), recommendation.get(1).getId()); // 2명
-            Assertions.assertEquals(product3.getId(), recommendation.get(2).getId()); // 1명
-
-        }
-
-    }
-
 
     /**
      * 공통 북마크 DTO 생성 함수
