@@ -1,6 +1,7 @@
 package com.jiyoung.kikihi.global.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.micrometer.common.lang.Nullable;
 import org.springframework.http.HttpStatus;
 
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * API 응답을 표준화하기 위한 레코드 클래스입니다.
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ApiResponse<T>(
         @JsonIgnore
         HttpStatus httpStatus,
