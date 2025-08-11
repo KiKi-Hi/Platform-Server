@@ -1,7 +1,7 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
@@ -22,9 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;

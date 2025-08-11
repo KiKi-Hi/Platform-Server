@@ -16,7 +16,7 @@ public interface AuthControllerSpec {
             summary = "토큰 재발급 API",
             description = "RefeshToken을 바탕으로 AccessToken을 재발급 할 수 있습니다."
     )
-    ApiResponse<String> reissue(
+    ApiResponse<Void> reissue(
             HttpServletRequest request,
             HttpServletResponse response);
 
@@ -24,7 +24,7 @@ public interface AuthControllerSpec {
             summary = "로그아웃 API",
             description = "쿠키가 존재하고, 카카오/구글을 통해 로그인한 회원에서 가능합니다."
     )
-    ApiResponse<String> logout(
+    ApiResponse<Void> logout(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             HttpServletRequest request,
             HttpServletResponse response);

@@ -23,11 +23,11 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
     // =================
     /**
      * DB에 저장하는 함수 로직
-     * @param customKeyBoard    저장할 도메인 객체
+     * @param customKeyboard    저장할 도메인 객체
      */
     @Override
-    public CustomKeyboard saveCustomKeyBoard(CustomKeyboard customKeyBoard) {
-        var entity = CustomKeyboardJpaEntity.from(customKeyBoard);
+    public CustomKeyboard saveCustomKeyboard(CustomKeyboard customKeyboard) {
+        var entity = CustomKeyboardJpaEntity.from(customKeyboard);
 
         return repository.save(entity)
                 .toDomain();
@@ -43,7 +43,7 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      * @param id    상세 조회할 ID
      */
     @Override
-    public Optional<CustomKeyboard> loadCustomKeyBoard(Long id) {
+    public Optional<CustomKeyboard> loadCustomKeyboard(Long id) {
         return repository.findById(id)
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
@@ -53,7 +53,7 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      * @param userID    유저 ID
      */
     @Override
-    public Slice<CustomKeyboard> loadCustomKeyBoardsByUserID(UUID userID) {
+    public Slice<CustomKeyboard> loadCustomKeyboardsByUserID(UUID userID) {
         return repository.findKeyboardsByUserId(userID)
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
@@ -64,12 +64,12 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      * @param id        커스텀 키보드 ID
      */
     @Override
-    public boolean existCustomKeyBoardByUserIdAndId(UUID userId, Long id) {
+    public boolean existCustomKeyboardByUserIdAndId(UUID userId, Long id) {
         return repository.existsByUserIdAndId(userId, id);
     }
 
     @Override
-    public Optional<CustomKeyboard> loadCustomKeyBoardByUserId(UUID userId) {
+    public Optional<CustomKeyboard> loadCustomKeyboardByUserId(UUID userId) {
         return repository.findByUserId(userId)
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
@@ -80,10 +80,10 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
 
     /**
      * 수정
-     * @param customKeyBoard    수정할 도메인
+     * @param customKeyboard    수정할 도메인
      */
     @Override
-    public void updateCustomKeyBoard(CustomKeyboard customKeyBoard) {
+    public void updateCustomKeyboard(CustomKeyboard customKeyboard) {
 
     }
 
@@ -96,7 +96,7 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      * @param id    삭제할 ID
      */
     @Override
-    public void deleteCustomKeyBoard(Long id) {
+    public void deleteCustomKeyboard(Long id) {
         repository.deleteById(id);
     }
 }

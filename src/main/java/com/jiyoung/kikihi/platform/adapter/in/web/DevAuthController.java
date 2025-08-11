@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@Profile("prod")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -33,7 +32,6 @@ public class DevAuthController implements DevAuthControllerSpec {
 
     // 테스트용으로 만든 UUID
     private final UUID id = UUID.fromString("12345678-aaaa-bbbb-cccc-123456789abc");
-
 
 
     @PostMapping("/dev-login")
@@ -62,7 +60,7 @@ public class DevAuthController implements DevAuthControllerSpec {
         tokenService.createAccessToken(httpServletResponse, authentication);
         tokenService.createRefreshToken(httpServletResponse, authentication);
 
-        return ApiResponse.ok("토큰이 쿠키로 발급되었습니다.");
+        return ApiResponse.created();
     }
 
     /// 임시 유저 생성

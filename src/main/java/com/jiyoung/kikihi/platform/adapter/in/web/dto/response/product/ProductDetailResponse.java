@@ -1,6 +1,7 @@
 package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product;
 
 import com.jiyoung.kikihi.platform.domain.product.Product;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.List;
@@ -24,19 +25,48 @@ import java.util.List;
  */
 
 @Builder
+@Schema(
+        name = "[응답][상품] 상품 상세 조회 Response",
+        description = "상품 상세 정보를 반환하는 응답 DTO입니다."
+)
 public record ProductDetailResponse(
+        @Schema(description = "상품 아이디", example = "101")
         String id,
+
+        @Schema(description = "상품 썸네일 이미지 URL", example = "https://example.com/product/101.jpg")
         String thumbnail,
+
+        @Schema(description = "제조사명", example = "독거미")
         String manufacturerName,
+
+        @Schema(description = "카테고리명", example = "keyboard")
         String category,
+
+        @Schema(description = "제품명", example = "독거미 Aula F99")
         String productName,
+
+        @Schema(description = "할인율 (예: 0.15=15%)", example = "0.15")
         double discountRate,
+
+        @Schema(description = "정상가(원)", example = "599000.0")
         double originalPrice,
+
+        @Schema(description = "할인가(원)", example = "509000.0")
         double discountedPrice,
+
+        @Schema(description = "북마크(좋아요)한 상품 여부", example = "true")
         boolean likedByMe,
+
+        @Schema(description = "배송 정보 응답 DTO", implementation = DeliveryInfoResponse.class)
         DeliveryInfoResponse deliveryInfo,
+
+        @Schema(description = "어울리는 추천 상품 목록", implementation = RecommendedItemResponse.class)
         List<RecommendedItemResponse> recommendedItems,
+
+        @Schema(description = "상품 유의사항", example = "도착일은 배송지나 배송사 사정으로 변경 또는 지연될 수 있습니다.")
         String cautions,
+
+        @Schema(description = "상세 정보 이미지 URL 목록", example = "[\"https://example.com/img1.jpg\", \"https://example.com/img2.jpg\"]")
         List<String> imageUrl
 ) {
 

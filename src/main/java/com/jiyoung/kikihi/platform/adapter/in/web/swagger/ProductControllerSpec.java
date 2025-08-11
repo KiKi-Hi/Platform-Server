@@ -3,7 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CategoryType;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.product.CategoryType;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;

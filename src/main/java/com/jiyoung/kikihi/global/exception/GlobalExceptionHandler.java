@@ -16,6 +16,10 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.NoSuchElementException;
 
+/**
+ * 전역 예외 처리 핸들러
+ * - @Hidden 은 스웨거에서 인식 되지 않도록 에러 수정용
+ */
 
 @Slf4j
 @Hidden

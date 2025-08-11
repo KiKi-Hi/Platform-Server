@@ -54,7 +54,7 @@ public class RecommendationService implements RecommendationUseCase {
         if (userId != null) {
 
             /// 커스텀을 제작했다면, 비슷한 특성의 상품들을 추천
-            Optional<CustomKeyboard> customKeyboard = customPort.loadCustomKeyBoardByUserId(userId);
+            Optional<CustomKeyboard> customKeyboard = customPort.loadCustomKeyboardByUserId(userId);
 
             if (customKeyboard.isPresent()) {
                 return recommendForCustomUser(customKeyboard.get());

@@ -4,6 +4,17 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 애플리케이션 전역에서 사용하는 에러 코드 Enum입니다.
+ * 각 에러는 고유 코드, HTTP 상태, 메시지를 포함합니다.
+ *
+ * 400 : 잘못된 요청 에러
+ * 401 : 로그인 관련 에러
+ * 403 : 권한 부족 관련 에러
+ * 404 : 존재하지 않는 에러
+ * 409 : Conflict 관련 에러
+ * 500 : 서버 문제
+ */
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {

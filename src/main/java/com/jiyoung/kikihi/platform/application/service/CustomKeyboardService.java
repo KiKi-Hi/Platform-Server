@@ -1,7 +1,7 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import com.jiyoung.kikihi.platform.application.in.custom.CustomKeyboardUseCase;
 import com.jiyoung.kikihi.platform.application.out.custom.CustomKeyboardPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;
@@ -45,7 +45,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
      * @param request 키보드 저장 DTO
      */
     @Override
-    public CustomKeyboard saveCustomKeyBoard(CustomKeyBoardRequest request, UUID userId) {
+    public CustomKeyboard saveCustomKeyboard(CustomKeyboardRequest request, UUID userId) {
 
         /// 상품 예외 처리
         var frameProduct = getProduct(request.getHousingId());
@@ -53,10 +53,10 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         var keyCapProduct = getProduct(request.getKeyCapId());
 
         /// 객체 생성
-        var customKeyBoard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), request.getName(), "thumbnail");
+        var customKeyboard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), request.getName(), "thumbnail");
 
         /// 저장 후 리턴
-        return port.saveCustomKeyBoard(customKeyBoard);
+        return port.saveCustomKeyboard(customKeyboard);
     }
 
     // =================
@@ -74,13 +74,13 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     }
 
     @Override
-    public Slice<CustomKeyboardWithName> getCustomKeyBoards(UUID userId) {
+    public Slice<CustomKeyboardWithName> getCustomKeyboards(UUID userId) {
 
         /// 유저 예외 처리
         User user = getUser(userId);
 
         /// 커스텀 키보드 목록 조회
-        Slice<CustomKeyboard> keyboards = port.loadCustomKeyBoardsByUserID(user.getId());
+        Slice<CustomKeyboard> keyboards = port.loadCustomKeyboardsByUserID(user.getId());
 
         /// 비었다면 빈 값 출력
         if (keyboards == null) {
@@ -99,7 +99,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         Map<String, Product> productMap = getProductsByIds(allProductIds);
 
         /// 결과 변환
-        List<CustomKeyboardWithName> customKeyBoards = keyboards.stream()
+        List<CustomKeyboardWithName> customKeyboards = keyboards.stream()
                 .map(keyboard -> {
                     var frameProduct = productMap.get(keyboard.getFrameId());
                     var switchProduct = productMap.get(keyboard.getSwitchId());
@@ -109,20 +109,20 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
                 })
                 .toList();
 
-        return new SliceImpl<>(customKeyBoards, keyboards.getPageable(), keyboards.hasNext());
+        return new SliceImpl<>(customKeyboards, keyboards.getPageable(), keyboards.hasNext());
     }
 
 
 
     /**
      * 커스텀 키보드 상세 조회하기
-     * @param customKeyBoardId  조회할 커스텀 키보드 ID
+     * @param customKeyboardId  조회할 커스텀 키보드 ID
      */
     @Override
-    public CustomKeyboardWithName getCustomKeyBoard(Long customKeyBoardId) {
+    public CustomKeyboardWithName getCustomKeyboard(Long customKeyboardId) {
 
         /// 예외 처리 후 응답,
-        CustomKeyboard keyBoard = getKeyBoard(customKeyBoardId);
+        CustomKeyboard keyBoard = getKeyboard(customKeyboardId);
 
         /// 개별 상품 조회
         // TODO! 한번에 조회하도록 쿼리문 수정
@@ -141,13 +141,13 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
 
     /**
      * 커스텀 키보드 삭제
-     * @param customKeyBoardId 삭제할 커스텀 ID
+     * @param customKeyboardId 삭제할 커스텀 ID
      */
     @Override
-    public void deleteCustomKeyBoard(Long customKeyBoardId, UUID userId) {
+    public void deleteCustomKeyboard(Long customKeyboardId, UUID userId) {
 
         /// 해당 유저의 커스텀 키보드인지 체크
-        boolean checked = port.existCustomKeyBoardByUserIdAndId(userId, customKeyBoardId);
+        boolean checked = port.existCustomKeyboardByUserIdAndId(userId, customKeyboardId);
 
         /// 키보드가 요청자의 것이 아니라면 에러 발생
         if (!checked){
@@ -155,7 +155,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         }
 
         /// 권한이 정상이기에 삭제
-        port.deleteCustomKeyBoard(customKeyBoardId);
+        port.deleteCustomKeyboard(customKeyboardId);
 
     }
 
@@ -194,10 +194,10 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
 
     /**
      * 커스텀 키보드 조회 함수
-     * @param customKeyBoardId  커스텀 키보드 ID
+     * @param customKeyboardId  커스텀 키보드 ID
      */
-    private CustomKeyboard getKeyBoard(Long customKeyBoardId) {
-        return port.loadCustomKeyBoard(customKeyBoardId)
+    private CustomKeyboard getKeyboard(Long customKeyboardId) {
+        return port.loadCustomKeyboard(customKeyboardId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.CUSTOM_NOT_FOUND.getMessage()));
     }
 

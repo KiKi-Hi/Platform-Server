@@ -1,8 +1,8 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocument;
 import com.jiyoung.kikihi.platform.adapter.out.mongo.product.ProductDocumentRepository;
@@ -177,12 +177,12 @@ class BookmarkServiceIntTest {
             });
 
             // when
-            Slice<BookmarkResponse> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test", pageable);
+            Slice<BookmarkListResponse> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test", pageable);
 
             // then
             Assertions.assertThat(bookmarks).hasSize(3);
             Assertions.assertThat(bookmarks)
-                    .extracting(BookmarkResponse::products)
+                    .extracting(BookmarkListResponse::products)
                     .extracting(ProductListResponse::id)
                     .containsExactlyInAnyOrder(product1.getId(), product2.getId(), product3.getId());
 
@@ -206,16 +206,16 @@ class BookmarkServiceIntTest {
             });
 
             // when
-            Slice<BookmarkResponse> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test", pageable);
+            Slice<BookmarkListResponse> bookmarks = sut.loadBookmarksByUserIdAndCategory(user.getId(), "test", pageable);
 
             // then
             Assertions.assertThat(bookmarks).hasSize(3);
             Assertions.assertThat(bookmarks)
-                    .extracting(BookmarkResponse::products)
+                    .extracting(BookmarkListResponse::products)
                     .extracting(ProductListResponse::id)
                     .containsExactlyInAnyOrder(product1.getId(), product2.getId(), product3.getId());
             Assertions.assertThat(bookmarks)
-                    .extracting(BookmarkResponse::products)
+                    .extracting(BookmarkListResponse::products)
                     .extracting(ProductListResponse::likedByMe)
                     .containsExactlyInAnyOrder(true, true, true);
 

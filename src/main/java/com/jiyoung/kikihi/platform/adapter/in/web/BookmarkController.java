@@ -3,9 +3,9 @@ package com.jiyoung.kikihi.platform.adapter.in.web;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CategoryType;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.product.CategoryType;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.swagger.BookmarkControllerSpec;
 import com.jiyoung.kikihi.platform.application.in.bookmark.BookmarkUseCase;
 import com.jiyoung.kikihi.security.oauth2.domain.PrincipalDetails;
@@ -47,7 +47,7 @@ public class BookmarkController implements BookmarkControllerSpec {
         service.saveBookmark(request);
 
         // 리턴
-        return ApiResponse.created("정상적으로 생성되었습니다.");
+        return ApiResponse.created();
     }
 
     /**
@@ -58,7 +58,7 @@ public class BookmarkController implements BookmarkControllerSpec {
      * @return 북마크 목록 응답 DTO 리스트
      */
     @GetMapping
-    public ApiResponse<SliceResponse<BookmarkResponse>> loadBookmarkByCategory(
+    public ApiResponse<SliceResponse<BookmarkListResponse>> loadBookmarkByCategory(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CategoryType category,
             PageRequest pageRequest) {
@@ -74,10 +74,10 @@ public class BookmarkController implements BookmarkControllerSpec {
         UUID userId = principalDetails.getId();
 
         // 서비스 계층
-        Slice<BookmarkResponse> responses = service.loadBookmarksByUserIdAndCategory(userId, category.getValue(), pageable);
+        Slice<BookmarkListResponse> responses = service.loadBookmarksByUserIdAndCategory(userId, category.getValue(), pageable);
 
         // SliceDTO 처리
-        SliceResponse<BookmarkResponse> sliceResponse = SliceResponse.from(responses);
+        SliceResponse<BookmarkListResponse> sliceResponse = SliceResponse.from(responses);
 
         return ApiResponse.ok(sliceResponse);
     }
@@ -96,6 +96,6 @@ public class BookmarkController implements BookmarkControllerSpec {
         // 서비스 계층
         service.deleteBookmarkById(bookmarkId, userId);
 
-        return ApiResponse.ok("성공적으로 삭제 되었습니다.");
+        return ApiResponse.deleted();
     }
 }
