@@ -22,7 +22,7 @@ public class AuthController implements AuthControllerSpec {
     private final JwtTokenUseCase tokenService;
 
     @PostMapping("/reissue")
-    public ApiResponse<String> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ApiResponse<Void> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         /// 재발급 하기
         tokenService.reissueByRefreshToken(request, response);
@@ -31,7 +31,7 @@ public class AuthController implements AuthControllerSpec {
     }
 
     @PostMapping("/logout")
-    public ApiResponse<String> logout(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletRequest request, HttpServletResponse response) {
+    public ApiResponse<Void> logout(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpServletRequest request, HttpServletResponse response) {
 
         // 유저
         UUID userId = principalDetails.getUser().getId();
