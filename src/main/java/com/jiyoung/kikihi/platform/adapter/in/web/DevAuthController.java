@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@Profile("prod")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
