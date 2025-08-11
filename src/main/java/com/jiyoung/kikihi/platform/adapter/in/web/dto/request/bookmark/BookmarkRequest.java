@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.adapter.in.web.dto.request;
+package com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark;
 
 import lombok.Builder;
 import lombok.Data;

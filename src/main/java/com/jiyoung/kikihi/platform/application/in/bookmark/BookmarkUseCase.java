@@ -1,6 +1,6 @@
 package com.jiyoung.kikihi.platform.application.in.bookmark;
 
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.platform.domain.bookmark.Bookmark;
 import org.springframework.data.domain.Pageable;

@@ -3,8 +3,8 @@ package com.jiyoung.kikihi.platform.adapter.in.web;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CategoryType;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.product.CategoryType;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.swagger.BookmarkControllerSpec;
 import com.jiyoung.kikihi.platform.application.in.bookmark.BookmarkUseCase;
@@ -47,7 +47,7 @@ public class BookmarkController implements BookmarkControllerSpec {
         service.saveBookmark(request);
 
         // 리턴
-        return ApiResponse.created("정상적으로 생성되었습니다.");
+        return ApiResponse.created();
     }
 
     /**

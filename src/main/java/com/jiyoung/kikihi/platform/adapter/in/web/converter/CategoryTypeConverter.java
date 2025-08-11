@@ -1,7 +1,7 @@
-package com.jiyoung.kikihi.platform.adapter.in.web.convertor;
+package com.jiyoung.kikihi.platform.adapter.in.web.converter;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CategoryType;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.product.CategoryType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * 파라미터 변환을 위한 컨버터입니다.
  */
 @Component
-public class CategoryTypeConvertor implements Converter<String, CategoryType> {
+public class CategoryTypeConverter implements Converter<String, CategoryType> {
 
     /**
      * getCode를 바탕으로 4DX를 인식하고, 대소문자 관계없이 비교해서 바꾸는 형식입니다.

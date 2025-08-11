@@ -1,7 +1,7 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.BookmarkRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.bookmark.BookmarkResponse;
 import com.jiyoung.kikihi.platform.application.in.bookmark.BookmarkUseCase;
 import com.jiyoung.kikihi.platform.application.out.bookmark.BookmarkPort;

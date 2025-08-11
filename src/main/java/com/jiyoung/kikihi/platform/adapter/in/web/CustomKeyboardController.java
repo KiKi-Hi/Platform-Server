@@ -3,7 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
@@ -41,14 +41,14 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * @param principalDetails 유저
      */
     @PostMapping()
-    public ApiResponse<String> createCustomKeyboard(
+    public ApiResponse<Void> createCustomKeyboard(
             @RequestBody @Valid CustomKeyBoardRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         /// 서비스
         service.saveCustomKeyBoard(request, principalDetails.getId());
 
-        return ApiResponse.created("정상적으로 생성되었습니다.");
+        return ApiResponse.created();
     }
 
     /**
@@ -67,7 +67,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         var response = CustomKeyboardDetailResponse.from(keyBoard);
 
         /// 결과 응답
-        return ApiResponse.created(response);
+        return ApiResponse.ok(response);
     }
 
     /**
@@ -151,7 +151,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * @param principalDetails  유저
      */
     @DeleteMapping("/{id}")
-    public ApiResponse<String> deleteCustomKeyBoard(
+    public ApiResponse<Void> deleteCustomKeyBoard(
             @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
@@ -159,7 +159,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         service.deleteCustomKeyBoard(id, principalDetails.getId());
 
         /// 응답
-        return ApiResponse.deleted("정상적으로 삭제되었습니다.");
+        return ApiResponse.deleted();
 
     }
 }

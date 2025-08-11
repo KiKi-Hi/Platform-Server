@@ -1,6 +1,6 @@
 package com.jiyoung.kikihi.platform.application.in.custom;
 
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboard;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardWithName;

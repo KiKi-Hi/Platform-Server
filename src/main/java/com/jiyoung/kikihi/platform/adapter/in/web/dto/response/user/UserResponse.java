@@ -1,11 +1,10 @@
-package com.jiyoung.kikihi.platform.adapter.in.web.dto.response;
+package com.jiyoung.kikihi.platform.adapter.in.web.dto.response.user;
 
 import com.jiyoung.kikihi.platform.domain.user.Address;
 import com.jiyoung.kikihi.platform.domain.user.Role;
 import com.jiyoung.kikihi.platform.domain.user.User;
 import lombok.Builder;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**

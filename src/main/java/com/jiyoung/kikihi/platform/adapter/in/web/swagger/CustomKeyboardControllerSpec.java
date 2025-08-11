@@ -3,7 +3,7 @@ package com.jiyoung.kikihi.platform.adapter.in.web.swagger;
 import com.jiyoung.kikihi.global.response.ApiResponse;
 import com.jiyoung.kikihi.global.response.page.PageRequest;
 import com.jiyoung.kikihi.global.response.page.SliceResponse;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import com.jiyoung.kikihi.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
@@ -44,7 +44,7 @@ public interface CustomKeyboardControllerSpec {
                     )
             )
     )
-    ApiResponse<String> createCustomKeyboard(
+    ApiResponse<Void> createCustomKeyboard(
             @RequestBody @Valid CustomKeyBoardRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
@@ -103,7 +103,7 @@ public interface CustomKeyboardControllerSpec {
             summary = "커스텀 키보드 삭제 API",
             description = "JWT를 기반으로 커스텀 키보드를 삭제합니다."
     )
-    ApiResponse<String> deleteCustomKeyBoard(
+    ApiResponse<Void> deleteCustomKeyBoard(
             @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );

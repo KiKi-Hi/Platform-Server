@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.adapter.in.web.dto.request;
+package com.jiyoung.kikihi.platform.adapter.in.web.dto.request.product;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;

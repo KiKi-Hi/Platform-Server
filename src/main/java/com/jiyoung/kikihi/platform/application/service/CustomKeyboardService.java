@@ -1,7 +1,7 @@
 package com.jiyoung.kikihi.platform.application.service;
 
 import com.jiyoung.kikihi.global.response.ErrorCode;
-import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.CustomKeyBoardRequest;
+import com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom.CustomKeyBoardRequest;
 import com.jiyoung.kikihi.platform.application.in.custom.CustomKeyboardUseCase;
 import com.jiyoung.kikihi.platform.application.out.custom.CustomKeyboardPort;
 import com.jiyoung.kikihi.platform.application.out.product.ProductPort;

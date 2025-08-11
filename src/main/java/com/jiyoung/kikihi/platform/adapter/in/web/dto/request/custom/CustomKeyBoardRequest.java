@@ -1,4 +1,4 @@
-package com.jiyoung.kikihi.platform.adapter.in.web.dto.request;
+package com.jiyoung.kikihi.platform.adapter.in.web.dto.request.custom;
 
 import com.jiyoung.kikihi.platform.domain.custom.CustomKeyboardLayout;
 import lombok.Data;
