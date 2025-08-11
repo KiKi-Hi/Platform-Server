@@ -22,7 +22,7 @@ public interface CustomKeyboardPort {
     boolean existCustomKeyboardByUserIdAndId(UUID userId, Long id);
 
     // 존재 여부 판단
-    Optional<CustomKeyboard> loadCustomKeyBoardByUserId(UUID userId);
+    Optional<CustomKeyboard> loadCustomKeyboardByUserId(UUID userId);
 
     /// 수정
     void updateCustomKeyboard(CustomKeyboard customKeyboard);

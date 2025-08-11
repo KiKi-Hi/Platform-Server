@@ -54,8 +54,6 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
      */
     @Override
     public Slice<CustomKeyboard> loadCustomKeyboardsByUserID(UUID userID) {
-        return repository.findByUserId(userID)
-    public Slice<CustomKeyboard> loadCustomKeyBoardsByUserID(UUID userID) {
         return repository.findKeyboardsByUserId(userID)
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
@@ -71,7 +69,7 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
     }
 
     @Override
-    public Optional<CustomKeyboard> loadCustomKeyBoardByUserId(UUID userId) {
+    public Optional<CustomKeyboard> loadCustomKeyboardByUserId(UUID userId) {
         return repository.findByUserId(userId)
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
