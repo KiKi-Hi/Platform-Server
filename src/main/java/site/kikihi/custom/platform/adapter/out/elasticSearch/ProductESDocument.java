@@ -23,7 +23,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "products")
+@Document(indexName = "kikihi.products")
 public class ProductESDocument {
 
     @Id
