@@ -51,8 +51,8 @@ public class ProductESDocument {
     @Field(type = FieldType.Text)
     private String detailPageUrl;   //
 
-    @Field(type = FieldType.Keyword)
-    private List<String> options;   //
+    @Field(type = FieldType.Object)
+    private List<Map<String, Object>> options;   //
 
     @Field(type = FieldType.Object)
     private Map<String, Object> specTable;  //

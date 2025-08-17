@@ -1,16 +1,90 @@
-volumes:
-  certs:
-    driver: local
-
-
 services:
+
+  ### 키키하이 도커 이미지
+  spring:
+    image: kikihistore/server:latest
+    container_name: kkh-app
+    environment:
+      - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
+    volumes:
+      - certs:/usr/share/spring/config/certs
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_started
+      redis:
+        condition: service_started
+      setup:
+        condition: service_started
+      es01:
+        condition: service_healthy
+    networks:
+      - monstache-network
+
+  # Nginx Proxy
+  nginx: # nginx 서비스 정의
+    image: nginx:latest  # 사용할 Docker 이미지
+    container_name: kkh-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - spring
+    networks:
+      - monstache-network
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  certbot:
+    container_name: kkh-certbot
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    networks:
+      - monstache-network
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: kkh-mysql
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - monstache-network
+
+  # Redis
+  redis:
+    image: redis:7.2.5
+    container_name: kkh-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - monstache-network
 
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    container_name: kkh-setup
+    container_name: elasticsearch_setup
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
     user: "0"
+    networks:
+      - monstache-network
     command: >
       bash -c '
         if [ x${ELASTIC_PASSWORD} == x ]; then
@@ -41,6 +115,12 @@ services:
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
+          "  - name: monstache\n"\
+          "    dns:\n"\
+          "      - monstache\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
           > config/certs/instances.yml;
           bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
           unzip config/certs/certs.zip -d config/certs;
@@ -53,106 +133,30 @@ services:
         until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
         echo "Setting kibana_system password";
         until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "Setting monstahce_system password";
+        until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/monstahce_system/_password -d "{\"password\":\"${MONSTACHE_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
         echo "All done!";
       '
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/es01/es01.crt ]" ]
+      test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
       interval: 1s
       timeout: 5s
       retries: 120
-    networks:
-      - backend-bridge
-  ### 키키하이 도커 이미지
-  spring:
-    image: kikihistore/server:latest
-    container_name: kkh-app
-    environment:
-      - TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
-    volumes:
-      - certs:/usr/share/spring/config/certs
-    ports:
-      - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_started
-      redis:
-        condition: service_started
-      setup:
-        condition: service_started
-      es01:
-        condition: service_healthy
-    networks:
-      - backend-bridge
-
-  # Nginx Proxy
-  nginx:  # nginx 서비스 정의
-    image: nginx:latest  # 사용할 Docker 이미지
-    container_name: kkh-nginx
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - spring
-    networks:
-      - backend-bridge
-    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
-
-  certbot:
-    container_name: kkh-certbot
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    depends_on:
-      - nginx
-    networks:
-      - backend-bridge
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
-  # MySQL
-  mysql:
-    image: mysql:8.0
-    container_name: kkh-mysql
-    ports:
-      - '3306:3306'
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    networks:
-      - backend-bridge
-
-  # Redis
-  redis:
-    image: redis:7.2.5
-    container_name: kkh-redis
-    ports:
-      - '6379:6379'
-    networks:
-      - backend-bridge
 
   es01:
-    container_name: kkh-elasticsearch
     depends_on:
       setup:
         condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: elasticsearch
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
+      - esdata01:/usr/share/elasticsearch/data
     ports:
       - ${ES_PORT}:9200
     environment:
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
       - discovery.type=single-node
@@ -169,6 +173,9 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
+    mem_limit: 1g
+    networks:
+      - monstache-network
     ulimits:
       memlock:
         soft: -1
@@ -182,8 +189,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
-    networks:
-      - backend-bridge
     command: >
       sh -c '
         if [ ! -f /usr/share/elasticsearch/plugins/analysis-nori/plugin-descriptor.properties ]; then
@@ -194,18 +199,18 @@ services:
         fi;
         exec /usr/local/bin/docker-entrypoint.sh
       '
-  
 
   kibana:
-    container_name: kkh-kibana
     depends_on:
       es01:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    container_name: kibana
     labels:
       co.elastic.logs/module: kibana
     volumes:
       - certs:/usr/share/kibana/config/certs
+      - kibanadata:/usr/share/kibana/data
     ports:
       - ${KIBANA_PORT}:5601
     environment:
@@ -217,6 +222,9 @@ services:
       - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+    mem_limit: 1g
+    networks:
+      - monstache-network
     healthcheck:
       test:
         [
@@ -226,32 +234,97 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
-    networks:
-      - backend-bridge
 
-  logstash01:
-    container_name: zipte-logstash
-    depends_on:
-      es01:
-        condition: service_healthy
-      kibana:
-        condition: service_healthy
-    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
-    labels:
-      co.elastic.logs/module: logstash
-    user: root
+  mongodb1:
+    restart: always
+    image: mongo:latest
+    container_name: mongodb1
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"  # 호스트에서 mongodb1 접근용
     volumes:
-      - certs:/usr/share/logstash/certs
-      - "./logstash/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      - "./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+      - ./monstache/mongo/db1:/data/db
+      - ./monstache/mongo/key:/etc
     environment:
-      - xpack.monitoring.enabled=false
-      - ELASTIC_USER=elastic
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - ELASTIC_HOSTS=https://es01:9200
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    command:
+      - mongod
+      - "--replSet"
+      - "replication"
+      - "--keyFile"
+      - "/etc/mongodb.key"
+      - "--bind_ip_all"
     networks:
-      - backend-bridge
+      - monstache-network
+    user: "mongodb"
+
+  mongodb2:
+    restart: always
+    image: mongo:latest
+    container_name: mongodb2
+    expose:
+      - "27017"
+    ports:
+      - "27018:27017"  # 호스트에서 mongodb2 접근용
+    volumes:
+      - ./monstache/mongo/db2:/data/db
+      - ./monstache/mongo/key:/etc
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    command:
+      - mongod
+      - "--replSet"
+      - "replication"
+      - "--keyFile"
+      - "/etc/mongodb.key"
+      - "--bind_ip_all"
+    depends_on:
+      - mongodb1
+    networks:
+      - monstache-network
+    user: "mongodb"
+
+  mongosetup:
+    image: "setup-rspl:latest"
+    container_name: mongosetup
+    entrypoint: [ "/bin/bash", "/usr/src/configs/setup.sh" ]
+    depends_on:
+      - mongodb1
+      - mongodb2
+    networks:
+      - monstache-network
+
+  monstache:
+    restart: always
+    image: rwynn/monstache:rel6
+    container_name: monstache
+    command: -f /config/config.toml
+    volumes:
+      - ./monstache/config/config.toml:/config/config.toml
+      - certs:/usr/share/monstache/config/certs
+    environment:
+      - MONSTACHE_ES_USER=${ES_USER}
+      - MONSTACHE_ES_PASS=${ES_PASSWORD}
+      - MONSTACHE_ES_URLS=https://es01:9200
+    depends_on:
+      - mongodb1
+      - mongodb2
+    networks:
+      - monstache-network
+    ports:
+      - "8082:8082"
+
+volumes:
+  certs:
+    driver: local
+  esdata01:
+    driver: local
+  kibanadata:
+    driver: local
 
 networks:
-  backend-bridge:
+  monstache-network:
     driver: bridge

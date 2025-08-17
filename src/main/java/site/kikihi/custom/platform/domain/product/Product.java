@@ -29,7 +29,7 @@ public class Product {
 
     private String detailPageUrl; //
 
-    private List<String> options; //
+    private List<Map<String, Object>> options; //
 
     private Map<String, Object> specTable; // spec_table
 
