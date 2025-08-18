@@ -93,6 +93,7 @@ public record ProductDetailResponse(
     public static ProductDetailResponse from(Product product, boolean likedByMe) {
         return ProductDetailResponse.builder()
                 .id(product.getId())
+                .thumbnail(product.getThumbnail())
                 .manufacturerName(product.getManufacturer())
                 .category(product.getCategory())
                 .productName(product.getName())
