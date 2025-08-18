@@ -43,7 +43,7 @@ public class ProductESDocument {
     private List<String> description;   //
 
     @Field(type = FieldType.Text)
-    private String thumbnailUrl;
+    private String thumbnail;
 
     @Field(type = FieldType.Keyword)
     private String manufacturer;    //
@@ -71,7 +71,7 @@ public class ProductESDocument {
                 .name(product.getName())
                 .price(product.getPrice())
                 .description(product.getDescription())
-                .thumbnailUrl(product.getThumbnail())
+                .thumbnail(product.getThumbnail())
                 .manufacturer(product.getManufacturer())
                 .detailPageUrl(product.getDetailPageUrl())
                 .options(product.getOptions())
@@ -88,7 +88,7 @@ public class ProductESDocument {
                 .category(category)
                 .price(price)
                 .description(description)
-                .thumbnail(thumbnailUrl)
+                .thumbnail(thumbnail)
                 .manufacturer(manufacturer)
                 .detailPageUrl(detailPageUrl)
                 .options(options)
