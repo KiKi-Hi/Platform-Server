@@ -16,7 +16,7 @@ import java.util.Map;
  * 배치서버에서 DB에 저장한 데이터을 담는 역할을 수행합니다.
  */
 
-@Document(collection = "products")
+@Document(collection = "keyboard")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,6 +1,10 @@
 package site.kikihi.custom.platform.adapter.in.web;
 
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 import site.kikihi.custom.global.response.ApiResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.product.KeyboardRecommendationRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.response.product.KeyboardRecommendationResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.adapter.in.web.swagger.RecommendControllerSpec;
 import site.kikihi.custom.platform.application.in.recommendation.RecommendationUseCase;
@@ -8,9 +12,6 @@ import site.kikihi.custom.platform.domain.product.Product;
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +44,24 @@ public class RecommendationController implements RecommendControllerSpec {
         return ApiResponse.ok(ProductListResponse.from(recommendation));
     }
 
+    /**
+     * 튜토리얼 키보드 추천 API
+     */
+    @PostMapping("/tutorial")
+    public ApiResponse<List<KeyboardRecommendationResponse>> getTutorialKeyboardRecommendation(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Valid @RequestBody KeyboardRecommendationRequest request
+    ) {
+
+        // 유저가 존재하면 넣기
+        UUID userId = principalDetails != null ? principalDetails.getId() : null;
+
+        // 튜토리얼 키보드 추천 서비스 호출
+        List<KeyboardRecommendationResponse> recommendation = service.getTutorialKeyboardRecommendation(userId,request);
+
+        // 응답 주기
+        return ApiResponse.ok(recommendation);
+    }
 
 
 }

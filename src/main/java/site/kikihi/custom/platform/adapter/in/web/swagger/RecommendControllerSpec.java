@@ -1,6 +1,10 @@
 package site.kikihi.custom.platform.adapter.in.web.swagger;
 
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
 import site.kikihi.custom.global.response.ApiResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.product.KeyboardRecommendationRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.response.product.KeyboardRecommendationResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +26,18 @@ public interface RecommendControllerSpec {
     )
     ApiResponse<List<ProductListResponse>> getProductRecommendation(
             @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+    /**
+     * 튜토리얼 키보드 추천 API
+     */
+    @Operation(
+            summary = "추천 키보드 리스트",
+            description = "튜토리얼에서 키보드 추천 리스트를 불러오는 API 입니다."
+            )
+    ApiResponse<List<KeyboardRecommendationResponse>> getTutorialKeyboardRecommendation(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Valid @RequestBody KeyboardRecommendationRequest request
     );
 
 
