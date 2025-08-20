@@ -1,6 +1,7 @@
 package site.kikihi.custom.platform.adapter.in.web.swagger;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.product.KeyboardRecommendationRequest;
@@ -38,6 +39,18 @@ public interface RecommendControllerSpec {
     ApiResponse<List<KeyboardRecommendationResponse>> getTutorialKeyboardRecommendation(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Valid @RequestBody KeyboardRecommendationRequest request
+    );
+
+    /**
+     * 유사 상품 추천 API
+     */
+    @Operation(
+            summary = "유사 상품 추천 리스트",
+            description = "상품 상세 페이지에서 유사한 상품 리스트를 불러오는 API 입니다."
+    )
+    ApiResponse<List<KeyboardRecommendationResponse>> getSimilarProducts(
+            @PathVariable("productId") String productId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
 

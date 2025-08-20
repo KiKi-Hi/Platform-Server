@@ -64,4 +64,21 @@ public class RecommendationController implements RecommendControllerSpec {
     }
 
 
+    /**
+     * 유사한 상품 추천
+     */
+    @GetMapping("/{productId}")
+    public ApiResponse<List<KeyboardRecommendationResponse>> getSimilarProducts(
+            @PathVariable("productId") String productId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        // 유저가 존재하면 넣기
+        UUID userId = principalDetails != null ? principalDetails.getId() : null;
+
+        // 유사한 상품 추천 서비스 호출
+        List<Product> similarProducts = service.getSimilarProducts(userId,productId);
+
+        // 응답 주기
+        return ApiResponse.ok(KeyboardRecommendationResponse.from(similarProducts));
+    }
 }

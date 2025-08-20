@@ -105,7 +105,7 @@ public class RecommendationService implements RecommendationUseCase {
             return Collections.emptyList();
         }
 
-        List<ProductDocument> documents=recommendKeyboardPort.filterAndRecommendKeyboards(
+        List<Product> documents=recommendKeyboardPort.filterAndRecommendKeyboards(
                 userId,
                 request.getSize(),
                 request.getKeyPressure(),
@@ -122,6 +122,32 @@ public class RecommendationService implements RecommendationUseCase {
         return documents.stream()
                 .map(KeyboardRecommendationResponse :: from)
                 .toList();
+
+    }
+
+    /**
+     * 유사한 상품을 추천하는 로직입니다.
+     * @param userId
+     * @param productId
+     * @return
+     */
+    @Override
+    public List<Product> getSimilarProducts(UUID userId, String productId) {
+    /// 유저가 있다면 체크, 없다면 바로 상품 조회
+//        if (userId != null) {
+//            /// 커스텀을 제작했다면, 비슷한 특성의 상품들을 추천
+//            Optional<CustomKeyboard> customKeyboard = customPort.loadCustomKeyboardByUserId(userId);
+//
+//            if (customKeyboard.isPresent()) {
+//                return recommendForCustomUser(customKeyboard.get());
+//            }
+//        }
+
+        /// 상품 조회
+        Product product = loadProduct(productId);
+
+        /// 유사한 상품 필터링
+        return recommendKeyboardPort.getSimilarProducts(userId, productId,product);
 
     }
 

@@ -2,7 +2,7 @@ package site.kikihi.custom.platform.adapter.in.web.dto.response.product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import site.kikihi.custom.platform.adapter.out.mongo.product.ProductDocument;
+import site.kikihi.custom.platform.domain.product.Product;
 
 import java.util.List;
 
@@ -20,8 +20,6 @@ import java.util.List;
 @Builder
 @Schema(name = "KeyboardRecommendationListResponse", description = "튜토리얼 키보드 추천 리스트 응답")
 public record KeyboardRecommendationResponse(
-
-
 
         @Schema(description = "상품 아이디", example = "101")
         String id,
@@ -45,7 +43,7 @@ public record KeyboardRecommendationResponse(
 
     /// 정적 팩토리 메서드
     // 단일 객체 변환 메서드 추가
-    public static KeyboardRecommendationResponse from(ProductDocument product) {
+    public static KeyboardRecommendationResponse from(Product product) {
         return KeyboardRecommendationResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
@@ -58,7 +56,7 @@ public record KeyboardRecommendationResponse(
 
 
     // 기존 리스트 변환 메서드는 그대로 유지
-    public static List<KeyboardRecommendationResponse> from(List<ProductDocument> productList) {
+    public static List<KeyboardRecommendationResponse> from(List<Product> productList) {
         return productList.stream()
                 .map(KeyboardRecommendationResponse::from) // 단일 객체 변환 메서드 호출
                 .toList();

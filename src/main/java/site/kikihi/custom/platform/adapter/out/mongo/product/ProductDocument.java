@@ -47,6 +47,9 @@ public class ProductDocument {
     @Field("all_detail_images")
     private List<String> allDetailImages;   //
 
+    @Field("spec_table")
+    private Map<String, Object> specTable; // spec_table은 현재 비어있는 상태로 초기화
+
     /// 도메인 변경
     public Product toDomain(){
         return Product.builder()
@@ -60,6 +63,7 @@ public class ProductDocument {
                 .detailPageUrl(detailPageUrl)
                 .options(convertOptions())
                 .allDetailImages(allDetailImages)
+                .specTable(specTable)
                 .build();
     }
 

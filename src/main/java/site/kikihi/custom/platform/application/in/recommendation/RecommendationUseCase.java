@@ -14,4 +14,7 @@ public interface RecommendationUseCase {
     /// 튜토리얼 키보드 추천
     List<KeyboardRecommendationResponse> getTutorialKeyboardRecommendation(UUID userId, KeyboardRecommendationRequest request);
 
+    /// 유사한 상품 추천
+    List<Product> getSimilarProducts(UUID userId, String productId);
+
 }
