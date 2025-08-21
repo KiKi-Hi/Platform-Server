@@ -141,6 +141,9 @@ public class SearchService implements SearchUseCase {
             throw new IllegalStateException(ErrorCode.ALREADY_ON.getMessage());
         }
 
+        /// 비즈니스 로직 수행
+        user.turnOffSearch();
+
         /// 업데이트
         userPort.updateUser(user);
     }

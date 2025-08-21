@@ -41,6 +41,8 @@ public class UserJpaEntity extends BaseTimeEntity {
     @Embedded
     private AddressJpaEntity address;
 
+    private boolean isSearch;
+
     @PrePersist
     public void generateUUID() {
         if (this.id == null) {
@@ -59,6 +61,7 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .role(user.getRole())
                 .profileImage(user.getProfileImage())
                 .address(AddressJpaEntity.from(user.getAddress()))
+                .isSearch(user.isSearch())
                 .build();
     }
 
@@ -73,6 +76,7 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .role(role)
                 .profileImage(profileImage)
                 .address(address.toDomain())
+                .isSearch(isSearch)
                 .build();
     }
 
