@@ -7,6 +7,8 @@ import lombok.Builder;
 import java.util.List;
 import java.util.Set;
 
+import static site.kikihi.custom.platform.adapter.in.web.dto.response.util.ProductPriceUtil.getPrice;
+
 /**
  * 상품 목록 응답 DTO
  *
@@ -15,9 +17,8 @@ import java.util.Set;
  * @param category          카테고리
  * @param manufacturerName  제조사명
  * @param productName       제품명
- * @param discountRate      할인율 (예: 0.2 = 20%)
- * @param discountedPrice   할인가 (정상가에서 할인 적용된 가격)
  * @param likedByMe         나의 좋아요 여부 (true/false)
+ * @param discountedPrice   가격 (기존 DTO 컬럼과 동일하게 유지)
  */
 
 @Builder
@@ -39,11 +40,8 @@ public record ProductListResponse(
         @Schema(description = "제품명", example = "맥북 키보드")
         String productName,
 
-        @Schema(description = "할인율 (0.2 = 20%)", example = "0.15")
-        double discountRate,
-
-        @Schema(description = "할인가 (정상가에서 할인 적용된 가격)", example = "339000.0")
-        double discountedPrice,
+        @Schema(description = "최저가 가격부터", example = "599000원 ~")
+        String discountedPrice,
 
         @Schema(description = "내가 좋아요(북마크)한 상품 여부", example = "true")
         boolean likedByMe
@@ -57,8 +55,7 @@ public record ProductListResponse(
                 .category(product.getCategory())
                 .manufacturerName(product.getManufacturer())
                 .productName(product.getName())
-                .discountRate(0)
-                .discountedPrice(product.getPrice())
+                .discountedPrice(getPrice(product))
                 .likedByMe(false)
                 .build();
     }
@@ -87,8 +84,7 @@ public record ProductListResponse(
                 .category(product.getCategory())
                 .manufacturerName(product.getManufacturer())
                 .productName(product.getName())
-                .discountRate(0)
-                .discountedPrice(product.getPrice())
+                .discountedPrice(getPrice(product))
                 .likedByMe(likedByMe)
                 .build();
     }

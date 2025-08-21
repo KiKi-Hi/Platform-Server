@@ -28,7 +28,7 @@ public interface ProductControllerSpec {
             description = "ID를 바탕으로 상품 상세정보를 조회할 수 있습니다."
     )
     ApiResponse<ProductDetailResponse> getProduct(
-            @Parameter(description = "상품 ID", example = "686bd26dff7b820865d6e005")
+            @Parameter(description = "상품 ID", example = "6896ed675198cf586e933d6c")
             @RequestParam String id,
 
             @Parameter(hidden = true)
