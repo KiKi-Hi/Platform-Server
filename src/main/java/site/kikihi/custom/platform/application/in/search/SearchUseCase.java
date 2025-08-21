@@ -27,6 +27,9 @@ public interface SearchUseCase {
     /// 키워드 모두 삭제하기
     void deleteAllKeywords(UUID userId);
 
+    /// 나의 최근 검색어 여부
+    boolean checkSearch(UUID userId);
+
     /// 나의 최근 검색어 저장 끄기
     void turnOffMySearchKeyword(UUID userId);
 

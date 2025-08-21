@@ -6,7 +6,7 @@ import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.search.SearchListResponse;
 import site.kikihi.custom.platform.adapter.in.web.swagger.SearchControllerSpec;
-import site.kikihi.custom.platform.application.service.SearchService;
+import site.kikihi.custom.platform.application.in.search.SearchUseCase;
 import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SearchController implements SearchControllerSpec {
 
-    private final SearchService service;
+    private final SearchUseCase service;
 
     /// 상품 검색
     @GetMapping
@@ -58,7 +58,6 @@ public class SearchController implements SearchControllerSpec {
 
     }
 
-
     /// 특정 검색어 삭제
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteSearch(
@@ -67,7 +66,6 @@ public class SearchController implements SearchControllerSpec {
     ) {
         /// 서비스 호출
         service.deleteMySearchKeyword(id, principalDetails.getId());
-
 
         /// 리턴
         return ApiResponse.deleted();
@@ -84,6 +82,22 @@ public class SearchController implements SearchControllerSpec {
 
         /// 리턴
         return ApiResponse.deleted();
+    }
+
+    /// 자동 저장 기능 조회
+    @GetMapping("/auto")
+    public ApiResponse<String> getMyAutoSearch(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+
+        /// 서비스 호출
+        boolean checked = service.checkSearch(principalDetails.getId());
+
+        String autoSearch = checked ? "자동 저장이 활성화되었습니다." : "자동 저장이 꺼져있습니다.";
+
+        /// 리턴
+        return ApiResponse.ok(autoSearch);
+
     }
 
     /// 자동 저장 기능 켜기

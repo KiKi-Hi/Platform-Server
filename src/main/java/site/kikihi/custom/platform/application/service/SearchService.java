@@ -66,9 +66,13 @@ public class SearchService implements SearchUseCase {
             /// 유저 조회
             User user = getUser(userId);
 
-            /// DB에 최신 검색어 저장하기
-            Search search = Search.of(user.getId(), keyword);
-            port.saveSearch(search);
+            /// 자동저장이 ON인 유저만 저장한다.
+            if (user.isSearch()) {
+
+                /// DB에 최신 검색어 저장하기
+                Search search = Search.of(user.getId(), keyword);
+                port.saveSearch(search);
+            }
         }
 
         return elasticsearchOperations.search(query, ProductESDocument.class)
@@ -125,6 +129,16 @@ public class SearchService implements SearchUseCase {
         port.deleteALlSearch(user.getId());
     }
 
+    @Override
+    public boolean checkSearch(UUID userId) {
+
+        /// 유저 예외 처리
+        User user = getUser(userId);
+
+        /// 유저의 여부 체크
+        return user.isSearch();
+    }
+
 
     /**
      * 검색 기록을 저장하지않도록 끕니다.
@@ -136,16 +150,11 @@ public class SearchService implements SearchUseCase {
         /// 유저
         User user = getUser(userId);
 
-        /// 이미 켜져있다면
-        if (!user.isSearch()) {
-            throw new IllegalStateException(ErrorCode.ALREADY_ON.getMessage());
+        /// 켜져있을때만 끌 수있게
+        if (user.isSearch()) {
+            user.turnOffSearch();
+            userPort.updateUser(user);
         }
-
-        /// 비즈니스 로직 수행
-        user.turnOffSearch();
-
-        /// 업데이트
-        userPort.updateUser(user);
     }
 
     @Override
@@ -153,16 +162,11 @@ public class SearchService implements SearchUseCase {
         /// 유저
         User user = getUser(userId);
 
-        /// 이미 켜져있다면
-        if (user.isSearch()) {
-            throw new IllegalStateException(ErrorCode.ALREADY_ON.getMessage());
+        /// 꺼져있을때만 켤 수있게
+        if (!user.isSearch()) {
+            user.turnOnSearch();
+            userPort.updateUser(user);
         }
-
-        /// 비즈니스 로직 수행
-        user.turnOnSearch();
-
-        /// 업데이트
-        userPort.updateUser(user);
 
     }
 

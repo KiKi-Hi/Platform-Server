@@ -1,6 +1,7 @@
 package site.kikihi.custom.platform.adapter.in.web.swagger;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ public interface SearchControllerSpec {
             description = "키워드를 바탕으로 조회합니다."
     )
     ApiResponse<List<ProductListResponse>> searchProducts(
+            @Parameter(example = "하우징")
             @RequestParam("keyword") String keyword,
             PageRequest pageRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -56,6 +58,13 @@ public interface SearchControllerSpec {
     );
 
 
+    @Operation(
+            summary = "검색어 자동저장 여부 API",
+            description = "JWT를 바탕으로 자동저장을 확인합니다."
+    )
+    ApiResponse<String> getMyAutoSearch(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
 
 
     @Operation(
