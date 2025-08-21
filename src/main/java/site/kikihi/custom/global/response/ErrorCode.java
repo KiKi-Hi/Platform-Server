@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 /**
  * 애플리케이션 전역에서 사용하는 에러 코드 Enum입니다.
  * 각 에러는 고유 코드, HTTP 상태, 메시지를 포함합니다.
- *
+ * <p>
  * 400 : 잘못된 요청 에러
  * 401 : 로그인 관련 에러
  * 403 : 권한 부족 관련 에러
@@ -28,6 +28,8 @@ public enum ErrorCode {
         INVALID_INPUT(400_002, HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
         NULL_VALUE(400_003, HttpStatus.BAD_REQUEST, "Null 값이 들어왔습니다."),
         TEST_ERROR(400_004, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
+        ALREADY_ON(400_005, HttpStatus.BAD_REQUEST, "이미 검색어 저장 기능이 켜져있습니다"),
+        ALREADY_OFF(400_006, HttpStatus.BAD_REQUEST, "이미 검색어 저장 기능이 꺼져있습니다"),
 
 
         // ========================
@@ -48,7 +50,6 @@ public enum ErrorCode {
         TOKEN_NOT_FOUND_COOKIE(401_011, HttpStatus.UNAUTHORIZED, "쿠키에 리프레시 토큰이 존재하지 않습니다."),
 
 
-
         // ========================
         // 403 Forbidden
         // ========================
@@ -57,6 +58,7 @@ public enum ErrorCode {
         UNAUTHORIZED_POST_ACCESS(403_002, HttpStatus.FORBIDDEN, "해당 게시글에 접근할 권한이 없습니다."),
         UNAUTHORIZED_DELETE_BOOKMARK(403_003, HttpStatus.FORBIDDEN, "해당 북마크를 삭제할 권한이 없습니다."),
         UNAUTHORIZED_DELETE_CUSTOM(403_004, HttpStatus.FORBIDDEN, "해당 커스텀을 삭제할 권한이 없습니다."),
+        UNAUTHORIZED_DELETE_SEARCH(403_005, HttpStatus.FORBIDDEN, "검색기록을 삭제할 권한이 없습니다."),
 
 
         // ========================
@@ -69,20 +71,22 @@ public enum ErrorCode {
         POST_TYPE_NOT_FOUND(404_004, HttpStatus.NOT_FOUND, "게시글 타입을 찾을 수 없습니다."),
         COMMENT_NOT_FOUND(404_005, HttpStatus.NOT_FOUND, "요청한 댓글을 찾을 수 없습니다."),
         PRODUCT_NOT_FOUND(404_006, HttpStatus.NOT_FOUND, "요청한 상품을 찾을 수 없습니다."),
-        BOOKMARK_NOT_FOUND(404_007,HttpStatus.NOT_FOUND,"요청한 북마크를 찾을 수 없습니다."),
-        CUSTOM_NOT_FOUND(404_008,HttpStatus.NOT_FOUND,"요청한 커스텀 키보드를 찾을 수 없습니다."),
+        BOOKMARK_NOT_FOUND(404_007, HttpStatus.NOT_FOUND, "요청한 북마크를 찾을 수 없습니다."),
+        CUSTOM_NOT_FOUND(404_008, HttpStatus.NOT_FOUND, "요청한 커스텀 키보드를 찾을 수 없습니다."),
+        SEARCH_NOT_FOUND(404_009, HttpStatus.NOT_FOUND, "요청한 검색기록을 찾을 수 없습니다."),
 
         // ========================
         // 409 Conflict
         // ========================
         DUPLICATE_EMAIL(409_001, HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
-        BOOKMARK_ALREADY(409_003,HttpStatus.CONFLICT,"이미 해당 상품에 북마크를 등록했습니다"),
+        BOOKMARK_ALREADY(409_003, HttpStatus.CONFLICT, "이미 해당 상품에 북마크를 등록했습니다"),
 
 
         // ========================
         // 500 Internal Server Error
         // ========================
-        INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
+        INTERNAL_SERVER_ERROR(500_000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
+        ;
 
         // 기타 공통
 
