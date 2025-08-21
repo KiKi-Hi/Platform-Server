@@ -40,7 +40,7 @@ public class RequestMatcherHolder {
 
             // 검색 관련
             new RequestInfo(GET, "/api/v1/search", null),
-            new RequestInfo(GET, "/api/v1/search/my", Role.USER),
+            new RequestInfo(GET, "/api/v1/search/**", Role.USER),
             new RequestInfo(DELETE, "/api/v1/search/**", Role.USER),
             new RequestInfo(PUT, "/api/v1/search/**", Role.USER),
 
