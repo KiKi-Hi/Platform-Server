@@ -80,4 +80,8 @@ public class UserJpaEntity extends BaseTimeEntity {
                 .build();
     }
 
+    /// 엔티티 수정용
+    public void updateSearch(boolean isSearch) {
+        this.isSearch = isSearch;
+    }
 }
