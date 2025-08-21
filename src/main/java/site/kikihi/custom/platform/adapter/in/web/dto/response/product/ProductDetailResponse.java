@@ -4,10 +4,7 @@ import site.kikihi.custom.platform.domain.product.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 상품 상세 응답 DTO
@@ -44,8 +41,8 @@ public record ProductDetailResponse(
         @Schema(description = "제품명", example = "독거미 Aula F99")
         String productName,
 
-        @Schema(description = "정상가(원)", example = "599000.0")
-        double originalPrice,
+        @Schema(description = "최저가 가격부터", example = "599000 ~")
+        String originalPrice,
 
         @Schema(description = "북마크(좋아요)한 상품 여부", example = "true")
         boolean likedByMe,
@@ -68,7 +65,7 @@ public record ProductDetailResponse(
                 .manufacturerName(product.getManufacturer())
                 .category(product.getCategory())
                 .productName(product.getName())
-                .originalPrice(product.getPrice())
+                .originalPrice(getPrice(product))
                 .likedByMe(false)
                 .options(ProductOptions.from(product))
                 .cautions("도착일은 배송지나 배송사 사정으로 변경 또는 지연될 수 있습니다.")
@@ -84,12 +81,40 @@ public record ProductDetailResponse(
                 .manufacturerName(product.getManufacturer())
                 .category(product.getCategory())
                 .productName(product.getName())
-                .originalPrice(product.getPrice())
+                .originalPrice(getPrice(product))
                 .likedByMe(likedByMe)
                 .options(ProductOptions.from(product))
                 .cautions("도착일은 배송지나 배송사 사정으로 변경 또는 지연될 수 있습니다.")
                 .imageUrl(product.getAllDetailImages())
                 .build();
+    }
+
+
+    /// 최저가 가격을 위한 설정
+    private static String getPrice(Product product) {
+
+        // 옵션 Optional 처리
+        List<Map<String, Object>> productOptions = Optional.ofNullable(product.getOptions())
+                .orElse(Collections.emptyList());
+
+        // 옵션이 없다면 기본 가격 제공
+        if (productOptions.isEmpty()) {
+            return (int) product.getPrice() + "원";
+        }
+
+        // 옵션 중 최저가 찾기
+        OptionalDouble minPrice = productOptions.stream()
+                .map(option -> option.get("main_price"))
+                .filter(Objects::nonNull)
+                .mapToDouble(price -> Double.parseDouble(price.toString()))
+                .min();
+
+        // 최저가 있으면 옵션 가격으로, 없으면 기본 가격으로
+        if (minPrice.isPresent()) {
+            return (int) minPrice.getAsDouble() + "원 ~";
+        } else {
+            return (int) product.getPrice() + "원";
+        }
     }
 
 
