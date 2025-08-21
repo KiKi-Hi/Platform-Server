@@ -34,6 +34,7 @@ public class ProductDocument {
 
     private List<String> description;   //
 
+    @Field("thumbnail")
     private String thumbnail;   //
 
     private String manufacturer;    //
