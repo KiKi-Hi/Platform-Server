@@ -2,7 +2,7 @@ package site.kikihi.custom.platform.application.service;
 
 import site.kikihi.custom.platform.adapter.out.elasticSearch.ProductESDocument;
 import site.kikihi.custom.platform.adapter.out.elasticSearch.ProductESRepository;
-import site.kikihi.custom.platform.application.in.product.ProductSearchUseCase;
+import site.kikihi.custom.platform.application.in.search.SearchUseCase;
 import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,17 +20,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ElasticSearchService implements ProductSearchUseCase {
+public class SearchService implements SearchUseCase {
 
     private final ElasticsearchOperations elasticsearchOperations;
     private final ProductESRepository productESRepository;
-
-//    // 상품 저장
-//    public Product saveProduct(Product product) {
-//        ProductESDocument doc = ProductESDocument.toESDocument(product);
-//        ProductESDocument saved = productESRepository.save(doc);
-//        return toDomain(saved);
-//    }
 
     // 키워드 검색 (name, description)
     @Override
