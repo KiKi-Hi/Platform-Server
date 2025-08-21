@@ -24,7 +24,9 @@ public class User {
     private Role role;
     private String profileImage;
     private Address address;
+    private boolean isSearch = true;
 
+    /// 정적 팩토리 메서드
     public static User of(OAuth2UserInfo userInfo) {
         return User.builder()
                 .id(UUID.randomUUID())
@@ -36,6 +38,17 @@ public class User {
                 .profileImage(userInfo.getImageUrl())
                 .role(Role.USER)
                 .address(Address.of())
+                .isSearch(true)
                 .build();
     }
+
+    /// 비즈니스 로직
+    public void turnOnSearch() {
+        isSearch = true;
+    }
+
+    public void turnOffSearch() {
+        isSearch = false;
+    }
+
 }
