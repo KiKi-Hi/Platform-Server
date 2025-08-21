@@ -2,12 +2,18 @@ package site.kikihi.custom.platform.domain.product;
 
 import site.kikihi.custom.platform.adapter.out.mongo.product.ProductDocument;
 
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 public class ProductFixtures {
 
+
     public static ProductDocument fakeProduct() {
+
+        Map<String, Object> options = new HashMap<>();
+        options.put("option_name", "화이트");
+        options.put("option_name", "블랙");
+        options.put("option_name", "실버");
+
         return ProductDocument.builder()
                 .id(UUID.randomUUID().toString())
                 .category("test")
@@ -16,7 +22,7 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .options(Arrays.asList("화이트", "블랙", "실버"))
+                .options(List.of(options))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
                         "https://example.com/images/prd-001-2.jpg"
@@ -26,6 +32,12 @@ public class ProductFixtures {
     }
 
     public static ProductDocument createProduct() {
+
+        Map<String, Object> options = new HashMap<>();
+        options.put("option_name", "화이트");
+        options.put("option_name", "블랙");
+        options.put("option_name", "실버");
+
         return ProductDocument.builder()
                 .id(UUID.randomUUID().toString())
                 .category("test")
@@ -34,7 +46,7 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .options(Arrays.asList("화이트", "블랙", "실버"))
+                .options(List.of(options))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
                         "https://example.com/images/prd-001-2.jpg"
@@ -44,6 +56,12 @@ public class ProductFixtures {
     }
 
     public static ProductDocument createProduct(String category, String name,double price) {
+
+        Map<String, Object> options = new HashMap<>();
+        options.put("option_name", "화이트");
+        options.put("option_name", "블랙");
+        options.put("option_name", "실버");
+
         return ProductDocument.builder()
                 .id(UUID.randomUUID().toString())
                 .category(category)
@@ -52,7 +70,7 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .options(Arrays.asList("화이트", "블랙", "실버"))
+                .options(List.of(options))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
                         "https://example.com/images/prd-001-2.jpg"
@@ -63,6 +81,11 @@ public class ProductFixtures {
 
     public static ProductDocument createProduct(String category, String name, String manufacturer, double price) {
 
+        Map<String, Object> options = new HashMap<>();
+        options.put("option_name", "화이트");
+        options.put("option_name", "블랙");
+        options.put("option_name", "실버");
+
         return ProductDocument.builder()
                 .id(UUID.randomUUID().toString())
                 .category(category)
@@ -71,7 +94,7 @@ public class ProductFixtures {
                 .description(Arrays.asList("고성능", "에너지 절약", "심플 디자인"))
                 .thumbnail("https://example.com/images/prd-001-thumb.jpg")
                 .detailPageUrl("https://example.com/products/prd-001/detail")
-                .options(Arrays.asList("화이트", "블랙", "실버"))
+                .options(List.of(options))
                 .allDetailImages(Arrays.asList(
                         "https://example.com/images/prd-001-1.jpg",
                         "https://example.com/images/prd-001-2.jpg"
