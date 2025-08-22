@@ -1,9 +1,9 @@
 package site.kikihi.custom.platform.application.service;
 
 import site.kikihi.custom.global.response.ErrorCode;
+import site.kikihi.custom.platform.adapter.in.web.converter.KeyboardOptionsConverter;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.product.KeyboardRecommendationRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.KeyboardRecommendationResponse;
-import site.kikihi.custom.platform.adapter.out.mongo.product.ProductDocument;
 import site.kikihi.custom.platform.application.in.recommendation.RecommendationUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
 import site.kikihi.custom.platform.application.out.bookmark.dto.TopBookmark;
@@ -107,14 +107,12 @@ public class RecommendationService implements RecommendationUseCase {
 
         List<Product> documents=recommendKeyboardPort.filterAndRecommendKeyboards(
                 userId,
-                request.getSize(),
-                request.getKeyPressure(),
-                request.getKeycapProfile(),
-                request.getSwitchType(),
-                request.getSoundDampener(),
-                request.getRgb(),
-                request.getBrand(),
-                request.getKeycapMaterial(),
+                KeyboardOptionsConverter.mapSizeToDescription(request.getSize()),
+                KeyboardOptionsConverter.mapKeyPressureToSpecTable(request.getKeyPressure()),
+                KeyboardOptionsConverter.mapLayoutToDescription(request.getLayout()),
+                KeyboardOptionsConverter.mapSwitchTypeToOptionNames(request.getSwitchType()),
+                request.getSoundDampener().getValue(),
+                request.getRgb().getValue(),
                 request.getMinPrice(),
                 request.getMaxPrice()
         );

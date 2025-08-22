@@ -33,60 +33,61 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
     @Override
     public List<Product> filterAndRecommendKeyboards(
             UUID userId,
-            KeyboardOptions.Size size,
-            KeyboardOptions.KeyPressure keyPressure,
-            KeyboardOptions.KeycapProfile keycapProfile,
-            KeyboardOptions.SwitchType switchType,
-            KeyboardOptions.SoundDampener soundDampener,
-            KeyboardOptions.RGB rgb,
-            String brand,
-            KeyboardOptions.KeycapMaterial keycapMaterial,
+            String size,
+            Integer keyPressure,
+            String layout,
+            List<String> switchType,
+            String soundDampener,
+            String rgb,
             int minPrice,
             int maxPrice
     ) {
         Query query = new Query();
 
-        // OR 조건들을 모아둘 리스트
-        List<Criteria> orCriterias = new ArrayList<>();
+        // AND 조건들을 모아둘 리스트
+        List<Criteria> andCriterias = new ArrayList<>();
 
-        // -----------------------
-        // description 관련 조건
-        // -----------------------
-        if (size != null) {
-            orCriterias.add(Criteria.where("description").regex(size.getValue(), "i"));
+        // 사이즈
+        if (size != null && !size.isBlank()) {
+            andCriterias.add(Criteria.where("description").regex(size, "i"));
         }
-        if (keycapProfile != null) {
-            orCriterias.add(Criteria.where("description").regex(keycapProfile.getValue(), "i"));
-        }
+
+        // 키압 조건
         if (keyPressure != null) {
-            // spec_table.기능 > 키압 문자열에서 숫자만 추출해서 비교
             String keyPressureField = "spec_table.기능 > 키압";
-
-            if (keyPressure == KeyboardOptions.KeyPressure.LIGHT) {
+            if (keyPressure <= 49) { // LIGHT 구간
                 query.addCriteria(Criteria.where(keyPressureField).regex("^([0-4]?[0-9])g$"));
-            } else if (keyPressure == KeyboardOptions.KeyPressure.NORMAL) {
+            } else { // NORMAL 구간
                 query.addCriteria(Criteria.where(keyPressureField).regex("^([5-9][0-9]|[1-9][0-9]{2,})g$"));
+            }
+
+        }
+        // Layout
+        if (layout != null && !layout.isBlank()) {
+            if ("ERGONOMIC".equalsIgnoreCase(layout)) {
+                query.addCriteria(Criteria.where("spec_table.키보드구조 > 스텝스컬쳐2").is("○"));
+            } else if ("SIMPLE".equalsIgnoreCase(layout)) {
+                andCriterias.add(Criteria.where("spec_table.키보드구조 > 로우프로파일(LP)").is("○"));
+                andCriterias.add(Criteria.where("description").regex("스텝스컬쳐2", "i"));
+                andCriterias.add(Criteria.where("description").regex("lp", "i"));
             }
         }
 
-
-// -----------------------
-// Switch Type
-// -----------------------
-        if (switchType != null) {
-            orCriterias.add(new Criteria().orOperator(
-                    Criteria.where("options.option_name").regex(switchType.getValue(), "i"),
-                    Criteria.where("spec_table.기능 > 키 스위치").regex(switchType.getValue(), "i"),
-                    Criteria.where("name").regex(switchType.getValue(), "i")
-            ));
+        // Switch Type
+        if (switchType != null && !switchType.isEmpty()) {
+            List<Criteria> switchCriteria = new ArrayList<>();
+            for (String sw : switchType) {
+                switchCriteria.add(Criteria.where("options.option_name").regex(sw, "i"));
+                switchCriteria.add(Criteria.where("spec_table.기능 > 키 스위치").regex(sw, "i"));
+                switchCriteria.add(Criteria.where("name").regex(sw, "i"));
+            }
+            andCriterias.add(new Criteria().orOperator(switchCriteria.toArray(new Criteria[0])));
         }
 
-// -----------------------
-// SoundDampener
-// -----------------------
+        // SoundDampener
         if (soundDampener != null) {
-            if (soundDampener == KeyboardOptions.SoundDampener.YES) {
-                orCriterias.add(new Criteria().orOperator(
+            if (soundDampener == KeyboardOptions.SoundDampener.YES.getValue()) {
+                andCriterias.add(new Criteria().orOperator(
                         Criteria.where("spec_table.키보드구조 > 흡음재").is("○"),
                         Criteria.where("description").regex("흡음재")
                 ));
@@ -98,12 +99,11 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             }
         }
 
-// -----------------------
-// RGB
-// -----------------------
+
+        // RGB
         if (rgb != null) {
-            if (rgb == KeyboardOptions.RGB.YES) {
-                orCriterias.add(new Criteria().orOperator(
+            if (rgb == KeyboardOptions.RGB.YES.getValue()) {
+                andCriterias.add(new Criteria().orOperator(
                         Criteria.where("spec_table.키보드구조 > RGB 백라이트").is("○"),
                         Criteria.where("description").regex("RGB", "i")
                 ));
@@ -115,48 +115,22 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             }
         }
 
-// -----------------------
-// Brand
-// -----------------------
-        if (brand != null) {
-            query.addCriteria(Criteria.where("manufacturer").regex("^" + brand + "$", "i"));
-        }
-
-// -----------------------
-// KeycapMaterial
-// -----------------------
-        if (keycapMaterial != null) {
-            orCriterias.add(new Criteria().orOperator(
-                    Criteria.where("spec_table.키캡 > 키캡 재질").regex(keycapMaterial.getValue(), "i"),
-                    Criteria.where("description").regex(keycapMaterial.getValue(), "i")
-            ));
-        }
-
-
-// -----------------------
-// Price (옵션 단위 필터링)
-// -----------------------
+        // 가격
         if (minPrice > 0 || maxPrice > 0) {
-            // options 배열 안의 main_price가 범위 안에 있는지 확인
             query.addCriteria(Criteria.where("options").elemMatch(
                     Criteria.where("main_price").gte(minPrice).lte(maxPrice)
             ));
         }
 
-// -----------------------
-// OR 조건 최종 적용
-// -----------------------
-        if (!orCriterias.isEmpty()) {
-            query.addCriteria(new Criteria().andOperator(orCriterias.toArray(new Criteria[0])));
+        // And 조건 최종 적용
+        if (!andCriterias.isEmpty()) {
+            query.addCriteria(new Criteria().andOperator(andCriterias.toArray(new Criteria[0])));
         }
 
         log.info("MongoDB Query: {}", query);
-
-        var results = mongoTemplate.find(query, ProductDocument.class);
+        List<ProductDocument> results = mongoTemplate.find(query, ProductDocument.class);
         log.info("검색 결과 건수: {}", results.size());
-        return results.stream()
-                .map(ProductDocument::toDomain)
-                .toList();
+        return results.stream().map(ProductDocument::toDomain).toList();
 
     }
 
@@ -243,194 +217,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
     }
 
 
-    // 유사도 점수 계산
-//    private SimilarityResult calculateSimilarityScore(
-//            Product base, Product candidate,
-//            Set<String> likedBrands, Set<String> likedSwitches
-//    ) {
-//        double score = 0.0;
-//        List<String> reasons = new ArrayList<>();
-//
-//        Map<String, Object> baseSpec = Optional.ofNullable(base.getSpecTable())
-//                .orElse(Collections.emptyMap());
-//        System.out.println("baseSpec = " + baseSpec);
-//        Map<String, Object> candSpec = Optional.ofNullable(candidate.getSpecTable())
-//                .orElse(Collections.emptyMap());
-//        System.out.println("candSpec = " + candSpec);
-//
-//        List<Map<String, Object>> baseOptions = Optional.ofNullable(base.getOptions()).orElse(Collections.emptyList());
-//        System.out.println("baseOptions = " + baseOptions);
-//
-//        List<Map<String, Object>> candOptions = Optional.ofNullable(candidate.getOptions()).orElse(Collections.emptyList());
-//        System.out.println("candOptions = " + candOptions);
-//
-//        // description List 출력
-//        List<String> baseDescriptions = Optional.ofNullable(base.getDescription()).orElse(Collections.emptyList());
-//        System.out.println("baseDescriptions = " + baseDescriptions);
-//
-//        List<String> candDescriptions = Optional.ofNullable(candidate.getDescription()).orElse(Collections.emptyList());
-//        System.out.println("candDescriptions = " + candDescriptions);
-//
-//
-//        // 1) 사이즈 필터링 (무조건 같아야 추천 대상)
-//        List<String> sizeKeywords = Arrays.asList("풀배열", "미니", "텐키리스");
-//
-//        String baseSize = null;
-//        for (String size : sizeKeywords) {
-//            for (String desc : baseDescriptions) {
-//                if (desc.trim().equalsIgnoreCase(size)) {
-//                    baseSize = size;
-//                    break;
-//                }
-//            }
-//            if (baseSize != null) break;
-//        }
-//
-//        String candSize = null;
-//        for (String size : sizeKeywords) {
-//            for (String desc : candDescriptions) {
-//                if (desc.trim().equalsIgnoreCase(size)) {
-//                    candSize = size;
-//                    break;
-//                }
-//            }
-//            if (candSize != null) break;
-//        }
-//
-//        if (baseSize == null || candSize == null || !baseSize.equalsIgnoreCase(candSize)) {
-//            System.out.println("사이즈 불일치: base=" + baseSize + ", candidate=" + candSize);
-//            reasons.add("사이즈 불일치");
-//        } else {
-//            System.out.println("사이즈 일치: " + baseSize);
-//            // 유사도 계산 계속 진행
-//        }
-//
-//        // 2) 키압 유사도
-//        Integer basePressure = parsePressure(baseSpec.get("기능 > 키압"));  // 공백 포함 정확 키 사용
-//        System.out.println("basePressure = " + basePressure);
-//        Integer candPressure = parsePressure(candSpec.get("기능 > 키압"));
-//        System.out.println("candPressure = " + candPressure);
-//        if (basePressure != null && candPressure != null) {
-//            double diff = Math.abs(basePressure - candPressure);
-//            if (diff > 10) {
-//                reasons.add("키압 차이 " + diff + "g (허용 10g) - 점수 감소");
-//            } else {
-//                double similarity = 1.0 - diff / 10.0;
-//                double s = similarity * 0.2;
-//                score += s;
-//                reasons.add("키압 차이=" + diff + "g, 점수=+" + String.format("%.2f", s));
-//            }
-//        } else {
-//            reasons.add("키압 정보 부족 - 점수 산정 제외");
-//        }
-//
-//        // 3) 스위치 비교
-//
-//// baseOptions 내 모든 option_name을 정규화하여 Set에 저장
-//        Set<String> baseSwitches = new HashSet<>();
-//        for (Map<String, Object> opt : baseOptions) {
-//            Object optionName = opt.get("option_name");
-//            if (optionName instanceof String) {
-//                String normalized = normalizeSwitch((String) optionName);
-//                if (normalized != null && !normalized.isEmpty()) {
-//                    baseSwitches.add(normalized);
-//                }
-//            }
-//        }
-//
-//// candOptions 내 모든 option_name을 정규화하여 리스트로 수집
-//        List<String> candSwitches = new ArrayList<>();
-//        for (Map<String, Object> opt : candOptions) {
-//            Object optionName = opt.get("option_name");
-//            if (optionName instanceof String) {
-//                String normalized = normalizeSwitch((String) optionName);
-//                if (normalized != null && !normalized.isEmpty()) {
-//                    candSwitches.add(normalized);
-//                }
-//            }
-//        }
-//
-//// 스위치 비교
-//        boolean switchMatched = false;
-//        boolean switchFamilyMatched = false;
-//        String matchedSwitch = null;
-//        outer:
-//        for (String cSwitch : candSwitches) {
-//            if (baseSwitches.contains(cSwitch)) {
-//                switchMatched = true;
-//                matchedSwitch = cSwitch;
-//                break outer;
-//            }
-//            for (String bSwitch : baseSwitches) {
-//                if (sameSwitchFamily(bSwitch, cSwitch)) {
-//                    switchFamilyMatched = true;
-//                    matchedSwitch = cSwitch;
-//                    break outer;
-//                }
-//            }
-//        }
-//
-//
-//// 점수 및 이유 부여
-//        if (baseSwitches.isEmpty() || candSwitches.isEmpty()) {
-//            reasons.add("스위치 정보 부족 - 점수 산정 제외");
-//        } else if (switchMatched) {
-//            score += 0.45;
-//            reasons.add("스위치 동일 (" + matchedSwitch + ") (+0.5)");
-//        } else if (switchFamilyMatched) {
-//            score += 0.25;
-//            reasons.add("스위치 유사 (" + matchedSwitch + ") (+0.25)");
-//        } else {
-//            reasons.add("스위치 불일치 - 점수 감소");
-//        }
-//
-//        // 6) description 내 공통 키워드 개수로 점수부여
-////        List<String> baseDesc = Optional.ofNullable(base.getDescription()).orElse(Collections.emptyList());
-////        List<String> candDesc = Optional.ofNullable(candidate.getDescription()).orElse(Collections.emptyList());
-////        Set<String> baseDescSet = new HashSet<>();
-////        for (String d : baseDesc) baseDescSet.add(d.trim().toLowerCase());
-////        int commonDescCount = 0;
-////        for (String d : candDesc) {
-////            if (baseDescSet.contains(d.trim().toLowerCase())) commonDescCount++;
-////        }
-////        double descScore = Math.min(commonDescCount / 5.0 * 0.1, 0.1);
-////        if (descScore > 0) {
-////            score += descScore;
-////            reasons.add("description 공통 키워드 " + commonDescCount + "개 (+"
-////                    + String.format("%.2f", descScore) + ")");
-////        } else {
-////            reasons.add("description 공통 키워드 부족");
-////        }
-//
-//        // 7) options 내 동일 option_name 개수로 점수부여
-//        Set<String> baseOptionNames = new HashSet<>();
-//        for (Map<String, Object> opt : baseOptions) {
-//            Object on = opt.get("option_name");
-//            if (on instanceof String) baseOptionNames.add(((String) on).trim().toLowerCase());
-//        }
-//        int commonOptionCount = 0;
-//        for (Map<String, Object> opt : candOptions) {
-//            Object on = opt.get("option_name");
-//            if (on instanceof String && baseOptionNames.contains(((String) on).trim().toLowerCase())) {
-//                commonOptionCount++;
-//            }
-//        }
-//        double optionScore = Math.min(commonOptionCount / 5.0 * 0.1, 0.1);
-//        if (optionScore > 0) {
-//            score += optionScore;
-//            reasons.add("options 공통 항목 " + commonOptionCount + "개 (+"
-//                    + String.format("%.2f", optionScore) + ")");
-//        } else {
-//            reasons.add("options 공통 항목 부족");
-//        }
-//
-//
-//        double finalScore = Math.min(score, 1.0);
-//        reasons.add("최종 점수: " + String.format("%.2f", finalScore));
-//
-//        return new SimilarityResult(finalScore, reasons);
-//    }
-
     // 유사도 점수 계산 (모듈화 버전)
     private SimilarityResult calculateSimilarityScore(
             Product base, Product candidate,
@@ -467,8 +253,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
 
         // 4) 옵션 공통 항목 평가
         score += evaluateOptionOverlap(baseOptions, candOptions, reasons);
-
-        // TODO 필요시 description 키워드 유사도 평가 추가
 
         double finalScore = Math.min(score, 1.0);
         reasons.add("최종 점수: " + String.format("%.2f", finalScore));
@@ -598,7 +382,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         }
         return optionScore;
     }
-
 
 
 // ---- 유틸 ----
