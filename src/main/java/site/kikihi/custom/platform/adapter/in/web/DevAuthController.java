@@ -74,6 +74,7 @@ public class DevAuthController implements DevAuthControllerSpec {
                 .provider(Provider.KAKAO) // 테스트용 값 (Enum)
                 .role(Role.ADMIN) // 관리자 권한 부여
                 .address(Address.of())
+                .isSearch(true)
                 .build();
     }
 
