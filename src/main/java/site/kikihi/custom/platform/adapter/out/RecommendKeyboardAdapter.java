@@ -1,6 +1,7 @@
 package site.kikihi.custom.platform.adapter.out;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -24,9 +25,7 @@ import java.util.stream.Collectors;
 public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
 
     private final MongoTemplate mongoTemplate;
-    private final ProductDocumentRepository repository;
-    private final BookmarkPort bookmarkPort; // 여기에 port를 써도 되는가??
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final BookmarkPort bookmarkPort;
 
 
     // 키보드 추천 로직
@@ -43,8 +42,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             int maxPrice
     ) {
         Query query = new Query();
-
-        // AND 조건들을 모아둘 리스트
         List<Criteria> andCriterias = new ArrayList<>();
 
         // 사이즈
@@ -99,7 +96,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             }
         }
 
-
         // RGB
         if (rgb != null) {
             if (rgb == KeyboardOptions.RGB.YES.getValue()) {
@@ -127,9 +123,7 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             query.addCriteria(new Criteria().andOperator(andCriterias.toArray(new Criteria[0])));
         }
 
-        log.info("MongoDB Query: {}", query);
         List<ProductDocument> results = mongoTemplate.find(query, ProductDocument.class);
-        log.info("검색 결과 건수: {}", results.size());
         return results.stream().map(ProductDocument::toDomain).toList();
 
     }
@@ -138,7 +132,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
     // 유사 상품 추천
     @Override
     public List<Product> getSimilarProducts(UUID userId, String productId, Product baseProduct) {
-        log.info("getSimilarProducts 호출: userId={}, productId={}, baseProduct={}", userId, productId, baseProduct);
 
         // 1단계: 후보군 넓게 추출 (카테고리 동일, 가격 ±25%)
         Query query = new Query();
@@ -178,7 +171,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             String keySwitch = (rawValue instanceof String) ? normalizeSwitch((String) rawValue) : null;
             if (keySwitch != null) likedSwitches.add(keySwitch);
         }
-
         log.info("유저 선호 브랜드={}, 선호 스위치={}", likedBrands, likedSwitches);
 
         // 3단계: 후보군 점수 계산 및 정렬
@@ -191,26 +183,52 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             }
 
         }
-
         scoredList.sort(Comparator.comparingDouble(ScoredProduct::getScore).reversed());
 
         List<Product> recommended = scoredList.stream()
                 .limit(6)
                 .map(ScoredProduct::getProduct)
-                .toList();
+                .collect(Collectors.toList());
 
 
-// 🔹 10개 추천 상품 상세 로그
-        log.info("===== 최종 추천 10개 상품 상세 =====");
+        // 2. 동일 제조사 상품 추가 (중복 피함)
+        Set<String> pickedIds = recommended.stream().map(Product::getId).collect(Collectors.toSet());
+        for (ProductDocument candidateDoc : candidates) {
+            Product candidate = candidateDoc.toDomain();
+            if (pickedIds.contains(candidate.getId())) continue;
+
+            boolean sameManufacturer = false;
+            if (candidate.getManufacturer() != null && baseProduct.getManufacturer() != null) {
+                sameManufacturer = candidate.getManufacturer().equals(baseProduct.getManufacturer());
+            }
+
+            if (sameManufacturer) {
+                recommended.add(candidate);
+                pickedIds.add(candidate.getId());
+                if (recommended.size() > 6) break;
+            }
+        }
+
+        // 3. 카테고리 내 랜덤 상품으로 채우기
+        if (recommended.size() < 10) {
+            List<Product> notPickedList = candidates.stream()
+                    .map(ProductDocument::toDomain)
+                    .filter(p -> !pickedIds.contains(p.getId()))
+                    .collect(Collectors.toList());
+            Collections.shuffle(notPickedList);
+            for (Product p : notPickedList) {
+                recommended.add(p);
+                if (recommended.size() > 6) break;
+            }
+        }
+
+        // 🔹 10개 추천 상품 상세 로그
+        log.info("===== 최종 추천 6개 상품 상세 =====");
         for (int i = 0; i < Math.min(6, scoredList.size()); i++) {
             ScoredProduct sp = scoredList.get(i);
             Product p = sp.getProduct();
             double score = sp.getScore();
             log.info("순위 {}: 상품ID={}, 점수={}", i + 1, p.getId(), score);
-
-            // calculateSimilarityScore 안에서 already logged한 reasons를 다시 받아오고 싶으면
-            // calculateSimilarityScore를 점수와 reasons를 반환하는 객체로 바꾸거나,
-            // 혹은 현재 방식처럼 로그를 찍는 것으로 충분
         }
         log.info("===== 추천 리스트 종료 =====");
         return recommended;
@@ -238,10 +256,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         List<String> candDescriptions = Optional.ofNullable(candidate.getDescription())
                 .orElse(Collections.emptyList());
 
-        log.info("baseSpec={}, candSpec={}", baseSpec, candSpec);
-        log.info("baseOptions={}, candOptions={}", baseOptions, candOptions);
-        log.info("baseDescriptions={}, candDescriptions={}", baseDescriptions, candDescriptions);
-
         // 1) 사이즈 평가
         score += evaluateSize(baseDescriptions, candDescriptions, reasons);
 
@@ -255,8 +269,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         score += evaluateOptionOverlap(baseOptions, candOptions, reasons);
 
         double finalScore = Math.min(score, 1.0);
-        reasons.add("최종 점수: " + String.format("%.2f", finalScore));
-
         return new SimilarityResult(finalScore, reasons);
     }
 
@@ -280,6 +292,7 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         }
     }
 
+    // 사이즈 찾기
     private String findSizeKeyword(List<String> descriptions, List<String> keywords) {
         for (String size : keywords) {
             for (String desc : descriptions) {
@@ -295,7 +308,6 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
     private double evaluatePressure(Map<String, Object> baseSpec, Map<String, Object> candSpec, List<String> reasons) {
         Integer basePressure = parsePressure(baseSpec.get("기능 > 키압"));
         Integer candPressure = parsePressure(candSpec.get("기능 > 키압"));
-        log.info("basePressure={}, candPressure={}", basePressure, candPressure);
 
         if (basePressure == null || candPressure == null) {
             reasons.add("키압 정보 부족 - 점수 산정 제외");
@@ -304,7 +316,7 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
 
         double diff = Math.abs(basePressure - candPressure);
         if (diff > 10) {
-            reasons.add("키압 차이 " + diff + "g (허용 10g) - 점수 감소");
+            reasons.add("키압 차이 " + diff + "g (허용 10g)");
             return 0.0;
         } else {
             double similarity = 1.0 - diff / 10.0; // diff=0 → similarity=1
@@ -342,6 +354,8 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         return 0.0;
     }
 
+
+    // 스위치 추출
     private Set<String> extractSwitches(List<Map<String, Object>> options) {
         Set<String> switches = new HashSet<>();
         for (Map<String, Object> opt : options) {
@@ -377,15 +391,12 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         double optionScore = Math.min(commonOptionCount / 5.0 * 0.1, 0.1);
         if (optionScore > 0) {
             reasons.add("options 공통 항목 " + commonOptionCount + "개 (+" + String.format("%.2f", optionScore) + ")");
-        } else {
-            reasons.add("options 공통 항목 부족");
         }
         return optionScore;
     }
 
 
-// ---- 유틸 ----
-
+    // ---- 유틸 ----
     // 키 정규화 (공백 제거), 로그 포함
     private String normalizeKey(String key) {
         return key == null ? null : key.trim();
@@ -429,12 +440,8 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         return result;
     }
 
-    // ScoredProduct 내부 상태 로그
-    private void logScoredProduct(ScoredProduct sp) {
-        log.info("추천 상품: id={}, 점수={}", sp.getProduct().getId(), sp.getScore());
-    }
-
     // ScoredProduct 클래스
+    @Getter
     private static class ScoredProduct {
         private final Product product;
         private final double score;
@@ -446,36 +453,14 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
             this.reasons = reasons;
             log.info("ScoredProduct 생성: 상품ID={}, 점수={}, 이유={}", product.getId(), score, String.join(", ", reasons));
         }
-
-        public Product getProduct() {
-            return product;
-        }
-
-        public double getScore() {
-            return score;
-        }
-
-        public List<String> getReasons() {
-            return reasons;
-        }
     }
 
+    @Getter
+    @RequiredArgsConstructor
     public static class SimilarityResult {
         private final double score;
         private final List<String> reasons;
 
-        public SimilarityResult(double score, List<String> reasons) {
-            this.score = score;
-            this.reasons = reasons;
-        }
-
-        public double getScore() {
-            return score;
-        }
-
-        public List<String> getReasons() {
-            return reasons;
-        }
     }
 
 }
