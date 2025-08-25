@@ -1,5 +1,7 @@
 package site.kikihi.custom.platform.adapter.out;
 
+import org.springframework.transaction.annotation.Transactional;
+import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.out.jpa.user.UserJpaEntity;
 import site.kikihi.custom.platform.adapter.out.jpa.user.UserJpaRepository;
 import site.kikihi.custom.platform.application.out.user.UserPort;
@@ -25,8 +27,15 @@ public class UserAdapter implements UserPort {
     }
 
     @Override
-    public User updateUser(User user) {
-        return null;
+    @Transactional
+    public void updateUser(User user) {
+
+        /// 조회
+        var entity = userJpaRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_NOT_FOUND.getMessage()));
+
+        /// 자동저장 여부 수정
+        entity.updateSearch(user.isSearch());
     }
 
     @Override

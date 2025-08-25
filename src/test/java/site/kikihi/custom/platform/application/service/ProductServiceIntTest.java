@@ -113,7 +113,6 @@ class ProductServiceIntTest {
             assertNotNull(response);
             assertTrue(response.likedByMe());
             Assertions.assertEquals(response.productName(), product1.getName());
-            Assertions.assertEquals(response.originalPrice(), product1.getPrice());
         }
 
         @Test

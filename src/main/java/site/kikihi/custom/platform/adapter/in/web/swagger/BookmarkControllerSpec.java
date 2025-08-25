@@ -88,7 +88,7 @@ public interface BookmarkControllerSpec {
 
         String SUCCESS_PAYLOAD = """
             {
-              "productId": "686bd26dff7b820865d6e005"
+              "productId": "6896ed675198cf586e933d6c"
             }
             """;
 }

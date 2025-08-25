@@ -7,6 +7,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
+import site.kikihi.custom.platform.domain.user.User;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +35,14 @@ public class RequestMatcherHolder {
             // 상품 관련
             new RequestInfo(GET, "/api/v1/products/**", null),
 
-            //추천 관련
+            // 추천 관련
             new RequestInfo(GET, "/api/v1/recommend/**", null),
+
+            // 검색 관련
+            new RequestInfo(GET, "/api/v1/search", null),
+            new RequestInfo(GET, "/api/v1/search/**", Role.USER),
+            new RequestInfo(DELETE, "/api/v1/search/**", Role.USER),
+            new RequestInfo(PUT, "/api/v1/search/**", Role.USER),
 
             // static resources
             new RequestInfo(GET, "/docs/**", null),
