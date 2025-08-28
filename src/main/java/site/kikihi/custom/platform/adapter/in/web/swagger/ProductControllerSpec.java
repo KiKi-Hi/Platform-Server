@@ -28,7 +28,7 @@ public interface ProductControllerSpec {
             description = "ID를 바탕으로 상품 상세정보를 조회할 수 있습니다."
     )
     ApiResponse<ProductDetailResponse> getProduct(
-            @Parameter(description = "상품 ID", example = "6896ed675198cf586e933d6c")
+            @Parameter(description = "상품 ID", example = "6896ed7d5198cf586e933d6e")
             @RequestParam String id,
 
             @Parameter(hidden = true)
@@ -50,7 +50,7 @@ public interface ProductControllerSpec {
     ApiResponse<SliceResponse<ProductListResponse>> getProductList(
             PageRequest pageRequest,
 
-            @Parameter(description = "카테고리", required = true, example = "keycap")
+            @Parameter(description = "카테고리", required = true, example = "keyboard")
             @RequestParam CategoryType category,
 
             @Parameter(

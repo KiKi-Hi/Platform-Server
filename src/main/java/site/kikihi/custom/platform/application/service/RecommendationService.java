@@ -1,18 +1,21 @@
 package site.kikihi.custom.platform.application.service;
 
 import site.kikihi.custom.global.response.ErrorCode;
+import site.kikihi.custom.platform.adapter.in.web.converter.KeyboardOptionsConverter;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.product.KeyboardRecommendationRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.response.product.KeyboardRecommendationResponse;
 import site.kikihi.custom.platform.application.in.recommendation.RecommendationUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
 import site.kikihi.custom.platform.application.out.bookmark.dto.TopBookmark;
 import site.kikihi.custom.platform.application.out.custom.CustomKeyboardPort;
 import site.kikihi.custom.platform.application.out.product.ProductPort;
+import site.kikihi.custom.platform.application.out.recommend.RecommendKeyboardPort;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboard;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 @Service
@@ -26,6 +29,10 @@ public class RecommendationService implements RecommendationUseCase {
 
     /// 커스텀 의존성 조회
     private final CustomKeyboardPort customPort;
+
+    /// 키보드 추천 필터링 & 조회
+    private final RecommendKeyboardPort recommendKeyboardPort;
+
 
     /// 추천 기준
     private static final int RECOMMEND_COUNT = 8;
@@ -84,6 +91,64 @@ public class RecommendationService implements RecommendationUseCase {
         }
 
     }
+
+    /**
+     * 키보드 추천을 위한 필터링 로직
+     *
+     * @param userId  유저 ID
+     * @param request 키보드 추천 요청 DTO
+     * @return 추천 상품 리스트
+     */
+    @Override
+    public List<KeyboardRecommendationResponse> getTutorialKeyboardRecommendation(UUID userId, KeyboardRecommendationRequest request) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        List<Product> documents=recommendKeyboardPort.filterAndRecommendKeyboards(
+                userId,
+                KeyboardOptionsConverter.mapSizeToDescription(request.getSize()),
+                KeyboardOptionsConverter.mapKeyPressureToSpecTable(request.getKeyPressure()),
+                KeyboardOptionsConverter.mapLayoutToDescription(request.getLayout()),
+                KeyboardOptionsConverter.mapSwitchTypeToOptionNames(request.getSwitchType()),
+                request.getSoundDampener().getValue(),
+                request.getRgb().getValue(),
+                request.getMinPrice(),
+                request.getMaxPrice()
+        );
+
+        return documents.stream()
+                .map(KeyboardRecommendationResponse :: from)
+                .toList();
+
+    }
+
+    /**
+     * 유사한 상품을 추천하는 로직입니다.
+     * @param userId
+     * @param productId
+     * @return
+     */
+    @Override
+    public List<Product> getSimilarProducts(UUID userId, String productId) {
+    /// 유저가 있다면 체크, 없다면 바로 상품 조회
+//        if (userId != null) {
+//            /// 커스텀을 제작했다면, 비슷한 특성의 상품들을 추천
+//            Optional<CustomKeyboard> customKeyboard = customPort.loadCustomKeyboardByUserId(userId);
+//
+//            if (customKeyboard.isPresent()) {
+//                return recommendForCustomUser(customKeyboard.get());
+//            }
+//        }
+
+        /// 상품 조회
+        Product product = loadProduct(productId);
+
+        /// 유사한 상품 필터링
+        return recommendKeyboardPort.getSimilarProducts(userId, productId,product);
+
+    }
+
 
     // =================
     //  내부 함수

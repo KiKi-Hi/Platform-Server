@@ -1,0 +1,68 @@
+package site.kikihi.custom.platform.adapter.in.web.dto.response.product;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import site.kikihi.custom.platform.domain.product.Product;
+
+import java.util.List;
+
+/**
+ * 상품 상세 응답 DTO
+ *
+ * @param id                 상품 ID
+ * @param thumbnail          상품 썸네일
+ * @param manufacturerName   제조사명
+ * @param productName        제품명
+ * @param price
+ * @param likedByMe          나의 북마크 여부
+ */
+
+@Builder
+@Schema(name = "KeyboardRecommendationListResponse", description = "튜토리얼 키보드 추천 리스트 응답")
+public record KeyboardRecommendationResponse(
+
+        @Schema(description = "상품 아이디", example = "101")
+        String id,
+
+        @Schema(description = "상품 썸네일 이미지 URL", example = "https://example.com/product/101.jpg")
+        String thumbnail,
+
+        @Schema(description = "제조사명", example = "독거미")
+        String manufacturerName,
+
+        @Schema(description = "제품명", example = "독거미 Aula F99")
+        String productName,
+
+        @Schema(description = "정상가(원)", example = "599000.0")
+        double price,
+
+        @Schema(description = "북마크(좋아요)한 상품 여부", example = "true")
+        boolean likedByMe
+
+) {
+
+    /// 정적 팩토리 메서드
+    // 단일 객체 변환 메서드 추가
+    public static KeyboardRecommendationResponse from(Product product) {
+        return KeyboardRecommendationResponse.builder()
+                .id(product.getId())
+                .thumbnail(product.getThumbnail())
+                .manufacturerName(product.getManufacturer())
+                .productName(product.getName())
+                .price(product.getPrice())
+                .likedByMe(false)
+                .build();
+    }
+
+
+    // 기존 리스트 변환 메서드는 그대로 유지
+    public static List<KeyboardRecommendationResponse> from(List<Product> productList) {
+        return productList.stream()
+                .map(KeyboardRecommendationResponse::from) // 단일 객체 변환 메서드 호출
+                .toList();
+    }
+
+
+
+}
+
