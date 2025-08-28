@@ -76,9 +76,9 @@ public class RecommendationController implements RecommendControllerSpec {
         UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         // 유사한 상품 추천 서비스 호출
-        List<Product> similarProducts = service.getSimilarProducts(userId,productId);
+        List<KeyboardRecommendationResponse> similarProducts = service.getSimilarProducts(userId,productId);
 
         // 응답 주기
-        return ApiResponse.ok(KeyboardRecommendationResponse.from(similarProducts));
+        return ApiResponse.ok(similarProducts);
     }
 }

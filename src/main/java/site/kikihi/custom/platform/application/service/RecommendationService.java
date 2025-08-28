@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -118,9 +119,11 @@ public class RecommendationService implements RecommendationUseCase {
         );
 
         return documents.stream()
-                .map(KeyboardRecommendationResponse :: from)
-                .toList();
-
+                .map(product -> {
+                    boolean likedByMe = bookmarkPort.checkBookmarkByUserIdAndProductId(userId, product.getId());
+                    return KeyboardRecommendationResponse.from(product, likedByMe);
+                })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -130,7 +133,7 @@ public class RecommendationService implements RecommendationUseCase {
      * @return
      */
     @Override
-    public List<Product> getSimilarProducts(UUID userId, String productId) {
+    public List<KeyboardRecommendationResponse> getSimilarProducts(UUID userId, String productId) {
     /// 유저가 있다면 체크, 없다면 바로 상품 조회
 //        if (userId != null) {
 //            /// 커스텀을 제작했다면, 비슷한 특성의 상품들을 추천
@@ -145,8 +148,15 @@ public class RecommendationService implements RecommendationUseCase {
         Product product = loadProduct(productId);
 
         /// 유사한 상품 필터링
-        return recommendKeyboardPort.getSimilarProducts(userId, productId,product);
+        List<Product> documents=recommendKeyboardPort.getSimilarProducts(userId, productId,product);
 
+        // 각 상품별 북마크 여부 체크 후 응답 리스트 생성
+        return documents.stream()
+                .map(similarProduct -> {
+                    boolean likedByMe = bookmarkPort.checkBookmarkByUserIdAndProductId(userId, similarProduct.getId());
+                    return KeyboardRecommendationResponse.from(similarProduct, likedByMe);
+                })
+                .collect(Collectors.toList());
     }
 
 

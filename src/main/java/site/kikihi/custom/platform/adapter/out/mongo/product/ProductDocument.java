@@ -22,32 +22,33 @@ import java.util.Map;
 public class ProductDocument {
 
     @Id
-    private String id;  //
+    private String id;
 
-    private String category;    //
+    private String category;
 
-    private String name;    //
+    private String name;
 
-    private double price;   //
+    private double price;
 
-    private List<String> description;   //
+    private List<String> description;
 
     @Field("thumbnail")
-    private String thumbnail;   //
+    private String thumbnail;
 
-    private String manufacturer;    //
+    private String manufacturer;
 
     @Field("detail_purchase_url")
-    private String detailPageUrl;   //
+    private String detailPageUrl;
 
     @Field("options")
-    private List<Map<String, Object>> options;   //
+    private List<Map<String, Object>> options;
 
     @Field("all_detail_images")
-    private List<String> allDetailImages;   //
+    private List<String> allDetailImages;
 
     @Field("spec_table")
-    private Map<String, Object> specTable; // spec_table은 현재 비어있는 상태로 초기화
+    @Builder.Default
+    private Map<String, Object> specTable = new java.util.HashMap<>();
 
     /// 도메인 변경
     public Product toDomain(){

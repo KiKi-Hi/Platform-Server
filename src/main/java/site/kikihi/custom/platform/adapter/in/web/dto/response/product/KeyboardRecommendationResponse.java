@@ -34,7 +34,7 @@ public record KeyboardRecommendationResponse(
         String productName,
 
         @Schema(description = "정상가(원)", example = "599000.0")
-        double price,
+        Double price,
 
         @Schema(description = "북마크(좋아요)한 상품 여부", example = "true")
         boolean likedByMe
@@ -43,25 +43,16 @@ public record KeyboardRecommendationResponse(
 
     /// 정적 팩토리 메서드
     // 단일 객체 변환 메서드 추가
-    public static KeyboardRecommendationResponse from(Product product) {
+    public static KeyboardRecommendationResponse from(Product product, boolean likedByMe) {
         return KeyboardRecommendationResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
                 .manufacturerName(product.getManufacturer())
                 .productName(product.getName())
                 .price(product.getPrice())
-                .likedByMe(false)
+                .likedByMe(likedByMe)
                 .build();
     }
-
-
-    // 기존 리스트 변환 메서드는 그대로 유지
-    public static List<KeyboardRecommendationResponse> from(List<Product> productList) {
-        return productList.stream()
-                .map(KeyboardRecommendationResponse::from) // 단일 객체 변환 메서드 호출
-                .toList();
-    }
-
 
 
 }

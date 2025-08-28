@@ -54,7 +54,7 @@ public class KeyboardOptions {
 
     @Getter
     @RequiredArgsConstructor
-    @Schema(name = "[요청][상품] 키압(Key Pressure) Enum", description = "키압 옵션")
+    @Schema(name = "[요청][상품] 레이아웃(Layout) Enum", description = "레이아웃 옵션")
     public enum Layout {
         @Schema(description = "인체공학적 (스텝스컬쳐2)", example = "egonomic")
         ERGONOMIC("egonomic"),
