@@ -43,8 +43,7 @@ public class BookmarkService implements BookmarkUseCase {
         User user = getUser(userId);
 
         /// 상품 예외 처리
-        Product product = productPort.getProduct(request.getProductId())
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+        Product product = getProduct(request.getProductId());
 
         /// 이미 눌렀다면 예외 처리 발생
         boolean checked = port.checkBookmarkByUserIdAndProductId(userId, request.getProductId());
@@ -57,6 +56,27 @@ public class BookmarkService implements BookmarkUseCase {
         Bookmark bookmark = Bookmark.of(product.getId(), user.getId(), product.getCategory());
 
         return port.saveBookmark(bookmark);
+    }
+
+
+
+    /**
+     * 로컬 스토리지에 저장한 북마크를 한번에 저장할 수 있도록 하는 서비스 로직
+     *
+     * @param userId  북마크를 저장할 유저 Id
+     * @param request 저장할 요청 DTO
+     */
+    @Override
+    public void syncBookmarks(UUID userId, BookmarkSyncRequest request) {
+
+        /// 상품 ID들
+        List<BookmarkRequest> productIds = request.getProductIds();
+
+        /// 서비스를 연속으로 실현하여 작동
+        List<Bookmark> list = productIds.stream()
+                .map(req -> saveBookmark(userId, req))
+                .toList();
+
     }
 
     /**
@@ -145,5 +165,14 @@ public class BookmarkService implements BookmarkUseCase {
                 .toList();
     }
 
+
+    /**
+     * 상품 내부 조회 함수
+     * @param productId 상품 ID
+     */
+    private Product getProduct(String productId) {
+        return productPort.getProduct(productId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+    }
 
 }
