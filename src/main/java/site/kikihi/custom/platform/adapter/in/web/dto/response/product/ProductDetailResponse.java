@@ -34,6 +34,9 @@ public record ProductDetailResponse(
         @Schema(description = "상품 썸네일 이미지 URL", example = "https://example.com/product/101.jpg")
         String thumbnail,
 
+        @Schema(description = "원본 상품 구매 URL", example = "https://example.com/product")
+        String siteUrl,
+
         @Schema(description = "제조사명", example = "독거미")
         String manufacturerName,
 
@@ -64,6 +67,7 @@ public record ProductDetailResponse(
         return ProductDetailResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
+                .siteUrl(product.getDetailPageUrl())
                 .manufacturerName(product.getManufacturer())
                 .category(product.getCategory())
                 .productName(product.getName())
@@ -80,6 +84,7 @@ public record ProductDetailResponse(
         return ProductDetailResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
+                .siteUrl(product.getDetailPageUrl())
                 .manufacturerName(product.getManufacturer())
                 .category(product.getCategory())
                 .productName(product.getName())
