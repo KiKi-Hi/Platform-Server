@@ -9,11 +9,8 @@ import site.kikihi.custom.platform.adapter.in.web.dto.response.bookmark.Bookmark
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,15 +29,7 @@ public interface BookmarkControllerSpec {
      */
     @Operation(
             summary = "북마크 생성 API",
-            description = "JWT 기반으로 북마크를 생성할 수 있습니다.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(name = "북마크 생성 성공 예시", value = SUCCESS_PAYLOAD),
-                            }
-                    )
-            )
+            description = "JWT 기반으로 북마크를 생성할 수 있습니다."
     )
     ApiResponse<String> saveBookmark(
             @RequestBody @Valid BookmarkRequest request,
@@ -82,13 +71,4 @@ public interface BookmarkControllerSpec {
 
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
-
-
-
-
-        String SUCCESS_PAYLOAD = """
-            {
-              "productId": "6896ed675198cf586e933d6c"
-            }
-            """;
 }

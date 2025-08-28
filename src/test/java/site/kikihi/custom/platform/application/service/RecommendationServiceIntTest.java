@@ -114,9 +114,9 @@ class RecommendationServiceIntTest {
         public void recommendation_under_8() throws Exception {
             // given
             /// 총 북마크 상품 2개 (< 8) -> 북마크 가중 2개, 새로운 랜덤 6개 추천
-            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product1.getId()));
-            bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), product1.getId()));
-            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product2.getId()));
+            bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(product1.getId()));
+            bookmarkService.saveBookmark(user2.getId(), getBookmarkRequest(product1.getId()));
+            bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(product2.getId()));
 
             Set<String> bookmarkedProductIds = Set.of(product1.getId(), product2.getId());
 
@@ -152,8 +152,8 @@ class RecommendationServiceIntTest {
 
             /// 북마크 10개 저장 bookmarks
             for (ProductDocument p : documents) {
-                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
-                bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), p.getId()));
+                bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(p.getId()));
+                bookmarkService.saveBookmark(user2.getId(), getBookmarkRequest(p.getId()));
             }
 
             Set<String> bookmarkedProductIds = documents.stream()
@@ -192,8 +192,8 @@ class RecommendationServiceIntTest {
 
             /// 총 북마크 30개 (20 <= 30 <= 50)
             for (ProductDocument p : documents) {
-                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
-                bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), p.getId()));
+                bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(p.getId()));
+                bookmarkService.saveBookmark(user2.getId(), getBookmarkRequest(p.getId()));
             }
 
             /// 북마크를 한 상품 ID 목록
@@ -234,9 +234,9 @@ class RecommendationServiceIntTest {
 
             // 총 북마크 60개 (60 > 50)
             for (ProductDocument p : documents) {
-                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
-                bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), p.getId()));
-                bookmarkService.saveBookmark(getBookmarkRequest(user3.getId(), p.getId()));
+                bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(p.getId()));
+                bookmarkService.saveBookmark(user2.getId(), getBookmarkRequest(p.getId()));
+                bookmarkService.saveBookmark(user3.getId(), getBookmarkRequest(p.getId()));
             }
 
             List<String> productIds = documents.stream()
@@ -281,7 +281,7 @@ class RecommendationServiceIntTest {
 
             // 최소 총 북마크 60개
             for (ProductDocument p : documents) {
-                bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), p.getId()));
+                bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(p.getId()));
             }
 
             /// 상품A: 100명 유저가 북마크
@@ -289,19 +289,19 @@ class RecommendationServiceIntTest {
             for (int i = 0; i < 100; i++) {
                 User u = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userA" + i, "socialA" + i));
                 users.add(u);
-                bookmarkService.saveBookmark(getBookmarkRequest(u.getId(), product1.getId()));
+                bookmarkService.saveBookmark(u.getId(), getBookmarkRequest(product1.getId()));
             }
 
             /// 상품B: 2명이 북마크
             User userB1 = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userB1", "socialB1"));
             User userB2 = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userB2", "socialB2"));
 
-            bookmarkService.saveBookmark(getBookmarkRequest(userB1.getId(), product2.getId()));
-            bookmarkService.saveBookmark(getBookmarkRequest(userB2.getId(), product2.getId()));
+            bookmarkService.saveBookmark(userB1.getId(),getBookmarkRequest( product2.getId()));
+            bookmarkService.saveBookmark(userB2.getId(), getBookmarkRequest(product2.getId()));
 
             /// 상품C: 1명이 북마크
             User userC = userPort.saveUser(UserFixtures.createUser(UUID.randomUUID(), "userC1", "socialC1"));
-            bookmarkService.saveBookmark(getBookmarkRequest(userC.getId(), product3.getId()));
+            bookmarkService.saveBookmark(userC.getId(),getBookmarkRequest( product3.getId()));
 
             /// 제대로된 추천을 위해 8개의 상품에 대해서 진행해야된다.
 
@@ -331,9 +331,9 @@ class RecommendationServiceIntTest {
             // given
             /// 북마크/랜덤 추천 데이터 준비(여러 상황에서 호출할 수 있으나, 추천 결과 유일성만 체크)
 
-            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product1.getId()));
-            bookmarkService.saveBookmark(getBookmarkRequest(user2.getId(), product1.getId()));
-            bookmarkService.saveBookmark(getBookmarkRequest(user1.getId(), product2.getId()));
+            bookmarkService.saveBookmark(user1.getId(),getBookmarkRequest(product1.getId()));
+            bookmarkService.saveBookmark(user2.getId(), getBookmarkRequest(product1.getId()));
+            bookmarkService.saveBookmark(user1.getId(), getBookmarkRequest(product2.getId()));
 
             /// when
             List<Product> recommended = sut.getProductsByRecommendation(null);
@@ -351,12 +351,10 @@ class RecommendationServiceIntTest {
         /**
          * 공통 북마크 DTO 생성 함수
          *
-         * @param userId    유저 ID
          * @param productId 상품 ID
          */
-        private BookmarkRequest getBookmarkRequest(UUID userId, String productId) {
+        private BookmarkRequest getBookmarkRequest(String productId) {
             return BookmarkRequest.builder()
-                    .userId(userId)
                     .productId(productId)
                     .build();
         }

@@ -41,10 +41,9 @@ public class BookmarkController implements BookmarkControllerSpec {
 
         // 아이디 추출
         UUID userId = principalDetails.getId();
-        request.setUserId(userId);
 
         // 서비스 계층
-        service.saveBookmark(request);
+        service.saveBookmark(userId, request);
 
         // 리턴
         return ApiResponse.created();

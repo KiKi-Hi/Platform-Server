@@ -2,6 +2,7 @@ package site.kikihi.custom.platform.application.service;
 
 import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark.BookmarkSyncRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import site.kikihi.custom.platform.application.in.bookmark.BookmarkUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
@@ -36,17 +37,17 @@ public class BookmarkService implements BookmarkUseCase {
      * @param request Bookmark 생성을 위한 Request
      */
     @Override
-    public Bookmark saveBookmark(BookmarkRequest request) {
+    public Bookmark saveBookmark(UUID userId, BookmarkRequest request) {
 
         /// 유저 예외 처리
-        User user = getUser(request.getUserId());
+        User user = getUser(userId);
 
         /// 상품 예외 처리
         Product product = productPort.getProduct(request.getProductId())
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
 
         /// 이미 눌렀다면 예외 처리 발생
-        boolean checked = port.checkBookmarkByUserIdAndProductId(request.getUserId(), request.getProductId());
+        boolean checked = port.checkBookmarkByUserIdAndProductId(userId, request.getProductId());
 
         if (checked) {
             throw new IllegalStateException(ErrorCode.BOOKMARK_ALREADY.getMessage());
