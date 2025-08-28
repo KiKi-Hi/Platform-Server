@@ -84,6 +84,8 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     })
     List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
+    /// 상품 개수
+    Long countByCategory(String category);
     // =================
     //  삭제 함수
     // =================

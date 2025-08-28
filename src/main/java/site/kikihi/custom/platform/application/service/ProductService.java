@@ -119,6 +119,17 @@ public class ProductService implements ProductUseCase {
         return toProductListResponse(userId, categoryId, products);
     }
 
+    /**
+     * 카테고리에 따른 전체 상품 개수
+     * @param categoryId    카테고리
+     */
+    @Override
+    public Long getCountProducts(String categoryId) {
+
+        /// Port에서 조회
+        return productPort.getProductsCount(categoryId);
+    }
+
     // =================
     //  상품 상세 조회
     // =================

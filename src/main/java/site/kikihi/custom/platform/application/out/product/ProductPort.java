@@ -48,6 +48,9 @@ public interface ProductPort {
     /// 상품 ID들 바탕으로 조회
     Map<String, Product> getProductsByIds(List<String> productIds);
 
+    /// 상품 개수 조회
+    Long getProductsCount(String category);
+
     // =================
     //  상품 추천
     // =================

@@ -31,6 +31,9 @@ public interface ProductUseCase {
     // 카테고리별 목록 조회 (카테고리, 제조사, 가격 포함)
     Slice<ProductListResponse> getProductsByCategoryIdAndManufacturerIdAndPrice(UUID userId, String categoryId, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
+    /// 상품 개수 조회
+    Long getCountProducts(String categoryId);
+
     /// 상품 상세 조회
     ProductDetailResponse getProduct(UUID userId, String id);
 

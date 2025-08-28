@@ -18,6 +18,15 @@ import java.util.List;
 @Tag(name = "상품 조회 API", description = "상품 조회를 수행하는 API 입니다.")
 public interface ProductControllerSpec {
 
+
+    @Operation(
+            summary = "상품 개수 조회 API",
+            description = "카테고리별 상품 전체 개수를 파악합니다."
+    )
+    ApiResponse<Long> getTotalProducts(
+            @RequestParam CategoryType category
+    );
+
     /**
      * 상품 상세 조회 API
      * @param id                상품 아이디
