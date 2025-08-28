@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.product.KeyboardOptions;
 import site.kikihi.custom.platform.adapter.out.mongo.product.ProductDocument;
-import site.kikihi.custom.platform.adapter.out.mongo.product.ProductDocumentRepository;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
 import site.kikihi.custom.platform.application.out.recommend.RecommendKeyboardPort;
 import site.kikihi.custom.platform.domain.bookmark.Bookmark;
@@ -53,21 +52,28 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
         if (keyPressure != null) {
             String keyPressureField = "spec_table.기능 > 키압";
             if (keyPressure <= 49) { // LIGHT 구간
-                query.addCriteria(Criteria.where(keyPressureField).regex("^([0-4]?[0-9])g$"));
+                andCriterias.add(Criteria.where(keyPressureField).regex("^([0-4]?[0-9])g$"));
             } else { // NORMAL 구간
-                query.addCriteria(Criteria.where(keyPressureField).regex("^([5-9][0-9]|[1-9][0-9]{2,})g$"));
+                andCriterias.add(Criteria.where(keyPressureField).regex("^([5-9][0-9]|[1-9][0-9]{2,})g$"));
             }
 
         }
         // Layout
         if (layout != null && !layout.isBlank()) {
-            if ("ERGONOMIC".equalsIgnoreCase(layout)) {
-                query.addCriteria(Criteria.where("spec_table.키보드구조 > 스텝스컬쳐2").is("○"));
+            String val = layout.trim();
+            boolean ergonomic = "ERGONOMIC".equalsIgnoreCase(val) || "egonomic".equalsIgnoreCase(val);
+            if (ergonomic) {
+                andCriterias.add(new Criteria().orOperator(
+                        Criteria.where("spec_table.키보드구조 > 스텝스컬쳐2").is("○"),
+                        Criteria.where("description").regex("스텝스컬쳐2", "i")
+                ));
             } else if ("SIMPLE".equalsIgnoreCase(layout)) {
-                andCriterias.add(Criteria.where("spec_table.키보드구조 > 로우프로파일(LP)").is("○"));
-                andCriterias.add(Criteria.where("description").regex("스텝스컬쳐2", "i"));
-                andCriterias.add(Criteria.where("description").regex("lp", "i"));
+                andCriterias.add(new Criteria().orOperator(
+                        Criteria.where("spec_table.키보드구조 > 로우프로파일(LP)").is("○"),
+                        Criteria.where("description").regex("lp", "i")
+                ));
             }
+
         }
 
         // Switch Type
@@ -83,13 +89,13 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
 
         // SoundDampener
         if (soundDampener != null) {
-            if (soundDampener == KeyboardOptions.SoundDampener.YES.getValue()) {
+            if (KeyboardOptions.SoundDampener.YES.getValue().equals(soundDampener)) {
                 andCriterias.add(new Criteria().orOperator(
                         Criteria.where("spec_table.키보드구조 > 흡음재").is("○"),
                         Criteria.where("description").regex("흡음재")
                 ));
             } else {
-                query.addCriteria(new Criteria().andOperator(
+                andCriterias.add(new Criteria().andOperator(
                         Criteria.where("spec_table.키보드구조 > 흡음재").ne("○"),
                         Criteria.where("description").not().regex("흡음재")
                 ));
@@ -98,13 +104,13 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
 
         // RGB
         if (rgb != null) {
-            if (rgb == KeyboardOptions.RGB.YES.getValue()) {
+            if (KeyboardOptions.RGB.YES.getValue().equals(rgb)) {
                 andCriterias.add(new Criteria().orOperator(
                         Criteria.where("spec_table.키보드구조 > RGB 백라이트").is("○"),
                         Criteria.where("description").regex("RGB", "i")
                 ));
             } else {
-                query.addCriteria(new Criteria().andOperator(
+                andCriterias.add(new Criteria().andOperator(
                         Criteria.where("spec_table.키보드구조 > RGB 백라이트").ne("○"),
                         Criteria.where("description").not().regex("RGB", "i")
                 ));
@@ -113,19 +119,19 @@ public class RecommendKeyboardAdapter implements RecommendKeyboardPort {
 
         // 가격
         if (minPrice > 0 || maxPrice > 0) {
-            query.addCriteria(Criteria.where("options").elemMatch(
-                    Criteria.where("main_price").gte(minPrice).lte(maxPrice)
-            ));
-        }
+                List<Criteria> priceBounds = new ArrayList<>();
+                if (minPrice > 0) priceBounds.add(Criteria.where("main_price").gte(minPrice));
+                if (maxPrice > 0) priceBounds.add(Criteria.where("main_price").lte(maxPrice));
+                query.addCriteria(Criteria.where("options")
+                .elemMatch(new Criteria().andOperator(priceBounds.toArray(new Criteria[0]))));
+            }
 
-        // And 조건 최종 적용
         if (!andCriterias.isEmpty()) {
             query.addCriteria(new Criteria().andOperator(andCriterias.toArray(new Criteria[0])));
         }
 
         List<ProductDocument> results = mongoTemplate.find(query, ProductDocument.class);
         return results.stream().map(ProductDocument::toDomain).toList();
-
     }
 
 

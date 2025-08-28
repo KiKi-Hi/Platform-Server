@@ -13,7 +13,7 @@ import java.util.Arrays;
 @Slf4j
 public class LoggingAspect {
 
-    @Pointcut("execution(* com.jiyoung.kikihi.platform.application.service.*Service.*(..))")
+    @Pointcut("execution(* site.kikihi.custom.platform.application.service.*Service.*(..))")
     private void applicationLayer() {
     }
 

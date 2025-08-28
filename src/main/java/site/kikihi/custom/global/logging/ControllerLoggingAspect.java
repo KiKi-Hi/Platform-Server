@@ -21,7 +21,7 @@ import java.util.Objects;
 @Slf4j
 public class ControllerLoggingAspect {
 
-    @Pointcut("execution(* com.jiyoung.kikihi.platform.adapter.in.web..*.*(..))")
+    @Pointcut("execution(* site.kikihi.custom.platform.adapter.in.web..*.*(..))")
     private void controllerPointcut() {}
 
     @Before("controllerPointcut()")

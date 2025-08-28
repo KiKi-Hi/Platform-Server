@@ -15,6 +15,6 @@ public interface RecommendationUseCase {
     List<KeyboardRecommendationResponse> getTutorialKeyboardRecommendation(UUID userId, KeyboardRecommendationRequest request);
 
     /// 유사한 상품 추천
-    List<Product> getSimilarProducts(UUID userId, String productId);
+    List<KeyboardRecommendationResponse> getSimilarProducts(UUID userId, String productId);
 
 }

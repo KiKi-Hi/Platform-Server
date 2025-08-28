@@ -6,10 +6,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Schema(name = "[요청][상품] 키보드 추천 요청 DTO", description = "키보드 추천 요청에 사용하는 DTO입니다.")
+@Schema(name = "[요청][상품] 키보드 추천 요청 Request", description = "키보드 추천 요청에 사용하는 DTO입니다.")
 public class KeyboardRecommendationRequest {
 
-    @Schema(description = "키보드 배열(Size) 옵션", example = "ten", required = true)
+    @Schema(description = "키보드 배열(Size) 옵션", example = "tenkeyless", required = true)
     private KeyboardOptions.Size size;
 
     @Schema(description = "키압(Key Pressure) 옵션", example = "light", required = true)
