@@ -66,5 +66,16 @@ public interface ProductControllerSpec {
 
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
+
+
+    @Operation(
+            summary = "제조사 목록 조회 API",
+            description = "카테고리에 따라서 제조사 목록을 조회할 수 있습니다."
+    )
+    ApiResponse<SliceResponse<String>> getManufacturers(
+            PageRequest pageRequest,
+
+            @Parameter(description = "카테고리", required = true, example = "keyboard")
+            @RequestParam CategoryType category);
 }
 

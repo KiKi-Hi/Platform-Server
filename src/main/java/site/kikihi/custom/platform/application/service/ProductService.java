@@ -150,6 +150,27 @@ public class ProductService implements ProductUseCase {
 
     }
 
+    /**
+     * 모든 제조사를 가져오는 로직입니다.
+     * @param categoryId    조회할 카테고리 ID
+     */
+    @Override
+    public Slice<String> getManufacturers(String categoryId, Pageable pageable) {
+
+        /// Port에서 일단 전부 조회
+        // TODO! DB가 적기 때문에, 일단은 다 가져와서 슬라이싱,,, 추후에 데이터의 개수가 많아지게 된다면 로직을 다시 생각해야 될 듯
+        List<String> manufacturers = productPort.getManufacturers(categoryId);
+
+        // 페이징 적용
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), manufacturers.size());
+        List<String> content = manufacturers.subList(start, end);
+
+        boolean hasNext = end < manufacturers.size();
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
     // ========================
     // 외부 의존성
     // ========================

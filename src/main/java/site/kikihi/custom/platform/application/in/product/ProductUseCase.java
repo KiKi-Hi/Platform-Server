@@ -34,6 +34,9 @@ public interface ProductUseCase {
     /// 상품 상세 조회
     ProductDetailResponse getProduct(UUID userId, String id);
 
+    /// 카테고리 목록 조회
+    Slice<String> getManufacturers(String categoryId, Pageable pageable);
+
     /// 외부 의존성
     // 커스텀 키보드에 맞는 부품들 조회
     Slice<ProductListResponse> getProductsByLayout(UUID userId, String categoryId, CustomKeyboardLayout layout, Pageable pageable);

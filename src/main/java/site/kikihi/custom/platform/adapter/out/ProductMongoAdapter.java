@@ -94,6 +94,14 @@ public class ProductMongoAdapter implements ProductPort {
                 map(ProductDocument::toDomain);
     }
 
+    /// 카테고리 기반 제조사 목록 조회
+    @Override
+    public List<String> getManufacturers(String category) {
+
+        /// DB 조회
+        return documentRepository.findManufacturersByCategory(category);
+    }
+
     // =================
     //  상품 조회
     // =================

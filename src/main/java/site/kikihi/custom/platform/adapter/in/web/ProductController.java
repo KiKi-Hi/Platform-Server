@@ -104,5 +104,29 @@ public class ProductController implements ProductControllerSpec {
 
         return ApiResponse.ok(product);
     }
+
+
+    /**
+     * 제조사 목록 조회 API
+     * @param category  카테고리
+     */
+    @GetMapping("/mnf")
+    public ApiResponse<SliceResponse<String>> getManufacturers(
+            PageRequest pageRequest,
+            @RequestParam CategoryType category) {
+
+        /// Pageable
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPage() - 1,
+                pageRequest.getSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
+        /// 서비스
+        Slice<String> responses = productService.getManufacturers(category.getValue(), pageable);
+
+        /// SliceResponse 변환 후, 리턴
+        return ApiResponse.ok(SliceResponse.from(responses));
+    }
 }
 

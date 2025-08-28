@@ -42,6 +42,13 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
+    @Aggregation(pipeline = {
+            "{ '$match': { 'category': ?0 } }",
+            "{ '$group': { '_id': '$manufacturer' } }"
+    })
+    List<String> findManufacturersByCategory(String category);
+
+
     /// 카테고리 기반 목록 조회 (카테고리, 제조사, 가격 포함)
     @Query("""
     {
