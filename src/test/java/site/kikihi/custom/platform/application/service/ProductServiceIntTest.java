@@ -102,9 +102,9 @@ class ProductServiceIntTest {
         void detailLoad_user_no_bookmark_happy() {
 
             // given
-            var request = getBookmarkRequest(user1.getId(), product1.getId());
+            var request = getBookmarkRequest(product1.getId());
 
-            bookmarkService.saveBookmark(request);
+            bookmarkService.saveBookmark(user1.getId(), request);
 
             // when
             ProductDetailResponse response = sut.getProduct(user1.getId(), product1.getId());
@@ -175,11 +175,12 @@ class ProductServiceIntTest {
             Pageable pageable = PageRequest.of(0, 10);
 
             // 상품1,3에 북마크 설정
-            var request1 = getBookmarkRequest(user1.getId(), product1.getId());
-            var request2 = getBookmarkRequest(user1.getId(), product3.getId());
+            var request1 = getBookmarkRequest(product1.getId());
+            var request2 = getBookmarkRequest(product3.getId());
 
-            List.of(request1, request2)
-                    .forEach(req -> bookmarkService.saveBookmark(req));
+            bookmarkService.saveBookmark(user1.getId(), request1);
+            bookmarkService.saveBookmark(user1.getId(), request2);
+
 
             // when
             Slice<ProductListResponse> products = sut.getProductsByCategoryId(user1.getId(), "test", pageable);
@@ -262,11 +263,11 @@ class ProductServiceIntTest {
             Pageable pageable = PageRequest.of(0, 10);
 
             // 상품1,3에 북마크 설정
-            var request1 = getBookmarkRequest(user1.getId(), product2.getId());
-            var request2 = getBookmarkRequest(user1.getId(), product4.getId());
+            var request1 = getBookmarkRequest(product2.getId());
+            var request2 = getBookmarkRequest(product4.getId());
 
-            List.of(request1, request2)
-                    .forEach(req -> bookmarkService.saveBookmark(req));
+            bookmarkService.saveBookmark(user1.getId(), request1);
+            bookmarkService.saveBookmark(user1.getId(), request2);
 
             // when
             Slice<ProductListResponse> products = sut.getProductsByCategoryIdAndManufacturerId(
@@ -345,9 +346,9 @@ class ProductServiceIntTest {
             double price = product1.getPrice();
 
             // 상품2에 북마크 설정
-            var request1 = getBookmarkRequest(user1.getId(), product1.getId());
+            var request1 = getBookmarkRequest(product1.getId());
 
-            bookmarkService.saveBookmark(request1);
+            bookmarkService.saveBookmark(user1.getId(), request1);
 
             // when
             Slice<ProductListResponse> products = sut.getProductsByCategoryIdAndPrice(
@@ -442,9 +443,9 @@ class ProductServiceIntTest {
             int maxPrice = (int) (product4.getPrice() + 10000);
 
             // 상품2에 북마크 설정
-            var request1 = getBookmarkRequest(user1.getId(), product4.getId());
+            var request1 = getBookmarkRequest( product4.getId());
 
-            bookmarkService.saveBookmark(request1);
+            bookmarkService.saveBookmark(user1.getId(), request1);
 
             // when
             Slice<ProductListResponse> products = sut.getProductsByCategoryIdAndManufacturerIdAndPrice(
@@ -510,12 +511,10 @@ class ProductServiceIntTest {
 
     /**
      * 공통 북마크 DTO 생성 함수
-     * @param userId        유저 ID
      * @param productId     상품 ID
      */
-    private BookmarkRequest getBookmarkRequest(UUID userId, String productId) {
+    private BookmarkRequest getBookmarkRequest(String productId) {
         return BookmarkRequest.builder()
-                .userId(userId)
                 .productId(productId)
                 .build();
     }

@@ -1,6 +1,7 @@
 package site.kikihi.custom.platform.application.in.bookmark;
 
 import site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark.BookmarkSyncRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import site.kikihi.custom.platform.domain.bookmark.Bookmark;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +21,16 @@ import java.util.*;
 public interface BookmarkUseCase {
 
     /// 저장하기
-    Bookmark saveBookmark(BookmarkRequest request);
+    Bookmark saveBookmark(UUID userId, BookmarkRequest request);
 
     Slice<BookmarkListResponse> loadBookmarksByUserIdAndCategory(UUID userId, String category, Pageable pageable);
 
+    /// 비회원을 위한 싱크 맞추기
+    void syncBookmarks(UUID userId, BookmarkSyncRequest request);
+
     /// 삭제하기
     void deleteBookmarkById(Long id, UUID userId);
+
+    void deleteBookmarkById(List<Long> ids, UUID userId);
 
 }
