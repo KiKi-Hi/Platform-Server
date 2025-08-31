@@ -35,6 +35,10 @@ public interface ProductPort {
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
     Slice<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
+    /// 카테고리 기반 제조사 조회
+    List<String> getManufacturers(String category);
+
+
     // =================
     //  상품 조회
     // =================
@@ -43,6 +47,9 @@ public interface ProductPort {
 
     /// 상품 ID들 바탕으로 조회
     Map<String, Product> getProductsByIds(List<String> productIds);
+
+    /// 상품 개수 조회
+    Long getProductsCount(String category);
 
     // =================
     //  상품 추천
