@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import java.util.List;
+
 @Tag(name = "북마크 API", description = "북마크 기능을 수행하는 API 입니다.")
 public interface BookmarkControllerSpec {
 
@@ -52,7 +54,8 @@ public interface BookmarkControllerSpec {
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
-                                    @ExampleObject(name = "북마크 생성 성공 예시", value = SUCCESS_PAYLOAD),
+                                    @ExampleObject(name = "여러개 북마크 생성 성공 예시", value = MULTI_SUCCESS_PAYLOAD),
+                                    @ExampleObject(name = "단일 북마크 생성 성공 예시", value = SINGLE_SUCCESS_PAYLOAD),
                             }
                     )
             )
@@ -89,17 +92,16 @@ public interface BookmarkControllerSpec {
             summary = "북마크를 삭제 API",
             description = "JWT 기반으로 본인이 기존에 북마크한 상품의 북마크를 해제할 수 있습니다."
     )
-    @DeleteMapping("/{bookmarkId}")
-    ApiResponse<String> deleteBookmark(
+    public ApiResponse<String> deleteBookmark(
 
-            @Parameter(example = "1")
-            @PathVariable Long bookmarkId,
+            @Parameter(example = "[1]", description = "삭제할 북마크 목록 (여러 개 입력 가능)")
+            @RequestParam List<Long> ids,
 
             @Parameter(hidden = true)
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
 
-    String SUCCESS_PAYLOAD = """
+    String MULTI_SUCCESS_PAYLOAD = """
             {
                "productIds": [
                  { "productId": "689b3eb15198cf586e9341ba" },
@@ -107,6 +109,15 @@ public interface BookmarkControllerSpec {
                  { "productId": "689b3e995198cf586e9341b8" },
                  { "productId": "689b3e8b5198cf586e9341b7" },
                  { "productId": "689b3e785198cf586e9341b6" }
+               ]
+             }
+            
+            """;
+
+    String SINGLE_SUCCESS_PAYLOAD = """
+            {
+               "productIds": [
+                 { "productId": "689b3eb15198cf586e9341ba" }
                ]
              }
             

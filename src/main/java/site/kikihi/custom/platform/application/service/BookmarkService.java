@@ -144,6 +144,25 @@ public class BookmarkService implements BookmarkUseCase {
 
     }
 
+    /**
+     * 북마크 삭제 기능 구현
+     * @param ids       삭제할 북마크 Ids
+     * @param userId    북마크를 삭제할 유저 Id
+     */
+    @Override
+    public void deleteBookmarkById(List<Long> ids, UUID userId) {
+
+        /// 삭제에 대한 반복문 실행
+
+        /// TODO! 지울 때마다 유저가 생성한 북마크인지 체크하기 위해서 진행
+        for (Long id : ids) {
+
+            /// 서비스 로직 실행
+            deleteBookmarkById(id, userId);
+        }
+
+    }
+
     /// 공통 함수
     /**
      * ID를 바탕으로 DB에서 유저를 조회하는

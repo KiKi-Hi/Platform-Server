@@ -31,4 +31,6 @@ public interface BookmarkUseCase {
     /// 삭제하기
     void deleteBookmarkById(Long id, UUID userId);
 
+    void deleteBookmarkById(List<Long> ids, UUID userId);
+
 }

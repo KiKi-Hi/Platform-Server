@@ -106,17 +106,20 @@ public class BookmarkController implements BookmarkControllerSpec {
 
     /**
      * 북마크를 삭제하는 로직입니다.
-     * @param bookmarkId        북마크 ID
-     * @param principalDetails  유저 ID
+     *
+     * @param ids       북마크 ID
+     * @param principalDetails 유저 ID
      */
-    @DeleteMapping("/{bookmarkId}")
-    public ApiResponse<String> deleteBookmark(@PathVariable Long bookmarkId,@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    @DeleteMapping()
+    public ApiResponse<String> deleteBookmark(
+            @RequestParam List<Long> ids,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         // 아이디 추출
         UUID userId = principalDetails.getId();
 
         // 서비스 계층
-        service.deleteBookmarkById(bookmarkId, userId);
+        service.deleteBookmarkById(ids, userId);
 
         return ApiResponse.deleted();
     }
