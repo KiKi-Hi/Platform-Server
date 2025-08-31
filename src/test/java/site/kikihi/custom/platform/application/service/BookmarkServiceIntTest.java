@@ -86,12 +86,11 @@ class BookmarkServiceIntTest {
 
             // given
             var request = BookmarkRequest.builder()
-                    .userId(user.getId())
                     .productId(product1.getId())
                     .build();
 
             // when
-            Bookmark bookmark = sut.saveBookmark(request);
+            Bookmark bookmark = sut.saveBookmark(user.getId(), request);
 
             // then
             Optional<Bookmark> result = port.getBookmark(bookmark.getId());
@@ -109,12 +108,11 @@ class BookmarkServiceIntTest {
             User fakeUser = UserFixtures.fakeUser();
 
             var request = BookmarkRequest.builder()
-                    .userId(fakeUser.getId())
                     .productId(product1.getId())
                     .build();
 
             // when & then
-            Assertions.assertThatThrownBy(() -> sut.saveBookmark(request))
+            Assertions.assertThatThrownBy(() -> sut.saveBookmark(fakeUser.getId(), request))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage());
         }
@@ -127,12 +125,11 @@ class BookmarkServiceIntTest {
             ProductDocument fakeProduct = ProductFixtures.fakeProduct();
 
             var request = BookmarkRequest.builder()
-                    .userId(user.getId())
                     .productId(fakeProduct.getId())
                     .build();
 
             // when & then
-            Assertions.assertThatThrownBy(() -> sut.saveBookmark(request))
+            Assertions.assertThatThrownBy(() -> sut.saveBookmark(user.getId(),request))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessageContaining(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
         }
@@ -143,14 +140,13 @@ class BookmarkServiceIntTest {
 
             // given
             var request = BookmarkRequest.builder()
-                    .userId(user.getId())
                     .productId(product1.getId())
                     .build();
 
-            sut.saveBookmark(request);
+            sut.saveBookmark(user.getId(),request);
 
             // when & then
-            Assertions.assertThatThrownBy(() -> sut.saveBookmark(request))
+            Assertions.assertThatThrownBy(() -> sut.saveBookmark(user.getId(),request))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining(ErrorCode.BOOKMARK_ALREADY.getMessage());
         }
@@ -170,10 +166,9 @@ class BookmarkServiceIntTest {
 
             List.of(product1, product2, product3).forEach(product -> {
                 var request = BookmarkRequest.builder()
-                        .userId(user.getId())
                         .productId(product.getId())
                         .build();
-                savedBookmarks.add(sut.saveBookmark(request));
+                savedBookmarks.add(sut.saveBookmark(user.getId(),request));
             });
 
             // when
@@ -199,10 +194,9 @@ class BookmarkServiceIntTest {
             /// 3개의 상품에 북마크 저장
             List.of(product1, product2, product3).forEach(product -> {
                 var request = BookmarkRequest.builder()
-                        .userId(user.getId())
                         .productId(product.getId())
                         .build();
-                savedBookmarks.add(sut.saveBookmark(request));
+                savedBookmarks.add(sut.saveBookmark(user.getId(),request));
             });
 
             // when
@@ -232,11 +226,10 @@ class BookmarkServiceIntTest {
 
             //given
             var request = BookmarkRequest.builder()
-                    .userId(user.getId())
                     .productId(product1.getId())
                     .build();
 
-            Bookmark saveBookmark = sut.saveBookmark(request);
+            Bookmark saveBookmark = sut.saveBookmark(user.getId(),request);
 
             //when
             sut.deleteBookmarkById(saveBookmark.getId(), user.getId());
@@ -254,10 +247,9 @@ class BookmarkServiceIntTest {
 
             //given
             var request = BookmarkRequest.builder()
-                    .userId(user.getId())
                     .productId(product1.getId())
                     .build();
-            Bookmark saveBookmark = sut.saveBookmark(request);
+            Bookmark saveBookmark = sut.saveBookmark(user.getId(), request);
 
             //when & then
             Assertions.assertThatThrownBy(() -> sut.deleteBookmarkById(saveBookmark.getId(), user2.getId()))

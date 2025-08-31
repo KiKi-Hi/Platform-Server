@@ -14,10 +14,7 @@ import java.util.UUID;
 )
 public class BookmarkRequest {
 
-    @Schema(description = "북마크할 상품 ID", example = "101")
+    @Schema(description = "북마크할 상품 ID", example = "6896ed7d5198cf586e933d6e")
     private String productId;
-
-    @Schema(description = "사용자 UUID", example = "95ea60b2-f63b-434e-afc5-d5e5d6a505e7")
-    private UUID userId;
 
 }

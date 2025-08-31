@@ -42,6 +42,13 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
+    @Aggregation(pipeline = {
+            "{ '$match': { 'category': ?0 } }",
+            "{ '$group': { '_id': '$manufacturer' } }"
+    })
+    List<String> findManufacturersByCategory(String category);
+
+
     /// 카테고리 기반 목록 조회 (카테고리, 제조사, 가격 포함)
     @Query("""
     {
@@ -102,6 +109,8 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     })
     List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
+    /// 상품 개수
+    Long countByCategory(String category);
     // =================
     //  삭제 함수
     // =================

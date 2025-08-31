@@ -2,6 +2,7 @@ package site.kikihi.custom.platform.application.service;
 
 import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark.BookmarkRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark.BookmarkSyncRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.bookmark.BookmarkListResponse;
 import site.kikihi.custom.platform.application.in.bookmark.BookmarkUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
@@ -36,17 +37,16 @@ public class BookmarkService implements BookmarkUseCase {
      * @param request Bookmark 생성을 위한 Request
      */
     @Override
-    public Bookmark saveBookmark(BookmarkRequest request) {
+    public Bookmark saveBookmark(UUID userId, BookmarkRequest request) {
 
         /// 유저 예외 처리
-        User user = getUser(request.getUserId());
+        User user = getUser(userId);
 
         /// 상품 예외 처리
-        Product product = productPort.getProduct(request.getProductId())
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+        Product product = getProduct(request.getProductId());
 
         /// 이미 눌렀다면 예외 처리 발생
-        boolean checked = port.checkBookmarkByUserIdAndProductId(request.getUserId(), request.getProductId());
+        boolean checked = port.checkBookmarkByUserIdAndProductId(userId, request.getProductId());
 
         if (checked) {
             throw new IllegalStateException(ErrorCode.BOOKMARK_ALREADY.getMessage());
@@ -56,6 +56,27 @@ public class BookmarkService implements BookmarkUseCase {
         Bookmark bookmark = Bookmark.of(product.getId(), user.getId(), product.getCategory());
 
         return port.saveBookmark(bookmark);
+    }
+
+
+
+    /**
+     * 로컬 스토리지에 저장한 북마크를 한번에 저장할 수 있도록 하는 서비스 로직
+     *
+     * @param userId  북마크를 저장할 유저 Id
+     * @param request 저장할 요청 DTO
+     */
+    @Override
+    public void syncBookmarks(UUID userId, BookmarkSyncRequest request) {
+
+        /// 상품 ID들
+        List<BookmarkRequest> productIds = request.getProductIds();
+
+        /// 서비스를 연속으로 실현하여 작동
+        List<Bookmark> list = productIds.stream()
+                .map(req -> saveBookmark(userId, req))
+                .toList();
+
     }
 
     /**
@@ -123,6 +144,25 @@ public class BookmarkService implements BookmarkUseCase {
 
     }
 
+    /**
+     * 북마크 삭제 기능 구현
+     * @param ids       삭제할 북마크 Ids
+     * @param userId    북마크를 삭제할 유저 Id
+     */
+    @Override
+    public void deleteBookmarkById(List<Long> ids, UUID userId) {
+
+        /// 삭제에 대한 반복문 실행
+
+        /// TODO! 지울 때마다 유저가 생성한 북마크인지 체크하기 위해서 진행
+        for (Long id : ids) {
+
+            /// 서비스 로직 실행
+            deleteBookmarkById(id, userId);
+        }
+
+    }
+
     /// 공통 함수
     /**
      * ID를 바탕으로 DB에서 유저를 조회하는
@@ -144,5 +184,14 @@ public class BookmarkService implements BookmarkUseCase {
                 .toList();
     }
 
+
+    /**
+     * 상품 내부 조회 함수
+     * @param productId 상품 ID
+     */
+    private Product getProduct(String productId) {
+        return productPort.getProduct(productId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+    }
 
 }

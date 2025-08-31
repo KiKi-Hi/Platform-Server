@@ -37,7 +37,7 @@ public class ProductDocument {
 
     private String manufacturer;
 
-    @Field("detail_purchase_url")
+    @Field("detail_page_url")
     private String detailPageUrl;
 
     @Field("options")
