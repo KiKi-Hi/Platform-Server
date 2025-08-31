@@ -133,6 +133,12 @@ public class ProductMongoAdapter implements ProductPort {
                 .map(ProductDocument::toDomain);
     }
 
+    @Override
+    public Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
+        return documentRepository.findByCategoryAndIsCustomTrue(categoryId, pageable)
+                .map(ProductDocument::toDomain);
+    }
+
 
     // =================
     //  상품 추천

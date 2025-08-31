@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.product.CategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.application.in.custom.CustomKeyboardUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
@@ -158,12 +159,23 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     @Override
     public Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
 
+        Slice<Product> products;
+        log.info("userId : {}", userId);
+        log.info("categoryId : {}", categoryId);
+        log.info("type : {}", type);
+        log.info("pageable : {}", pageable);
+
         /// 타입을 바탕으로 조회하기
-        log.info("log cateogoryId: {}, type : {}", categoryId, type);
-
-        Slice<Product> products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId, pageable);
-
-        log.info("products: {}", products);
+        /// 하우징인 경우
+        if (categoryId.equals(CategoryType.HOUSING.getValue())){
+            products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId, pageable);
+        }
+        /// 키캡인 경우
+        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
+            products = productPort.getProductsByCategoryAndCustom(categoryId, pageable);
+        } else {
+            products = productPort.getProducts(categoryId, pageable);
+        }
 
         /// 북마크 여부도 파악하기
         return toProductListResponse(userId, categoryId, products);

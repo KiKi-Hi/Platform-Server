@@ -46,6 +46,8 @@ public interface ProductPort {
 
     Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
 
+    Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
+
     // =================
     //  상품 추천
     // =================

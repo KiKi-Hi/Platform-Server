@@ -3,8 +3,8 @@ package site.kikihi.custom.platform.adapter.in.web.swagger;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
-import site.kikihi.custom.platform.adapter.in.web.dto.request.product.CategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
@@ -94,7 +94,7 @@ public interface CustomKeyboardControllerSpec {
     )
     ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyboardProductsByLayout(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam CategoryType category,
+            @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
             PageRequest pageRequest
     );
@@ -111,10 +111,10 @@ public interface CustomKeyboardControllerSpec {
 
     String REQUEST = """
             {
-              "layout" : "PERCENT_75",
-              "housingId" : "686bd26d34c3c12ea9b8e7e2",
+              "layout" : "PERCENT_60",
+              "housingId" : "68b3f4fedc26d32d8881fdff",
               "switchId" : "686bd26d34c3c12ea9b8e7e3",
-              "keyCapId" : "686bd26d89b5df14c6125f58",
+              "keyCapId" : "68b3f653dc26d32d8881fe3d",
               "name" : "테스트 커스텀"
             }
             """;

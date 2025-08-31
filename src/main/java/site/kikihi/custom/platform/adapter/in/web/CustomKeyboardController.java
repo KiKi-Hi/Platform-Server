@@ -3,8 +3,8 @@ package site.kikihi.custom.platform.adapter.in.web;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
-import site.kikihi.custom.platform.adapter.in.web.dto.request.product.CategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
@@ -117,7 +117,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     @GetMapping("/products")
     public ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyboardProductsByLayout(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam CategoryType category,
+            @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
             PageRequest pageRequest
     ) {
