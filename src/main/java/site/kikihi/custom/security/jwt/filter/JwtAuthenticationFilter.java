@@ -120,6 +120,11 @@
                 return false;
             }
 
+            /// 커스텀은 회원/비회원 구분해야되기에 필터를 타도록 설정
+            if (request.getRequestURI().startsWith("/api/v1/custom")) {
+                return false;
+            }
+
             /// null 인 것 해결
             return requestMatcherHolder.getRequestMatchersByMinRole(null)
                     .matches(request);

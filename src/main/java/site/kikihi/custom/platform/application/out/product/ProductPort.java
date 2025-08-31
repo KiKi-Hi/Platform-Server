@@ -48,6 +48,10 @@ public interface ProductPort {
     /// 상품 ID들 바탕으로 조회
     Map<String, Product> getProductsByIds(List<String> productIds);
 
+    Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
+
+    Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
+
     /// 상품 개수 조회
     Long getProductsCount(String category);
 

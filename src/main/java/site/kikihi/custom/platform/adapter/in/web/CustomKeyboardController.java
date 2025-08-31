@@ -3,6 +3,7 @@ package site.kikihi.custom.platform.adapter.in.web;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
@@ -10,7 +11,6 @@ import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyb
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.adapter.in.web.swagger.CustomKeyboardControllerSpec;
 import site.kikihi.custom.platform.application.in.custom.CustomKeyboardUseCase;
-import site.kikihi.custom.platform.application.in.product.ProductUseCase;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardWithName;
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/custom")
@@ -30,9 +31,6 @@ import java.util.List;
 public class CustomKeyboardController implements CustomKeyboardControllerSpec {
 
     private final CustomKeyboardUseCase service;
-
-    /// 상품 조회를 위한 의존성
-    private final ProductUseCase productService;
 
     /**
      * 커스텀 키보드 저장
@@ -119,10 +117,13 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     @GetMapping("/products")
     public ApiResponse<SliceResponse<ProductListResponse>> getCustomKeyboardProductsByLayout(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam String categoryId,
+            @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
             PageRequest pageRequest
     ) {
+
+        /// 유저가 없다면 null 저장
+        UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         /// Pageable
         Pageable pageable = org.springframework.data.domain.PageRequest.of(
@@ -132,7 +133,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         );
 
         /// 서비스
-        Slice<ProductListResponse> content = productService.getProductsByLayout(principalDetails.getId(), categoryId, layout, pageable);
+        Slice<ProductListResponse> content = service.getCustomProducts(userId, category.getValue(), layout, pageable);
 
         /// DTO 변경
         Slice<ProductListResponse> dtoSlice = new SliceImpl<>(
