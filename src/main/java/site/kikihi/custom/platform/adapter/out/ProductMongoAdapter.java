@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 public class ProductMongoAdapter implements ProductPort {
 
     private final ProductDocumentRepository documentRepository;
-
     // =================
     //  상품 상세 조회
     // =================
@@ -94,6 +93,14 @@ public class ProductMongoAdapter implements ProductPort {
                 map(ProductDocument::toDomain);
     }
 
+    /// 카테고리 기반 제조사 목록 조회
+    @Override
+    public List<String> getManufacturers(String category) {
+
+        /// DB 조회
+        return documentRepository.findManufacturersByCategory(category);
+    }
+
     // =================
     //  상품 조회
     // =================
@@ -118,6 +125,15 @@ public class ProductMongoAdapter implements ProductPort {
         return documentRepository.findByIdIn(productIds).stream()
                 .map(ProductDocument::toDomain)
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
+    }
+
+    /**
+     * 상품 개수 조회
+     * @param category  카테고리
+     */
+    @Override
+    public Long getProductsCount(String category) {
+        return documentRepository.countByCategory(category);
     }
 
     // =================
