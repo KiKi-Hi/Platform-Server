@@ -1,6 +1,8 @@
 package site.kikihi.custom.platform.application.in.custom;
 
+import org.springframework.data.domain.Pageable;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
+import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboard;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardWithName;
@@ -35,7 +37,8 @@ public interface CustomKeyboardUseCase {
     // 나의 커스텀 키보드 목록 조회
     CustomKeyboardWithName getCustomKeyboard(Long customKeyboardId);
 
-    // 부품 추가하기
+    // 배열에 맞는 상품 조회하기
+    Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
 
     /// 삭제

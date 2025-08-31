@@ -120,6 +120,20 @@ public class ProductMongoAdapter implements ProductPort {
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
     }
 
+    /**
+     * 커스텀에서 사용할 함수
+     *
+     * @param type     조회할 타입
+     * @param pageable 페이징
+     */
+    @Override
+    public Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable) {
+
+        return documentRepository.findByTypeAndCategoryAndIsCustomTrue(type, categoryId, pageable)
+                .map(ProductDocument::toDomain);
+    }
+
+
     // =================
     //  상품 추천
     // =================

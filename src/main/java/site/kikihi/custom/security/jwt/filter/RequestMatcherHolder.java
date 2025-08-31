@@ -44,6 +44,13 @@ public class RequestMatcherHolder {
             new RequestInfo(DELETE, "/api/v1/search/**", Role.USER),
             new RequestInfo(PUT, "/api/v1/search/**", Role.USER),
 
+            // 커스텀 관련
+            new RequestInfo(GET, "/api/v1/custom/products", null),
+            new RequestInfo(GET, "/api/v1/custom/layout", null),
+            new RequestInfo(GET, "/api/v1/custom/**", Role.USER),
+            new RequestInfo(POST, "/api/v1/custom/**", Role.USER),
+            new RequestInfo(DELETE, "/api/v1/custom/**", Role.USER),
+
             // static resources
             new RequestInfo(GET, "/docs/**", null),
             new RequestInfo(GET, "/*.ico", null),

@@ -50,6 +50,12 @@ public class ProductDocument {
     @Builder.Default
     private Map<String, Object> specTable = new java.util.HashMap<>();
 
+    @Field("type")
+    private String type;
+
+    @Field("is_custom")
+    private boolean isCustom;
+
     /// 도메인 변경
     public Product toDomain(){
         return Product.builder()

@@ -58,6 +58,21 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
+
+    @Query("""
+    {
+      'type': ?0,
+      'category': ?1,
+      'is_custom': true
+    }
+    """)
+    Slice<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
+            String type,
+            String category,
+            Pageable pageable
+    );
+
+
     /// 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
