@@ -67,6 +67,13 @@ public class BookmarkAdapter implements BookmarkPort {
                 .toList();
     }
 
+    @Override
+    public List<Bookmark> getBookmarksByUserId(UUID userId) {
+        return repository.findByUserId(userId).stream()
+                .map(BookmarkJpaEntity::toDomain)
+                .toList();
+    }
+
     /**
      * 북마크ID 와 유저가 존재하는지 체크
      *

@@ -29,6 +29,8 @@ public interface BookmarkPort {
     /// 유저와 카테고리 ID를 바탕으로 북마크 목록 조회
     List<Bookmark> getBookmarksByUserIdAndCategoryId(UUID userId, String category);
 
+    List<Bookmark> getBookmarksByUserId(UUID userId);
+
     /// 유저와 북마크 ID를 바탕으로 북마크 여부 조회
     boolean checkBookmarkByUserIdAndId(UUID userId, Long bookmarkId);
 

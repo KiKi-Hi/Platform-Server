@@ -19,14 +19,6 @@ import java.util.List;
 public interface ProductControllerSpec {
 
 
-    @Operation(
-            summary = "상품 개수 조회 API",
-            description = "카테고리별 상품 전체 개수를 파악합니다."
-    )
-    ApiResponse<Long> getTotalProducts(
-            @RequestParam CategoryType category
-    );
-
     /**
      * 상품 상세 조회 API
      * @param id                상품 아이디

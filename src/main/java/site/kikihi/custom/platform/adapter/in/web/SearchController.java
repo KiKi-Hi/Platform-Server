@@ -1,13 +1,16 @@
 package site.kikihi.custom.platform.adapter.in.web;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
+import site.kikihi.custom.global.response.page.SliceResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.search.SearchListResponse;
 import site.kikihi.custom.platform.adapter.in.web.swagger.SearchControllerSpec;
 import site.kikihi.custom.platform.application.in.search.SearchUseCase;
-import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import site.kikihi.custom.platform.domain.search.Search;
@@ -25,23 +28,30 @@ public class SearchController implements SearchControllerSpec {
 
     /// 상품 검색
     @GetMapping
-    public ApiResponse<List<ProductListResponse>> searchProducts(
+    public ApiResponse<SliceResponse<ProductListResponse>> searchProducts(
             @RequestParam("keyword") String keyword,
             PageRequest pageRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
+        /// Pageable
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPage() - 1,
+                pageRequest.getSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
         /// 유저가 없다면 null 저장
         UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         /// 서비스 호출
-        List<Product> productList = service.searchProducts(keyword, pageRequest.getPage(), pageRequest.getSize(), userId);
+        Slice<ProductListResponse> products = service.searchProducts(keyword, pageable, userId);
 
-        /// DTO 수정
-        List<ProductListResponse> responses = ProductListResponse.from(productList);
+        /// 서비스 호출(총 검색 결과 개수)
+        long countByKeyword = service.countByKeyword(keyword);
 
         /// 응답
-        return ApiResponse.ok(responses);
+        return ApiResponse.ok(SliceResponse.from(products, countByKeyword));
     }
 
     /// 나의 최근 검색어 조회
@@ -82,49 +92,6 @@ public class SearchController implements SearchControllerSpec {
 
         /// 리턴
         return ApiResponse.deleted();
-    }
-
-    /// 자동 저장 기능 조회
-    @GetMapping("/auto")
-    public ApiResponse<String> getMyAutoSearch(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-
-        /// 서비스 호출
-        boolean checked = service.checkSearch(principalDetails.getId());
-
-        String autoSearch = checked ? "자동 저장이 활성화되었습니다." : "자동 저장이 꺼져있습니다.";
-
-        /// 리턴
-        return ApiResponse.ok(autoSearch);
-
-    }
-
-    /// 자동 저장 기능 켜기
-    @PutMapping("/auto/on")
-    public ApiResponse<Void> turnOnSearch(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ){
-
-        /// 서비스 호출
-        service.turnOnMySearchKeyword(principalDetails.getId());
-
-        /// 리턴
-        return ApiResponse.updated();
-
-    }
-
-    /// 자동 저장 기능 끄기
-    @PutMapping("/auto/off")
-    public ApiResponse<Void> turnOffSearch(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ){
-
-        /// 서비스 호출
-        service.turnOffMySearchKeyword(principalDetails.getId());
-
-        /// 리턴
-        return ApiResponse.updated();
     }
 
 }
