@@ -33,9 +33,6 @@ public class UserAdapter implements UserPort {
         /// 조회
         var entity = userJpaRepository.findById(user.getId())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_NOT_FOUND.getMessage()));
-
-        /// 자동저장 여부 수정
-        entity.updateSearch(user.isSearch());
     }
 
     @Override
