@@ -52,18 +52,6 @@ jobs:
           discovery.type: single-node
           ES_JAVA_OPTS: "-Xms512m -Xmx512m"
 
-      logstash:
-        image: docker.elastic.co/logstash/logstash:7.17.0
-        ports:
-          - 5044:5044
-        options: >-
-          --health-cmd "curl -f http://localhost:5044/_node/pipelines || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-        env:
-          LS_JAVA_OPTS: "-Xms256m -Xmx256m"
-
     permissions:
       contents: write
       checks: write
@@ -105,7 +93,7 @@ jobs:
           echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/application-test.yml
 
       - name: logback-test.xml 설정
-        run: echo "${{ secrets.LOGBACK_TEST_XML }}" > ./src/main/resources/logback-test.xml
+        run: echo "${{ secrets.LOGBACK_TEST_XML }}" > ./src/test/resources/logback-test.xml
 
       # 5. 캐싱
       - name: Gradle Caching
@@ -146,14 +134,6 @@ jobs:
             echo "Waiting for Elasticsearch..."
             sleep 5
           done
-
-      - name: Logstash 체크
-        run: |
-          until nc -z localhost 5044; do
-            echo "Waiting for Logstash..."
-            sleep 3
-          done
-
 
       # 5-2. Nori 플러그인 설치
       - name: Install Nori plugin
