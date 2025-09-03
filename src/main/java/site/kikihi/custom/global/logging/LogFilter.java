@@ -25,11 +25,13 @@ public class LogFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         /// 요청 로그 남기기
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
+        String ipAddress = request.getRemoteAddr();
         String httpMethod = request.getMethod();
         String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
 
-        log.info("[HTTP 요청 로깅]: [{}] {} - 사용자: {}", httpMethod, uri, username);
+        /// 로그스태시로 넘길 로깅 출력
+        log.info("[HTTP 로깅]: {}, [{}], {}, {}", ipAddress, httpMethod, uri, username);
 
         /// 로그 남기고 넘기기
         filterChain.doFilter(request, response);
