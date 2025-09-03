@@ -157,6 +157,35 @@ public class SearchService implements SearchUseCase {
         port.deleteALlSearch(user.getId());
     }
 
+    /**
+     * 키워드에 따른 검색으로 검색 결과가 몇 개인지
+     * @param keyword   키워드
+     */
+    @Override
+    public long countByKeyword(String keyword) {
+        // match 쿼리 구성
+        Query nameMatch = MatchQuery.of(m -> m.field("name").query(keyword))._toQuery();
+        Query descMatch = MatchQuery.of(m -> m.field("description").query(keyword))._toQuery();
+
+        // bool 쿼리
+        Query boolQuery = BoolQuery.of(b -> b
+                .should(nameMatch)
+                .should(descMatch)
+                .minimumShouldMatch("1")
+        )._toQuery();
+
+        // NativeQuery - 페이징 없이 전체 개수 조회용
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(boolQuery)
+                .withMinScore(minScore)
+                .build();
+
+        SearchHits<ProductESDocument> searchHits = elasticsearchOperations.search(query, ProductESDocument.class);
+
+        return searchHits.getTotalHits();
+    }
+
+
     /// 유저 조회
     private User getUser(UUID userId) {
 

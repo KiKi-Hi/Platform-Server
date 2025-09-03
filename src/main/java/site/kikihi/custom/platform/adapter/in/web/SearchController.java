@@ -38,8 +38,11 @@ public class SearchController implements SearchControllerSpec {
         /// 서비스 호출
         Slice<ProductListResponse> products = service.searchProducts(keyword, pageRequest.getPage(), pageRequest.getSize(), userId);
 
+        /// 서비스 호출(총 검색 결과 개수)
+        long countByKeyword = service.countByKeyword(keyword);
+
         /// 응답
-        return ApiResponse.ok(SliceResponse.from(products));
+        return ApiResponse.ok(SliceResponse.from(products, countByKeyword));
     }
 
     /// 나의 최근 검색어 조회

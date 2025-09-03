@@ -23,6 +23,9 @@ public interface SearchUseCase {
     /// 나의 검색에 목록 확인하기
     List<Search> getMySearches(UUID userId);
 
+    /// 키워드 검색 결과 개수
+    long countByKeyword(String keyword);
+
     /// 키워드 하나 삭제하기
     void deleteMySearchKeyword(Long searchId, UUID userId);
 
