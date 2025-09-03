@@ -4,6 +4,7 @@ import site.kikihi.custom.platform.adapter.out.jpa.bookmark.projection.ProductId
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import site.kikihi.custom.platform.domain.bookmark.Bookmark;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,4 +36,5 @@ public interface BookmarkJpaRepository extends JpaRepository<BookmarkJpaEntity, 
     Long countByProductId();
 
 
+    List<BookmarkJpaEntity> findByUserId(UUID userId);
 }

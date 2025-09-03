@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
+import site.kikihi.custom.global.response.page.SliceResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.search.SearchListResponse;
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
@@ -21,7 +22,7 @@ public interface SearchControllerSpec {
             summary = "검색 API",
             description = "키워드를 바탕으로 조회합니다."
     )
-    ApiResponse<List<ProductListResponse>> searchProducts(
+    ApiResponse<SliceResponse<ProductListResponse>> searchProducts(
             @Parameter(example = "하우징")
             @RequestParam("keyword") String keyword,
             PageRequest pageRequest,
@@ -57,32 +58,4 @@ public interface SearchControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
-
-    @Operation(
-            summary = "검색어 자동저장 여부 API",
-            description = "JWT를 바탕으로 자동저장을 확인합니다."
-    )
-    ApiResponse<String> getMyAutoSearch(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
-
-
-    @Operation(
-            summary = "검색어 자동저장 기능 ON API",
-            description = "JWT를 바탕으로 자동저장을 킵니다."
-    )
-    ApiResponse<Void> turnOnSearch(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
-
-
-
-
-    @Operation(
-            summary = "검색어 자동저장 기능 OFF API",
-            description = "JWT를 바탕으로 자동저장을 끕니다."
-    )
-    ApiResponse<Void> turnOffSearch(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
 }
