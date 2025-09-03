@@ -57,6 +57,7 @@ public class ProductController implements ProductControllerSpec {
                 Sort.by(Sort.Direction.DESC, "id")
         );
 
+
         /// 공통 객체들 저장
         Slice<ProductListResponse> products;
 
@@ -84,7 +85,10 @@ public class ProductController implements ProductControllerSpec {
             throw new IllegalArgumentException(ErrorCode.BAD_REQUEST.getMessage());
         }
 
-        return ApiResponse.ok(SliceResponse.from(products));
+        /// 카테고리에 따른 전체 개수 조회
+        Long totalCounts = productService.getCountProducts(category.getValue());
+
+        return ApiResponse.ok(SliceResponse.from(products, totalCounts));
     }
 
     /**
@@ -127,23 +131,6 @@ public class ProductController implements ProductControllerSpec {
 
         /// SliceResponse 변환 후, 리턴
         return ApiResponse.ok(SliceResponse.from(responses));
-    }
-
-
-    /**
-     * 전체 상품 개수 조회 API
-     * @param category  카테 고리
-     */
-    @GetMapping("/total")
-    public ApiResponse<Long> getTotalProducts(
-            @RequestParam CategoryType category
-    ) {
-
-        /// 서비스 호출
-        Long response = productService.getCountProducts(category.getValue());
-
-        /// 리턴
-        return ApiResponse.ok(response);
     }
 
 }
