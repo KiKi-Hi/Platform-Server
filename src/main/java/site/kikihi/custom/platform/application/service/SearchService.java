@@ -14,7 +14,6 @@ import site.kikihi.custom.platform.application.out.user.UserPort;
 import site.kikihi.custom.platform.domain.bookmark.Bookmark;
 import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -48,10 +47,9 @@ public class SearchService implements SearchUseCase {
 
     /// 키워드 검색 (name, description)
     @Override
-    public Slice<ProductListResponse> searchProducts(String keyword, int page, int size, UUID userId) {
+    public Slice<ProductListResponse> searchProducts(String keyword, Pageable pageable, UUID userId) {
 
         /// Pageable 구성
-        Pageable pageRequest = PageRequest.of(page, size);
 
         // match 쿼리 구성
         Query nameMatch = MatchQuery.of(m -> m.field("name").query(keyword))._toQuery();
@@ -67,7 +65,7 @@ public class SearchService implements SearchUseCase {
         // NativeQuery
         NativeQuery query = NativeQuery.builder()
                 .withQuery(boolQuery)
-                .withPageable(pageRequest)
+                .withPageable(pageable)
                 .withMinScore(minScore)
                 .build();
 
@@ -93,9 +91,9 @@ public class SearchService implements SearchUseCase {
 
         /// 페이징 처리
         // 현재 페이지 결과 수
-        boolean hasNext = checkNext(page, size, searchHits);
+        boolean hasNext = checkNext(pageable.getPageNumber(), pageable.getPageSize(), searchHits);
 
-        Slice<Product> products = new SliceImpl<>(elasticProducts, pageRequest, hasNext);
+        Slice<Product> products = new SliceImpl<>(elasticProducts, pageable, hasNext);
 
         return toProductListResponse(userId, products);
     }

@@ -1,8 +1,8 @@
 package site.kikihi.custom.platform.application.in.search;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
-import site.kikihi.custom.platform.domain.product.Product;
 import site.kikihi.custom.platform.domain.search.Search;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface SearchUseCase {
 
     /// 검색
-    Slice<ProductListResponse> searchProducts(String keyword, int page, int size, UUID userId);
+    Slice<ProductListResponse> searchProducts(String keyword, Pageable pageable, UUID userId);
 
     /// 나의 검색에 목록 확인하기
     List<Search> getMySearches(UUID userId);

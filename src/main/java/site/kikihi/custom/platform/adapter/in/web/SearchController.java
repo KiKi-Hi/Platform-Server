@@ -1,6 +1,8 @@
 package site.kikihi.custom.platform.adapter.in.web;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
@@ -32,11 +34,18 @@ public class SearchController implements SearchControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
 
+        /// Pageable
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                pageRequest.getPage() - 1,
+                pageRequest.getSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
         /// 유저가 없다면 null 저장
         UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         /// 서비스 호출
-        Slice<ProductListResponse> products = service.searchProducts(keyword, pageRequest.getPage(), pageRequest.getSize(), userId);
+        Slice<ProductListResponse> products = service.searchProducts(keyword, pageable, userId);
 
         /// 서비스 호출(총 검색 결과 개수)
         long countByKeyword = service.countByKeyword(keyword);
