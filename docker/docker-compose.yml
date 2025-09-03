@@ -19,6 +19,10 @@ services:
         condition: service_started
       es01:
         condition: service_healthy
+      kibana:
+        condition: service_healthy
+      logstash01:
+        condition: service_healthy
     networks:
       - monstache-network
 
