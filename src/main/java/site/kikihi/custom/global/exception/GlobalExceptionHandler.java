@@ -27,9 +27,12 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     /// 공통 처리 메서드
-    private ApiResponse<CustomException> handleCustomException(CustomException customException) {
+    private ApiResponse<CustomException> handleCustomException(CustomException exception) {
 
-        return ApiResponse.fail(customException);
+        /// 로그 발생
+        log.error("[ERROR 로깅] : {}", exception.getMessage());
+
+        return ApiResponse.fail(exception);
     }
 
     /// 예외 처리
@@ -76,9 +79,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ApiResponse<CustomException> handleException(Exception e) {
-
-        /// 로그 발생
-        log.error(e.getMessage(), e);
 
         /// 500 예외 코드 검색
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
