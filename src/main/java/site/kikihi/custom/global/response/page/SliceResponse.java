@@ -12,7 +12,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SliceResponse<T>(
 
-        long totalCount,
+        Long totalCount,
         List<T> content,
         boolean hasNext,
         int page,
@@ -20,6 +20,7 @@ public record SliceResponse<T>(
 ) {
     public static <T> SliceResponse<T> from(Slice<T> slice) {
         return SliceResponse.<T>builder()
+                .totalCount(null)
                 .content(slice.getContent())
                 .hasNext(slice.hasNext())
                 .page(slice.getNumber() + 1)
