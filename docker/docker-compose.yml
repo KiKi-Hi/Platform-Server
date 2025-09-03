@@ -150,7 +150,7 @@ services:
       setup:
         condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    container_name: elasticsearch
+    container_name: kkh-es
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
@@ -207,7 +207,7 @@ services:
       es01:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-    container_name: kibana
+    container_name: kkh-kibana
     labels:
       co.elastic.logs/module: kibana
     volumes:
@@ -238,6 +238,7 @@ services:
       retries: 120
 
   logstash01:
+    container_name: kkh-logstash
     depends_on:
       es01:
         condition: service_healthy
@@ -247,10 +248,11 @@ services:
     labels:
       co.elastic.logs/module: logstash
     user: root
+    ports:
+      - "5044:5044"
     volumes:
       - certs:/usr/share/logstash/certs
       - logstashdata01:/usr/share/logstash/data
-      - "./logstash/logstash_ingest_data/:/usr/share/logstash/ingest_data/"
       - "./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
       - xpack.monitoring.enabled=true
