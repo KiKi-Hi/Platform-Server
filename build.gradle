@@ -51,7 +51,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.springframework.security:spring-security-test'
 
-
 	// Swagger 관련
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
@@ -61,6 +60,8 @@ dependencies {
 	// elasticSearch
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
+	// Log 관련
+	implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
 }
 

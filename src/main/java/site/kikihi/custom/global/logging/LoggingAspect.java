@@ -3,10 +3,9 @@ package site.kikihi.custom.global.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 @Aspect
 @Component
@@ -17,25 +16,25 @@ public class LoggingAspect {
     private void applicationLayer() {
     }
 
-    @Before("applicationLayer()")
-    public void logMethodEntry(JoinPoint joinPoint) {
-        log.info("[서비스 로깅] 메서드 진입: {}.{}({})",
-                joinPoint.getSignature().getDeclaringTypeName(),
-                joinPoint.getSignature().getName(),
-                Arrays.toString(joinPoint.getArgs()));
-    }
+    @Around("applicationLayer()")
+    public Object logProcessTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
 
-    @AfterReturning(pointcut = "applicationLayer()", returning = "result")
-    public void logMethodExit(JoinPoint joinPoint, Object result) {
-        log.info("[서비스 로깅] 메서드 종료: {}.{} => 반환: {}",
+        Object proceed = joinPoint.proceed();  // 실제 메서드 실행
+
+        long executionTime = System.currentTimeMillis() - start;
+
+        log.info("[서비스 로깅] 메서드 실행 시간: {}.{} 실행 시간 = {}ms",
                 joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName(),
-                result);
+                executionTime);
+
+        return proceed;
     }
 
     @AfterThrowing(pointcut = "applicationLayer()")
     public void logException(JoinPoint joinPoint) {
-        log.info("[서비스 로깅] 예외 발생: {}.{}",
+        log.info("[서비스 로깅] 예외 발생: {},{}",
                 joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName());
     }
