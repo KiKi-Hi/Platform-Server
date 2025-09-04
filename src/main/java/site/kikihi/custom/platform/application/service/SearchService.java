@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.application.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -30,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SearchService implements SearchUseCase {
@@ -88,6 +90,9 @@ public class SearchService implements SearchUseCase {
                 .map(SearchHit::getContent)
                 .map(ProductESDocument::toDomain)
                 .toList();
+
+        log.info("Searching for {}", elasticProducts.toString());
+
 
         /// 페이징 처리
         // 현재 페이지 결과 수
