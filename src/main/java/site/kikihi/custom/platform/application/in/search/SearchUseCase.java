@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface SearchUseCase {
 
     /// 검색
-    Slice<ProductListResponse> searchProducts(String keyword, Pageable pageable, UUID userId);
+    Slice<ProductListResponse> searchProducts(String keyword, int page, int size, UUID userId);
 
     /// 나의 검색에 목록 확인하기
     List<Search> getMySearches(UUID userId);

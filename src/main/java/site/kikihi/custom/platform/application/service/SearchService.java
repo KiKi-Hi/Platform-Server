@@ -1,5 +1,7 @@
 package site.kikihi.custom.platform.application.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -30,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SearchService implements SearchUseCase {
@@ -47,9 +50,10 @@ public class SearchService implements SearchUseCase {
 
     /// 키워드 검색 (name, description)
     @Override
-    public Slice<ProductListResponse> searchProducts(String keyword, Pageable pageable, UUID userId) {
+    public Slice<ProductListResponse> searchProducts(String keyword, int page, int size, UUID userId) {
 
         /// Pageable 구성
+        Pageable pageRequest = PageRequest.of(page - 1, size);
 
         // match 쿼리 구성
         Query nameMatch = MatchQuery.of(m -> m.field("name").query(keyword))._toQuery();
@@ -65,7 +69,7 @@ public class SearchService implements SearchUseCase {
         // NativeQuery
         NativeQuery query = NativeQuery.builder()
                 .withQuery(boolQuery)
-                .withPageable(pageable)
+                .withPageable(pageRequest)
                 .withMinScore(minScore)
                 .build();
 
@@ -91,9 +95,9 @@ public class SearchService implements SearchUseCase {
 
         /// 페이징 처리
         // 현재 페이지 결과 수
-        boolean hasNext = checkNext(pageable.getPageNumber(), pageable.getPageSize(), searchHits);
+        boolean hasNext = checkNext(page, size, searchHits);
 
-        Slice<Product> products = new SliceImpl<>(elasticProducts, pageable, hasNext);
+        Slice<Product> products = new SliceImpl<>(elasticProducts, pageRequest, hasNext);
 
         return toProductListResponse(userId, products);
     }

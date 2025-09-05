@@ -25,7 +25,12 @@ public interface SearchControllerSpec {
     ApiResponse<SliceResponse<ProductListResponse>> searchProducts(
             @Parameter(example = "하우징")
             @RequestParam("keyword") String keyword,
-            PageRequest pageRequest,
+
+            @Parameter(example = "1")
+            @RequestParam int page,
+
+            @Parameter(example = "20")
+            @RequestParam int size,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 

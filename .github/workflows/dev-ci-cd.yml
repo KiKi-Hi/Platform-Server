@@ -72,7 +72,6 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_PROD_YML }}" > ./src/main/resources/application-prod.yml
           echo "${{ secrets.APPLICATION_OAUTH2_YML }}" > ./src/main/resources/application-oauth2.yml
-          echo "${{ secrets.LOGBACK_SPRING_XML }}" > ./src/main/resources/logback-spring.xml
           
           mkdir -p src/test/resources
           echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/application-test.yml

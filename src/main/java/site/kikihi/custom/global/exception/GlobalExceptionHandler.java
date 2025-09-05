@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     private ApiResponse<CustomException> handleCustomException(CustomException exception) {
 
         /// 로그 발생
-        log.error("[ERROR 로깅] : {}", exception.getMessage());
+        log.error("[ERROR 로깅] : {}", exception.getErrorCode().getMessage());
 
         return ApiResponse.fail(exception);
     }

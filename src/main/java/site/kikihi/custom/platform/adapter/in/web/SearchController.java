@@ -30,22 +30,16 @@ public class SearchController implements SearchControllerSpec {
     @GetMapping
     public ApiResponse<SliceResponse<ProductListResponse>> searchProducts(
             @RequestParam("keyword") String keyword,
-            PageRequest pageRequest,
+            @RequestParam int page,
+            @RequestParam int size,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-
-        /// Pageable
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(
-                pageRequest.getPage() - 1,
-                pageRequest.getSize(),
-                Sort.by(Sort.Direction.DESC, "id")
-        );
 
         /// 유저가 없다면 null 저장
         UUID userId = principalDetails != null ? principalDetails.getId() : null;
 
         /// 서비스 호출
-        Slice<ProductListResponse> products = service.searchProducts(keyword, pageable, userId);
+        Slice<ProductListResponse> products = service.searchProducts(keyword, page, size, userId);
 
         /// 서비스 호출(총 검색 결과 개수)
         long countByKeyword = service.countByKeyword(keyword);

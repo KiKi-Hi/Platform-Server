@@ -50,12 +50,11 @@ public class ControllerLoggingAspect {
         }
 
         // 로그 출력
-        log.info("요청 정보 - 전체URL: {} | URI: {} | 메서드: {} | 유저: {} | Origin: {}",
-                request.getRequestURL(),
-                request.getRequestURI(),
+        log.info("[HTTP 로깅]: {}, [{}] ,{}, {}",
+                request.getHeader("Origin"),
                 request.getMethod(),
-                username,
-                request.getHeader("Origin"));
-
+                request.getRequestURL(),
+                username);
     }
+
 }
