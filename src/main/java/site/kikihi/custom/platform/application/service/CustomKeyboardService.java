@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 키보드 커스텀 서비스
@@ -61,8 +62,15 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         var switchProduct = getProduct(request.getSwitchId());
         var keyCapProduct = getProduct(request.getKeyCapId());
 
+        /// 악세사리 (선택)
+        String accessoryId = null;
+        if (request.getAccessoryId() != null && !request.getAccessoryId().isBlank()) {
+            var accessoryProduct = getProduct(request.getAccessoryId());
+            accessoryId = accessoryProduct.getId();
+        }
+
         /// 객체 생성
-        var customKeyboard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), request.getName(), "thumbnail");
+        var customKeyboard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), accessoryId, request.getName(), "thumbnail");
 
         /// 저장 후 리턴
         return port.saveCustomKeyboard(customKeyboard);
@@ -102,12 +110,16 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         }
 
         /// 필요한 모든 productId를 한 번에 수집
-        Set<String> allProductIds = new HashSet<>();
-        keyboards.forEach(k -> {
-            allProductIds.add(k.getFrameId());
-            allProductIds.add(k.getSwitchId());
-            allProductIds.add(k.getKeyCapId());
-        });
+        Set<String> allProductIds = keyboards.stream()
+                .flatMap(k -> Stream.of(
+                        k.getFrameId(),
+                        k.getSwitchId(),
+                        k.getKeyCapId(),
+                        k.getAccessoryId() // null 포함 가능, 아래에서 안전 처리
+                ))
+                .filter(Objects::nonNull) // null 제거
+                .collect(Collectors.toSet());
+
 
         /// productId로 한 번에 조회 (N+1 방지 핵심)
         Map<String, Product> productMap = getProductsByIds(allProductIds);
@@ -118,8 +130,9 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
                     var frameProduct = productMap.get(keyboard.getFrameId());
                     var switchProduct = productMap.get(keyboard.getSwitchId());
                     var keyCapProduct = productMap.get(keyboard.getKeyCapId());
+                    var accessoryProduct = productMap.get(keyboard.getAccessoryId());
 
-                    return CustomKeyboardWithName.of(keyboard, frameProduct, switchProduct, keyCapProduct);
+                    return CustomKeyboardWithName.of(keyboard, frameProduct, switchProduct, keyCapProduct, accessoryProduct);
                 })
                 .toList();
 
@@ -144,8 +157,18 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         var switchProduct = getProduct(keyBoard.getSwitchId());
         var keyCapProduct = getProduct(keyBoard.getKeyCapId());
 
+        String accessoryId = null;
+        if (keyBoard.getAccessoryId() != null && !keyBoard.getAccessoryId().isBlank()) {
+
+        }
+
+        // 악세사리가 존재하면 조회
+        var accessoryProduct = keyBoard.getAccessoryId() != null && !keyBoard.getAccessoryId().isBlank()
+                ? getProduct(keyBoard.getAccessoryId())
+                : null;
+
         /// 응답
-        return CustomKeyboardWithName.of(keyBoard, frameProduct, switchProduct, keyCapProduct);
+        return CustomKeyboardWithName.of(keyBoard, frameProduct, switchProduct, keyCapProduct, accessoryProduct);
 
     }
 
