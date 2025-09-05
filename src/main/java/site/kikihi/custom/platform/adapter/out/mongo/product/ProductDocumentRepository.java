@@ -79,13 +79,9 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
-    @Query("""
-            {
-              'type': ?0,
-              'category': ?1,
-              'is_custom': true
-            }
-            """)
+    @Query(value = """
+  { 'type': ?0, 'category': ?1, 'is_custom': true }
+""", count = true)
     Long countByTypeAndCategoryAndIsCustomTrue(String type, String category);
 
     @Query("""
@@ -100,12 +96,9 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     );
 
 
-    @Query("""
-            {
-              'category': ?0,
-              'is_custom': true
-            }
-            """)
+    @Query(value = """
+  {'category': ?0, 'is_custom': true }
+""", count = true)
     Long countByCategoryAndIsCustomTrue(String category);
 
 
