@@ -183,10 +183,6 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     public Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
 
         Slice<Product> products;
-        log.info("userId : {}", userId);
-        log.info("categoryId : {}", categoryId);
-        log.info("type : {}", type);
-        log.info("pageable : {}", pageable);
 
         /// 타입을 바탕으로 조회하기
         /// 하우징인 경우
@@ -202,6 +198,27 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
 
         /// 북마크 여부도 파악하기
         return toProductListResponse(userId, categoryId, products);
+    }
+
+
+    /**
+     * 키보드 배열을 바탕으로 가능한 상품 개수 조회
+     *
+     */
+    @Override
+    public Long getCustomProductCounts(String categoryId, CustomKeyboardLayout type) {
+
+        /// 타입을 바탕으로 조회하기
+        /// 하우징인 경우
+        if (categoryId.equals(CategoryType.HOUSING.getValue())){
+            return productPort.getProductsAndCategoryByType(type.getDb(), categoryId);
+        }
+        /// 키캡인 경우
+        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
+            return productPort.getProductsByCategoryAndCustom(categoryId);
+        } else {
+            return productPort.getProductsCount(categoryId);
+        }
     }
 
     // =================
