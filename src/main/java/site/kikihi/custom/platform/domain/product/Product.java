@@ -25,6 +25,8 @@ public class Product {
 
     private String thumbnail; //
 
+    private String mapping;
+
     private String manufacturer; //
 
     private String detailPageUrl; //

@@ -42,10 +42,18 @@ public record CustomKeyboardWithName(
         String imageUrl
 ) {
 
-    /// 정적 팩토리 메서드
-    public static CustomKeyboardWithName of(CustomKeyboard keyboard, Product housingProduct, Product switchProduct, Product keyCapProduct, Product accessoryProduct) {
+    public static CustomKeyboardWithName of(
+            CustomKeyboard keyboard,
+            Product housingProduct,
+            Product switchProduct,
+            Product keyCapProduct,
+            Product accessoryProduct) {
 
-        double totalPrice = housingProduct.getPrice() + switchProduct.getPrice() + keyCapProduct.getPrice() + accessoryProduct.getPrice();
+        // accessoryProduct가 null이면 가격에 더하지 않음
+        double totalPrice = housingProduct.getPrice() + switchProduct.getPrice() + keyCapProduct.getPrice();
+        if (accessoryProduct != null) {
+            totalPrice += accessoryProduct.getPrice();
+        }
 
         return CustomKeyboardWithName.builder()
                 .id(keyboard.getId())
@@ -57,8 +65,8 @@ public record CustomKeyboardWithName(
                 .switchName(switchProduct.getName())
                 .keyCapId(keyCapProduct.getId())
                 .keyCapName(keyCapProduct.getName())
-                .accessoryId(accessoryProduct.getId())
-                .accessoryName(accessoryProduct.getName())
+                .accessoryId(accessoryProduct != null ? accessoryProduct.getId() : null)
+                .accessoryName(accessoryProduct != null ? accessoryProduct.getName() : null)
                 .name(keyboard.getName())
                 .totalPrice(totalPrice)
                 .imageUrl(keyboard.getImageUrl())
