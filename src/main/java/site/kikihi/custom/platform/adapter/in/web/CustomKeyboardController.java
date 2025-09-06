@@ -135,6 +135,9 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 서비스
         Slice<ProductListResponse> content = service.getCustomProducts(userId, category.getValue(), layout, pageable);
 
+        /// 개수 조회
+        Long counts = service.getCustomProductCounts(category.getValue(), layout);
+
         /// DTO 변경
         Slice<ProductListResponse> dtoSlice = new SliceImpl<>(
                 content.getContent(),
@@ -143,7 +146,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         );
 
         /// 응답
-        return ApiResponse.ok(SliceResponse.from(dtoSlice));
+        return ApiResponse.ok(SliceResponse.from(dtoSlice, counts));
     }
 
     /**

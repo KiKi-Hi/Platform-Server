@@ -26,6 +26,9 @@ public class CustomKeyboardRequest {
     @Schema(description = "키캡 ID", example = "keycap_29")
     private String keyCapId;
 
+    @Schema(description = "악세사리 ID", example = "accessory_id")
+    private String accessoryId;
+
     @Schema(description = "커스텀 키보드 이름", example = "내 인생 첫 커스텀 65키")
     private String name;
 

@@ -35,6 +35,9 @@ public class ProductDocument {
     @Field("thumbnail")
     private String thumbnail;
 
+    @Field("mapping")
+    private String mapping;
+
     private String manufacturer;
 
     @Field("detail_page_url")
@@ -65,6 +68,7 @@ public class ProductDocument {
                 .price(price)
                 .description(description)
                 .thumbnail(thumbnail)
+                .mapping(mapping)
                 .manufacturer(manufacturer)
                 .detailPageUrl(detailPageUrl)
                 .options(options)

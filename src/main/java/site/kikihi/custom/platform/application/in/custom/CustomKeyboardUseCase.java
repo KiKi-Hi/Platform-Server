@@ -40,6 +40,9 @@ public interface CustomKeyboardUseCase {
     // 배열에 맞는 상품 조회하기
     Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
+    // 배여에 맞는 상품 개수 조회하기
+    Long getCustomProductCounts(String categoryId, CustomKeyboardLayout type);
+
 
     /// 삭제
     void deleteCustomKeyboard(Long customKeyboardId, UUID userId);

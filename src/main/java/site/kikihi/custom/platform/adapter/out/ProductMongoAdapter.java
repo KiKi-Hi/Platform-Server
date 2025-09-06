@@ -141,9 +141,19 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
+    public Long getProductsAndCategoryByType(String type, String categoryId) {
+        return documentRepository.countByTypeAndCategoryAndIsCustomTrue(type, categoryId);
+    }
+
+    @Override
     public Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
         return documentRepository.findByCategoryAndIsCustomTrue(categoryId, pageable)
                 .map(ProductDocument::toDomain);
+    }
+
+    @Override
+    public Long getProductsByCategoryAndCustom(String categoryId) {
+        return documentRepository.countByCategoryAndIsCustomTrue(categoryId);
     }
 
 

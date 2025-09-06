@@ -79,6 +79,11 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
+    @Query(value = """
+  { 'type': ?0, 'category': ?1, 'is_custom': true }
+""", count = true)
+    Long countByTypeAndCategoryAndIsCustomTrue(String type, String category);
+
     @Query("""
     {
       'category': ?0,
@@ -89,6 +94,14 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             String category,
             Pageable pageable
     );
+
+
+    @Query(value = """
+  {'category': ?0, 'is_custom': true }
+""", count = true)
+    Long countByCategoryAndIsCustomTrue(String category);
+
+
 
     /// 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
