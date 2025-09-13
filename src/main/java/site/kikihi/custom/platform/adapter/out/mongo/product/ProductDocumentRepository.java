@@ -74,9 +74,26 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'is_custom': true
     }
     """)
-    Page<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
+    Page<ProductDocument> findByCustomHousing(
             String type,
             String category,
+            Pageable pageable
+    );
+
+    /// 카테고리 상품 목록 조회, 하우징 조회(가격 포함)
+    @Query("""
+    {
+      'type': ?0,
+      'category': ?1,
+      'price': { $gte: ?2, $lte: ?3 },
+      'is_custom': true
+    }
+    """)
+    Page<ProductDocument> findByCustomHousing(
+            String type,
+            String category,
+            Integer minPrice,
+            Integer maxPrice,
             Pageable pageable
     );
 
@@ -88,8 +105,23 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'is_custom': true
     }
     """)
-    Page<ProductDocument> findByCategoryAndIsCustomTrue(
+    Page<ProductDocument> findByCustomKeyCap(
             String category,
+            Pageable pageable
+    );
+
+    /// 카테고리 상품 목록 조회, 키캡 조회
+    @Query("""
+    {
+      'category': ?0,
+      'price': { $gte: ?1, $lte: ?2 },
+      'is_custom': true
+    }
+    """)
+    Page<ProductDocument> findByCustomKeyCap(
+            String category,
+            Integer minPrice,
+            Integer maxPrice,
             Pageable pageable
     );
 

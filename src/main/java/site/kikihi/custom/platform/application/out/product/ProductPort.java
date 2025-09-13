@@ -39,19 +39,20 @@ public interface ProductPort {
     /// 카테고리 기반 제조사 조회
     List<String> getManufacturers(String category);
 
-
     // =================
-    //  상품 조회
+    //  카테고리 상품 목록 조회
     // =================
-    /// 상품 ID들 바탕으로 조회
-    Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable);
+    /// 카테고리 기반 상품 목록 조회 (카테고리, 타입)
+    Page<Product> getCustomProducts(String type, String categoryId, Pageable pageable);
 
-    /// 상품 ID들 바탕으로 조회
-    Map<String, Product> getProductsByIds(List<String> productIds);
+    /// 카테고리 기반 상품 목록 조회 (카테고리, 타입, 가격)
+    Page<Product> getCustomProducts(String type, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
 
-    Page<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
+    /// 카테고리 기반 상품 목록 조회 (카테고리)
+    Page<Product> getCustomProducts(String categoryId, Pageable pageable);
 
-    Page<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
+    /// 카테고리 기반 상품 목록 조회 (카테고리, 가격)
+    Page<Product> getCustomProducts(String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     // =================
     //  상품 추천
@@ -65,6 +66,16 @@ public interface ProductPort {
 
     /// 비슷한 상품 추천
     List<Product> findProductsByAttributes(String switchId, String keycapId, CustomKeyboardLayout layout);
+
+    // =================
+    //  상품 조회
+    // =================
+    /// 상품 ID들 바탕으로 조회
+    Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable);
+
+    /// 상품 ID들 바탕으로 조회
+    Map<String, Product> getProductsByIds(List<String> productIds);
+
 
     // =================
     //  상품 삭제

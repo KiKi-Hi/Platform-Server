@@ -88,7 +88,9 @@ public interface CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
-            @RequestParam boolean bookmark,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = true) boolean bookmark,
             PageRequest pageRequest
     );
 

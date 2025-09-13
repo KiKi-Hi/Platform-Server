@@ -2,6 +2,7 @@ package site.kikihi.custom.platform.adapter.in.web;
 
 import org.springframework.data.domain.*;
 import site.kikihi.custom.global.response.ApiResponse;
+import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
@@ -101,7 +102,9 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
-            @RequestParam(defaultValue = "false") boolean bookmark,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = true, defaultValue = "false") boolean bookmark,
             PageRequest pageRequest
     ) {
 
@@ -118,26 +121,38 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 서비스
         Slice<ProductListResponse> content;
         long counts;
-        if (bookmark) {
-            var result = service.getProductsByBookmark(userId, category.getValue(), layout, pageable);
-            content = result;
-            counts = result.getTotalElements();
 
-        } else {
+        // 파라미터 여부에 따라 분기 처리
+        if (!bookmark && minPrice == null && maxPrice == null) {
+            /// 카테고리만 있는 경우
             var result = service.getCustomProducts(userId, category.getValue(), layout, pageable);
-            content = result;
             counts = result.getTotalElements();
+            content = result;
+
+        } else if (bookmark && minPrice == null && maxPrice == null) {
+            /// 카테고리와 북마크만 있는 경우
+            var result = service.getProductsByBookmark(userId, category.getValue(), layout, pageable);
+            counts = result.getTotalElements();
+            content = result;
+
+        } else if (!bookmark && minPrice != null && maxPrice != null) {
+            /// 카테고리와 가격만 있는 경우
+            var result = service.getProductsByCategoryIdAndPrice(userId, category.getValue(), layout, minPrice, maxPrice, pageable);
+            counts = result.getTotalElements();
+            content = result;
+
+        } else if (bookmark && minPrice != null && maxPrice != null) {
+            /// 카테고리,북마크,가격 모두 있는 경우
+            var result = service.getProductsByFilterAndBookmark(userId, category.getValue(), layout, minPrice, maxPrice, pageable);
+            counts = result.getTotalElements();
+            content = result;
+        } else {
+            throw new IllegalArgumentException(ErrorCode.BAD_REQUEST.getMessage());
         }
 
-        /// DTO 변경
-        Slice<ProductListResponse> dtoSlice = new SliceImpl<>(
-                content.getContent(),
-                content.getPageable(),
-                content.hasNext()
-        );
 
         /// 응답
-        return ApiResponse.ok(SliceResponse.from(dtoSlice, counts));
+        return ApiResponse.ok(SliceResponse.from(content, counts));
     }
 
 

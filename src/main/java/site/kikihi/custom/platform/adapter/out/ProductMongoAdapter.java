@@ -135,12 +135,26 @@ public class ProductMongoAdapter implements ProductPort {
      * @param pageable      페이징
      */
     @Override
-    public Page<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable) {
+    public Page<Product> getCustomProducts(String type, String categoryId, Pageable pageable) {
 
-        return documentRepository.findByTypeAndCategoryAndIsCustomTrue(type, categoryId, pageable)
+        return documentRepository.findByCustomHousing(type, categoryId, pageable)
                 .map(ProductDocument::toDomain);
     }
 
+    /**
+     * 커스텀에서 사용할 하우징 함수 (가격)
+     *
+     * @param type          조회할 타입
+     * @param categoryId    카테고리
+     * @param minPrice      최소 가격
+     * @param maxPrice      최대 가격
+     * @param pageable      페이징
+     */
+    @Override
+    public Page<Product> getCustomProducts(String type, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return documentRepository.findByCustomHousing(type, categoryId, minPrice, maxPrice, pageable)
+                .map(ProductDocument::toDomain);
+    }
 
     /**
      * 커스텀에서 사용할 키캡 함수
@@ -148,8 +162,21 @@ public class ProductMongoAdapter implements ProductPort {
      * @param pageable      페이징
      */
     @Override
-    public Page<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
-        return documentRepository.findByCategoryAndIsCustomTrue(categoryId, pageable)
+    public Page<Product> getCustomProducts(String categoryId, Pageable pageable) {
+        return documentRepository.findByCustomKeyCap(categoryId, pageable)
+                .map(ProductDocument::toDomain);
+    }
+
+    /**
+     * 커스텀에서 사용할 키캡 함수
+     * @param categoryId    카테고리
+     * @param minPrice      최소 가격
+     * @param maxPrice      최대 가격
+     * @param pageable      페이징
+     */
+    @Override
+    public Page<Product> getCustomProducts(String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return documentRepository.findByCustomKeyCap(categoryId, minPrice, maxPrice, pageable)
                 .map(ProductDocument::toDomain);
     }
 

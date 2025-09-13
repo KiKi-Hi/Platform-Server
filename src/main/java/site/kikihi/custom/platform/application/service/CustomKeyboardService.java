@@ -174,7 +174,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     }
 
     /**
-     * 키보드 배열을 바탕으로 가능한 상품 목록 조회
+     * 키보드 배열을 바탕으로 가능한 상품 목록 조회 (카테고리)
      *
      * @param userId   유저ID
      * @param type     조회할 배열 타입
@@ -188,11 +188,11 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         /// 타입을 바탕으로 조회하기
         /// 하우징인 경우
         if (categoryId.equals(CategoryType.HOUSING.getValue())){
-            products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId, pageable);
+            products = productPort.getCustomProducts(type.getDb(), categoryId, pageable);
         }
         /// 키캡인 경우
         else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
-            products = productPort.getProductsByCategoryAndCustom(categoryId, pageable);
+            products = productPort.getCustomProducts(categoryId, pageable);
         } else {
             products = productPort.getProducts(categoryId, pageable);
         }
@@ -202,7 +202,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     }
 
     /**
-     * 키보드 배열을 바탕으로 가능한 북마크한 상품 목록 조회
+     * 키보드 배열을 바탕으로 상품 목록 조회 (카테고리,북마크)
      * @param userId        유저ID
      * @param categoryId    카테고리
      * @param type          조회할 타입
@@ -215,11 +215,11 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         /// 타입을 바탕으로 조회하기
         /// 하우징인 경우
         if (categoryId.equals(CategoryType.HOUSING.getValue())){
-            products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId, pageable);
+            products = productPort.getCustomProducts(type.getDb(), categoryId, pageable);
         }
         /// 키캡인 경우
         else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
-            products = productPort.getProductsByCategoryAndCustom(categoryId, pageable);
+            products = productPort.getCustomProducts(categoryId, pageable);
         } else {
             products = productPort.getProducts(categoryId, pageable);
         }
@@ -229,8 +229,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     }
 
     /**
-     * 키보드 배열을 바탕으로 가능한 북마크한 상품 목록의 필터링 조회
-     *
+     * 키보드 배열을 바탕으로 상품 목록의 필터링 조회 (카테고리, 가격)
      * @param userId     유저 ID
      * @param categoryId 카테고리 ID
      * @param minPrice   최소가격
@@ -241,15 +240,52 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     public Page<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         /// Port에서 조회
-        Page<Product> products = productPort.getProducts(categoryId, minPrice, maxPrice, pageable);
+        Page<Product> products;
 
-        /// 공통 함수 바탕으로 처리
+        /// 하우징인 경우
+        if (categoryId.equals(CategoryType.HOUSING.getValue())){
+            products = productPort.getCustomProducts(type.getDb(), categoryId, minPrice, maxPrice, pageable);
+        }
+        /// 키캡인 경우
+        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
+            products = productPort.getCustomProducts(categoryId, minPrice, maxPrice, pageable);
+
+        } else {
+            products = productPort.getProducts(categoryId, minPrice, maxPrice, pageable);
+        }
+
+        /// 북마크 여부 파악해서 해당 상품만 가져오기
         return toProductListResponse(userId, categoryId, products);
     }
 
+    /**
+     * 키보드 배열을 바탕으로 상품 목록의 필터링 조회 (카테고리,북마크,가격)
+     *
+     * @param userId     유저 ID
+     * @param categoryId 카테고리 ID
+     * @param minPrice   최소가격
+     * @param maxPrice   최대가격
+     * @param pageable   페이징
+     */
     @Override
     public Page<ProductListResponse> getProductsByFilterAndBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable) {
-        return null;
+        /// Port에서 조회
+        Page<Product> products;
+
+        /// 하우징인 경우
+        if (categoryId.equals(CategoryType.HOUSING.getValue())){
+            products = productPort.getCustomProducts(type.getDb(), categoryId, minPrice, maxPrice, pageable);
+        }
+        /// 키캡인 경우
+        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
+            products = productPort.getCustomProducts(categoryId, minPrice, maxPrice, pageable);
+
+        } else {
+            products = productPort.getProducts(categoryId, minPrice, maxPrice, pageable);
+        }
+
+        /// 북마크 여부 파악해서 해당 상품만 가져오기
+        return toProductBookmarkResponse(userId, categoryId, products);
     }
 
 
