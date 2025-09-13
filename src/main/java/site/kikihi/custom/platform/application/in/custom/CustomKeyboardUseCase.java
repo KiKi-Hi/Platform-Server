@@ -40,12 +40,17 @@ public interface CustomKeyboardUseCase {
     // 배열에 맞는 상품 조회하기
     Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
-    // 배여에 맞는 상품 개수 조회하기
+    // 배열에 맞는 상품 개수 조회하기
     Long getCustomProductCounts(String categoryId, CustomKeyboardLayout type);
 
+    /// 수정
+    // 커스텀 상품 내부에 부품 추가하기
+    void insertProductInCustomKeyboard(Long customKeyboardId, String categoryId, String productId, UUID userId);
 
     /// 삭제
     void deleteCustomKeyboard(Long customKeyboardId, UUID userId);
 
+    // 커스텀 상품 내부에서 부품 제거하기
+    void deleteCustomInside(Long customKeyboardId, String categoryId, String productId, UUID userId);
 
 }

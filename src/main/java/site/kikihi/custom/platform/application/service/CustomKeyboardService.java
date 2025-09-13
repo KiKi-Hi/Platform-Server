@@ -76,6 +76,19 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         return port.saveCustomKeyboard(customKeyboard);
     }
 
+
+    /**
+     * 상품 부품 추가하기
+     * @param customKeyboardId  커스텀 키보드 ID
+     * @param categoryId        추가할 카테고리
+     * @param productId         추가할 상품 ID
+     * @param userId            유저
+     */
+    @Override
+    public void insertProductInCustomKeyboard(Long customKeyboardId, String categoryId, String productId, UUID userId) {
+
+    }
+
     // =================
     //  조회 함수
     // =================
@@ -228,6 +241,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     /**
      * 커스텀 키보드 삭제
      * @param customKeyboardId 삭제할 커스텀 ID
+     * @param userId            삭제하는 유저 ID
      */
     @Override
     public void deleteCustomKeyboard(Long customKeyboardId, UUID userId) {
@@ -241,6 +255,37 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         }
 
         /// 권한이 정상이기에 삭제
+        port.deleteCustomKeyboard(customKeyboardId);
+
+    }
+
+    /**
+     * 커스텀 키보드 내부에 있는 부품을 삭제합니다
+     *
+     * @param customKeyboardId 삭제할 커스텀 ID
+     * @param categoryId       카테고리 ID
+     * @param productId        부품 ID
+     * @param userId           삭제하는 유저 ID
+     */
+    @Override
+    public void deleteCustomInside(Long customKeyboardId, String categoryId, String productId, UUID userId) {
+
+        /// 해당 유저의 커스텀 키보드인지 체크
+        boolean checked = port.existCustomKeyboardByUserIdAndId(userId, customKeyboardId);
+
+        /// 키보드가 요청자의 것이 아니라면 에러 발생
+        if (!checked) {
+            throw new IllegalStateException(ErrorCode.UNAUTHORIZED_DELETE_CUSTOM.getMessage());
+        }
+
+        /// 커스텀 내부에 해당 상품의 ID가 있는지 여부 확인
+        boolean existed = port.existProductInsideCustomKeyboard(customKeyboardId, categoryId, productId);
+
+        if (!existed) {
+            throw new IllegalStateException(ErrorCode.BAD_PRODUCT_DELETE_CUSTOM.getMessage());
+        }
+
+        /// 해당 유저의 상품이며, 커스텀 내부에 상품이 존재하기에 삭제 가능하다.
         port.deleteCustomKeyboard(customKeyboardId);
 
     }

@@ -5,7 +5,7 @@ import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
-import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardUpdateRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
@@ -97,21 +97,6 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     }
 
     /**
-     * 키보드 배열 종류 조회
-     */
-    @GetMapping("/layout")
-    public ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyboardLayout() {
-
-        /// 서비스
-        List<CustomKeyboardLayout> layouts = service.getKeyboardLayouts();
-
-        /// DTO
-        List<CustomKeyboardLayoutResponse> responses = CustomKeyboardLayoutResponse.from(layouts);
-
-        return ApiResponse.ok(responses);
-    }
-
-    /**
      * 배열에 맞는 상품 조회
      */
     @GetMapping("/products")
@@ -150,6 +135,23 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     }
 
     /**
+     * 커스텀 키보드 내부 상품 추가하기
+     * @param request           추가 DTO
+     * @param principalDetails  유저
+     */
+    public ApiResponse<Void> updateCustomKeyboard(
+            @RequestBody CustomKeyboardUpdateRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ){
+
+        /// 서비스
+        service.insertProductInCustomKeyboard(request.getId(), request.getCategory().getValue(), request.getProductId(), principalDetails.getId());
+
+        return ApiResponse.updated();
+    }
+
+
+    /**
      * 커스텀 키보드 삭제 API
      * @param id                삭제할 커스텀 키보드
      * @param principalDetails  유저
@@ -165,5 +167,26 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 응답
         return ApiResponse.deleted();
 
+    }
+
+    /**
+     * 커스텀 키보드 내부 상품 삭제 API
+     * @param id                수정할 커스텀 키보드
+     * @param category          카테고리 API
+     * @param productId         상품 ID
+     * @param principalDetails  유저
+     */
+    @DeleteMapping()
+    public ApiResponse<Void> deleteProductInsideCustom(
+            @RequestParam Long id,
+            @RequestParam CustomCategoryType category,
+            @RequestParam String productId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+
+        /// 서비스 호출
+        service.deleteCustomInside(id, category.getValue(), productId, principalDetails.getId());
+
+        return ApiResponse.deleted();
     }
 }

@@ -74,6 +74,29 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
 
+    /**
+     * 커스텀 키보드 내부에 해당 상품 ID가 존재하는지 체크
+     *
+     * @param id        커스텀 ID
+     * @param productId 상품 ID
+     */
+    @Override
+    public boolean existProductInsideCustomKeyboard(Long id, String categoryId, String productId) {
+
+        switch (categoryId) {
+            case "housing":
+                return repository.existsByIdAndFrameId(id, productId);
+            case "switch":
+                return repository.existsByIdAndSwitchId(id, productId);
+            case "keycap":
+                return repository.existsByIdAndKeyCapId(id, productId);
+            case "accessory":
+                return repository.existsByIdAndAccessoryId(id, productId);
+            default:
+                return false;
+        }
+    }
+
     // =================
     //  DB 수정
     // =================
@@ -98,5 +121,20 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
     @Override
     public void deleteCustomKeyboard(Long id) {
         repository.deleteById(id);
+    }
+
+    /**
+     * 삭제할 커스텀 키보드
+     * @param id            아이디
+     * @param categoryId    카테고리
+     * @param productId     상품 ID
+     */
+    @Override
+    public void deleteProductInsideCustomKeyboard(Long id, String categoryId, String productId) {
+
+        /// 삭제가 아닌 수정으로 진행
+        /// 더티 체킹으로서 수행
+
+
     }
 }
