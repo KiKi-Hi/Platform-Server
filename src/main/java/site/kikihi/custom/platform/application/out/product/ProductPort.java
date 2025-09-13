@@ -50,16 +50,22 @@ public interface ProductPort {
 
     Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
 
+    List<Product> getProductsAndCategoryByType(String type, String categoryId);
+
     // 개수
-    Long getProductsAndCategoryByType(String type, String categoryId);
+    Long countProductsAndCategoryByType(String type, String categoryId);
 
     Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
 
     // 개수
-    Long getProductsByCategoryAndCustom(String categoryId);
+    Long countProductsByCategoryAndCustom(String categoryId);
+
+    List<Product> getProductsByCategoryAndCustom(String categoryId);
 
     /// 상품 개수 조회
-    Long getProductsCount(String category);
+    Long countProductsCount(String category);
+
+    List<Product> getProductsByCategory(String category);
 
     // =================
     //  상품 추천

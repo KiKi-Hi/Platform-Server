@@ -88,6 +88,7 @@ public interface CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
+            @RequestParam boolean bookmark,
             PageRequest pageRequest
     );
 

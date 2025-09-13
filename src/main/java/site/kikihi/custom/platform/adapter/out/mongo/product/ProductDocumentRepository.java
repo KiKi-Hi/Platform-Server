@@ -79,6 +79,18 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
+    @Query("""
+    {
+      'type': ?0,
+      'category': ?1,
+      'is_custom': true
+    }
+    """)
+    List<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
+            String type,
+            String category
+    );
+
     @Query(value = """
   { 'type': ?0, 'category': ?1, 'is_custom': true }
 """, count = true)
@@ -101,6 +113,20 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
 """, count = true)
     Long countByCategoryAndIsCustomTrue(String category);
 
+    @Query("""
+    {
+      'category': ?0,
+      'is_custom': true
+    }
+    """)
+    List<ProductDocument> fndByCategoryAndCustom(String category);
+
+    @Query("""
+    {
+      'category': ?0
+      }
+    """)
+    List<ProductDocument> fndByCategory(String category);
 
 
     /// 아이디 기반 조회
@@ -124,6 +150,8 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
 
     /// 상품 개수
     Long countByCategory(String category);
+
+
     // =================
     //  삭제 함수
     // =================

@@ -141,7 +141,14 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
-    public Long getProductsAndCategoryByType(String type, String categoryId) {
+    public List<Product> getProductsAndCategoryByType(String type, String categoryId) {
+        return documentRepository.findByTypeAndCategoryAndIsCustomTrue(type, categoryId).stream()
+                .map(ProductDocument::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Long countProductsAndCategoryByType(String type, String categoryId) {
         return documentRepository.countByTypeAndCategoryAndIsCustomTrue(type, categoryId);
     }
 
@@ -152,8 +159,15 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
-    public Long getProductsByCategoryAndCustom(String categoryId) {
+    public Long countProductsByCategoryAndCustom(String categoryId) {
         return documentRepository.countByCategoryAndIsCustomTrue(categoryId);
+    }
+
+    @Override
+    public List<Product> getProductsByCategoryAndCustom(String categoryId) {
+        return documentRepository.fndByCategoryAndCustom(categoryId).stream()
+                .map(ProductDocument::toDomain)
+                .toList();
     }
 
 
@@ -162,8 +176,15 @@ public class ProductMongoAdapter implements ProductPort {
      * @param category  카테고리
      */
     @Override
-    public Long getProductsCount(String category) {
+    public Long countProductsCount(String category) {
         return documentRepository.countByCategory(category);
+    }
+
+    @Override
+    public List<Product> getProductsByCategory(String category) {
+        return documentRepository.fndByCategory(category).stream()
+                .map(ProductDocument::toDomain)
+                .toList();
     }
 
     // =================

@@ -127,7 +127,7 @@ public class ProductService implements ProductUseCase {
     public Long getCountProducts(String categoryId) {
 
         /// Port에서 조회
-        return productPort.getProductsCount(categoryId);
+        return productPort.countProductsCount(categoryId);
     }
 
     // =================

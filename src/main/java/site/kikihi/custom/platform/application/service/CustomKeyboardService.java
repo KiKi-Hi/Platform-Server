@@ -93,16 +93,6 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     //  조회 함수
     // =================
 
-    // 배열 조회
-
-    /**
-     * 키보드 레이아웃을 조회
-     */
-    @Override
-    public List<CustomKeyboardLayout> getKeyboardLayouts() {
-        return CustomKeyboardLayout.getKeyboardLayouts();
-    }
-
 
     /**
      * 내가 만든 키보드 목록 조회
@@ -213,10 +203,36 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         return toProductListResponse(userId, categoryId, products);
     }
 
+    /**
+     * 키보드 배열을 바탕으로 가능한 북마크한 상품 목록 조회
+     * @param userId        유저ID
+     * @param categoryId    카테고리
+     * @param type          조회할 타입
+     * @param pageable      페이징
+     */
+    @Override
+    public Slice<ProductListResponse> getProductsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
+        Slice<Product> products;
+
+        /// 타입을 바탕으로 조회하기
+        /// 하우징인 경우
+        if (categoryId.equals(CategoryType.HOUSING.getValue())){
+            products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId, pageable);
+        }
+        /// 키캡인 경우
+        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
+            products = productPort.getProductsByCategoryAndCustom(categoryId, pageable);
+        } else {
+            products = productPort.getProducts(categoryId, pageable);
+        }
+
+        /// 북마크 여부 파악해서 해당 상품만 가져오기
+        return toProductBookmarkResponse(userId, categoryId, products);
+    }
+
 
     /**
      * 키보드 배열을 바탕으로 가능한 상품 개수 조회
-     *
      */
     @Override
     public Long getCustomProductCounts(String categoryId, CustomKeyboardLayout type) {
@@ -224,13 +240,49 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         /// 타입을 바탕으로 조회하기
         /// 하우징인 경우
         if (categoryId.equals(CategoryType.HOUSING.getValue())){
-            return productPort.getProductsAndCategoryByType(type.getDb(), categoryId);
+            return productPort.countProductsAndCategoryByType(type.getDb(), categoryId);
         }
         /// 키캡인 경우
         else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
-            return productPort.getProductsByCategoryAndCustom(categoryId);
+            return productPort.countProductsByCategoryAndCustom(categoryId);
         } else {
-            return productPort.getProductsCount(categoryId);
+            return productPort.countProductsCount(categoryId);
+        }
+    }
+
+    /**
+     * 키보드 배열을 바탕으로 북마크한 상품 개수 조회
+     */
+    @Override
+    public Long getCustomProductCountsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type) {
+
+        /// 로그인 하지 않은 유저가 확인한다면
+        if (userId == null) {
+            return 0L;
+        }
+
+        /// 유저가 북마크를 했는지 체크
+        List<Bookmark> bookmarks = bookmarkPort.getBookmarksByUserIdAndCategoryId(userId, categoryId);
+
+        /// 북마크된 상품 ID만 추출
+        Set<String> bookmarkedProductIds = bookmarks.stream()
+                .map(Bookmark::getProductId)
+                .collect(Collectors.toSet());
+
+        /// 하우징인 경우
+        List<Product> products;
+        if (categoryId.equals(CategoryType.HOUSING.getValue())){
+            products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId);
+            return (long) ProductListResponse.fromBookmark(products, bookmarkedProductIds).size();
+        }
+
+        /// 키캡인 경우
+        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
+            products = productPort.getProductsByCategoryAndCustom(categoryId);
+            return (long) ProductListResponse.fromBookmark(products, bookmarkedProductIds).size();
+        } else {
+            products = productPort.getProductsByCategory(categoryId);
+            return (long) ProductListResponse.fromBookmark(products, bookmarkedProductIds).size();
         }
     }
 
@@ -368,6 +420,45 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
 
         // 북마크 여부 반영하여 DTO 변환
         dtoList = ProductListResponse.from(content, bookmarkedProductIds);
+
+        return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+    }
+
+    // =================
+    //  공통 함수
+    // =================
+    /**
+     * 상품 목록 조회를 진행할때, 북마크 여부를 파악하는 함수입니다.
+     * @param userId        유저 ID
+     * @param categoryId    카테고리 ID
+     * @param products      상품 목록
+     */
+    private Slice<ProductListResponse> toProductBookmarkResponse(UUID userId, String categoryId, Slice<Product> products) {
+        /// 응답 값
+        List<ProductListResponse> dtoList;
+
+        /// 상품 목록 꺼내서 DTO 변환
+        List<Product> content = products.getContent();
+
+        /// 로그인 하지 않은 유저가 확인한다면
+        if (userId == null) {
+
+            dtoList = List.of();
+
+            /// 새로운 Slice 객체로 생성
+            return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+        }
+
+        /// 유저가 북마크를 했는지 체크
+        List<Bookmark> bookmarks = bookmarkPort.getBookmarksByUserIdAndCategoryId(userId, categoryId);
+
+        /// 북마크된 상품 ID만 추출
+        Set<String> bookmarkedProductIds = bookmarks.stream()
+                .map(Bookmark::getProductId)
+                .collect(Collectors.toSet());
+
+        // 북마크 여부 반영하여 DTO 변환
+        dtoList = ProductListResponse.fromBookmark(content, bookmarkedProductIds);
 
         return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
     }

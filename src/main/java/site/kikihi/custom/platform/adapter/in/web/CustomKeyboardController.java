@@ -104,6 +104,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
+            @RequestParam(defaultValue = "false") boolean bookmark,
             PageRequest pageRequest
     ) {
 
@@ -118,10 +119,23 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         );
 
         /// 서비스
-        Slice<ProductListResponse> content = service.getCustomProducts(userId, category.getValue(), layout, pageable);
+        Slice<ProductListResponse> content;
+        Long counts;
+        if (bookmark) {
 
-        /// 개수 조회
-        Long counts = service.getCustomProductCounts(category.getValue(), layout);
+            /// 내용
+            content = service.getProductsByBookmark(userId, category.getValue(), layout, pageable);
+
+            /// 개수 조회
+            counts = service.getCustomProductCountsByBookmark(userId, category.getValue(), layout);
+
+        } else {
+            /// 내용
+            content = service.getCustomProducts(userId, category.getValue(), layout, pageable);
+
+            /// 개수 조회
+            counts = service.getCustomProductCounts(category.getValue(), layout);
+        }
 
         /// DTO 변경
         Slice<ProductListResponse> dtoSlice = new SliceImpl<>(
@@ -133,6 +147,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 응답
         return ApiResponse.ok(SliceResponse.from(dtoSlice, counts));
     }
+
 
     /**
      * 커스텀 키보드 내부 상품 추가하기
