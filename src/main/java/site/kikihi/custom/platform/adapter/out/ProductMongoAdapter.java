@@ -47,10 +47,10 @@ public class ProductMongoAdapter implements ProductPort {
     // =================
     /// 카테고리 기반 상품 목록 조회 (카테고리만)
     @Override
-    public Slice<Product> getProducts(String category, Pageable pageable) {
+    public Page<Product> getProducts(String category, Pageable pageable) {
 
         /// DB 조회
-        Slice<ProductDocument> result = documentRepository
+        Page<ProductDocument> result = documentRepository
                 .findByCategory(category, pageable);
 
         return result.
@@ -59,7 +59,7 @@ public class ProductMongoAdapter implements ProductPort {
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
     @Override
-    public Slice<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
+    public Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
 
         /// DB 조회
         Page<ProductDocument> result = documentRepository
@@ -71,9 +71,9 @@ public class ProductMongoAdapter implements ProductPort {
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 가격 포함)
     @Override
-    public Slice<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         /// DB 조회
-        Slice<ProductDocument> result = documentRepository
+        Page<ProductDocument> result = documentRepository
                 .findByCategoryAndPriceRange(category, minPrice, maxPrice, pageable);
 
         return result.
@@ -82,11 +82,11 @@ public class ProductMongoAdapter implements ProductPort {
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
     @Override
-    public Slice<Product> getProducts(String category, List<String> manufacturer,
+    public Page<Product> getProducts(String category, List<String> manufacturer,
                                      Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         /// DB 조회
-        Slice<ProductDocument> result = documentRepository
+        Page<ProductDocument> result = documentRepository
                 .findByCategoryAndManufacturerAndPriceRange(category, manufacturer, minPrice, maxPrice, pageable);
 
         return result.
@@ -134,7 +134,7 @@ public class ProductMongoAdapter implements ProductPort {
      * @param pageable 페이징
      */
     @Override
-    public Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable) {
+    public Page<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable) {
 
         return documentRepository.findByTypeAndCategoryAndIsCustomTrue(type, categoryId, pageable)
                 .map(ProductDocument::toDomain);
@@ -153,7 +153,7 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     @Override
-    public Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
+    public Page<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
         return documentRepository.findByCategoryAndIsCustomTrue(categoryId, pageable)
                 .map(ProductDocument::toDomain);
     }

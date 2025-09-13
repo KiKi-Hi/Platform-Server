@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.adapter.in.web;
 
+import org.springframework.data.domain.*;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
@@ -16,10 +17,6 @@ import site.kikihi.custom.platform.domain.custom.CustomKeyboardWithName;
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -120,21 +117,16 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
 
         /// 서비스
         Slice<ProductListResponse> content;
-        Long counts;
+        long counts;
         if (bookmark) {
-
-            /// 내용
-            content = service.getProductsByBookmark(userId, category.getValue(), layout, pageable);
-
-            /// 개수 조회
-            counts = service.getCustomProductCountsByBookmark(userId, category.getValue(), layout);
+            var result = service.getProductsByBookmark(userId, category.getValue(), layout, pageable);
+            content = result;
+            counts = result.getTotalElements();
 
         } else {
-            /// 내용
-            content = service.getCustomProducts(userId, category.getValue(), layout, pageable);
-
-            /// 개수 조회
-            counts = service.getCustomProductCounts(category.getValue(), layout);
+            var result = service.getCustomProducts(userId, category.getValue(), layout, pageable);
+            content = result;
+            counts = result.getTotalElements();
         }
 
         /// DTO 변경

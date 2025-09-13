@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.application.in.custom;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
@@ -24,35 +25,33 @@ import java.util.*;
  */
 public interface CustomKeyboardUseCase {
 
-    /// 생성
+    /// 커스텀 생성
     CustomKeyboard saveCustomKeyboard(CustomKeyboardRequest request, UUID userId);
 
-    /// 조회
+    /// 커스텀 조회
+    // 나의 커스텀 키보드 상세 조회
+    CustomKeyboardWithName getCustomKeyboard(Long customKeyboardId);
 
     // 나의 커스텀 키보드 목록 조회
     Slice<CustomKeyboardWithName> getCustomKeyboards(UUID userId);
 
-    // 커스텀 키보드 상세 조회
-    CustomKeyboardWithName getCustomKeyboard(Long customKeyboardId);
+    /// 커스텀 삭제
+    void deleteCustomKeyboard(Long customKeyboardId, UUID userId);
 
+
+    /// 상품 목록 조회
     // 배열에 맞는 상품 조회하기
-    Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
+    Page<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
     // 배열에 맞는 상품 조회하기 (북마크있는 상품만 조회)
-    Slice<ProductListResponse> getProductsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
+    Page<ProductListResponse> getProductsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
-    // 배열에 맞는 상품 개수 조회하기
-    Long getCustomProductCounts(String categoryId, CustomKeyboardLayout type);
-
-    // 배열에 맞는 상품 개수 조회하기(북마크)
-    Long getCustomProductCountsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type);
+    // 배열에 맞는 상품 가격대 필터링 조회하기 (카테고리, 가격 포함)
+    Page<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 수정
     // 커스텀 상품 내부에 부품 추가하기
     void insertProductInCustomKeyboard(Long customKeyboardId, String categoryId, String productId, UUID userId);
-
-    /// 삭제
-    void deleteCustomKeyboard(Long customKeyboardId, UUID userId);
 
     // 커스텀 상품 내부에서 부품 제거하기
     void deleteCustomInside(Long customKeyboardId, String categoryId, String productId, UUID userId);

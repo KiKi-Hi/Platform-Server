@@ -60,6 +60,7 @@ public class ProductController implements ProductControllerSpec {
 
         /// 공통 객체들 저장
         Slice<ProductListResponse> products;
+        Long totalCounts;
 
         /// 유저가 없다면 null 저장
         UUID userId = principalDetails != null ? principalDetails.getId() : null;
@@ -67,26 +68,32 @@ public class ProductController implements ProductControllerSpec {
         // 파라미터 여부에 따라 분기 처리
         if (manufacturer == null && minPrice == null && maxPrice == null) {
             /// 카테고리만 있는 경우
-            products = productService.getProductsByCategoryId(userId, category.getValue(), pageable);
+            var result = productService.getProductsByCategoryId(userId, category.getValue(), pageable);
+            totalCounts = result.getTotalElements();
+            products = result;
 
         } else if (manufacturer != null && minPrice == null && maxPrice == null) {
             /// 카테고리 + 제조사만 있는 경우
-            products = productService.getProductsByCategoryIdAndManufacturerId(userId, category.getValue(), manufacturer, pageable);
+            var result = productService.getProductsByCategoryIdAndManufacturerId(userId, category.getValue(), manufacturer, pageable);
+            totalCounts = result.getTotalElements();
+            products = result;
 
         } else if (manufacturer == null && minPrice != null && maxPrice != null) {
             /// 카테고리 + 가격만 있는 경우
-            products = productService.getProductsByCategoryIdAndPrice(userId, category.getValue(), minPrice, maxPrice, pageable);
+            var result = productService.getProductsByCategoryIdAndPrice(userId, category.getValue(), minPrice, maxPrice, pageable);
+            totalCounts = result.getTotalElements();
+            products = result;
 
         } else if (manufacturer != null && minPrice != null && maxPrice != null) {
             /// 카테고리 + 제조사 + 가격이 있는 경우
-            products = productService.getProductsByCategoryIdAndManufacturerIdAndPrice(
+            var result = productService.getProductsByCategoryIdAndManufacturerIdAndPrice(
                     userId, category.getValue(), manufacturer, minPrice, maxPrice, pageable);
+            totalCounts = result.getTotalElements();
+            products = result;
+
         }  else {
             throw new IllegalArgumentException(ErrorCode.BAD_REQUEST.getMessage());
         }
-
-        /// 카테고리에 따른 전체 개수 조회
-        Long totalCounts = productService.getCountProducts(category.getValue());
 
         return ApiResponse.ok(SliceResponse.from(products, totalCounts));
     }

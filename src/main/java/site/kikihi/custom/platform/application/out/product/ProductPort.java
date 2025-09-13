@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.application.out.product;
 
+import org.springframework.data.domain.Page;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.product.Product;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +25,16 @@ public interface ProductPort {
     //  상품 목록 조회
     // =================
     /// 카테고리 기반 상품 목록 조회 (카테고리만)
-    Slice<Product> getProducts(String category, Pageable pageable);
+    Page<Product> getProducts(String category, Pageable pageable);
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
-    Slice<Product> getProducts(String category, List<String> manufacturer, Pageable pageable);
+    Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable);
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
-    Slice<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
-    Slice<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Page<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 카테고리 기반 제조사 조회
     List<String> getManufacturers(String category);
@@ -48,14 +49,14 @@ public interface ProductPort {
     /// 상품 ID들 바탕으로 조회
     Map<String, Product> getProductsByIds(List<String> productIds);
 
-    Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
+    Page<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
 
     List<Product> getProductsAndCategoryByType(String type, String categoryId);
 
     // 개수
     Long countProductsAndCategoryByType(String type, String categoryId);
 
-    Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
+    Page<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
 
     // 개수
     Long countProductsByCategoryAndCustom(String categoryId);

@@ -22,7 +22,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     // =================
 
     /// 카테고리 기반 목록 조회 (카테고리)
-    Slice<ProductDocument> findByCategory(String category, Pageable pageable);
+    Page<ProductDocument> findByCategory(String category, Pageable pageable);
 
     /// 카테고리 기반 목록 조회 (카테고리, 제조사 포함)
     @Query("{ 'category': ?0, 'manufacturer': { $in: ?1 } }")
@@ -35,7 +35,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'price': { $gte: ?1, $lte: ?2 }
     }
     """)
-    Slice<ProductDocument> findByCategoryAndPriceRange(
+    Page<ProductDocument> findByCategoryAndPriceRange(
             String category,
             Integer minPrice,
             Integer maxPrice,
@@ -57,7 +57,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'price': { $gte: ?2, $lte: ?3 }
     }
     """)
-    Slice<ProductDocument> findByCategoryAndManufacturerAndPriceRange(
+    Page<ProductDocument> findByCategoryAndManufacturerAndPriceRange(
             String category,
             List<String> manufacturer,
             Integer minPrice,
@@ -73,7 +73,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'is_custom': true
     }
     """)
-    Slice<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
+    Page<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
             String type,
             String category,
             Pageable pageable
@@ -102,7 +102,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'is_custom': true
     }
     """)
-    Slice<ProductDocument> findByCategoryAndIsCustomTrue(
+    Page<ProductDocument> findByCategoryAndIsCustomTrue(
             String category,
             Pageable pageable
     );

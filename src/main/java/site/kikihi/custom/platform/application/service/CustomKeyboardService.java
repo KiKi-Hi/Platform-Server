@@ -1,7 +1,7 @@
 package site.kikihi.custom.platform.application.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.product.CategoryType;
@@ -18,8 +18,6 @@ import site.kikihi.custom.platform.domain.custom.CustomKeyboardWithName;
 import site.kikihi.custom.platform.domain.product.Product;
 import site.kikihi.custom.platform.domain.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,9 +181,9 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
      * @param pageable 페이징
      */
     @Override
-    public Slice<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
+    public Page<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
 
-        Slice<Product> products;
+        Page<Product> products;
 
         /// 타입을 바탕으로 조회하기
         /// 하우징인 경우
@@ -211,8 +209,8 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
      * @param pageable      페이징
      */
     @Override
-    public Slice<ProductListResponse> getProductsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
-        Slice<Product> products;
+    public Page<ProductListResponse> getProductsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable) {
+        Page<Product> products;
 
         /// 타입을 바탕으로 조회하기
         /// 하우징인 경우
@@ -230,61 +228,25 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         return toProductBookmarkResponse(userId, categoryId, products);
     }
 
-
     /**
-     * 키보드 배열을 바탕으로 가능한 상품 개수 조회
+     * 키보드 배열을 바탕으로 가능한 북마크한 상품 목록의 필터링 조회
+     *
+     * @param userId     유저 ID
+     * @param categoryId 카테고리 ID
+     * @param minPrice   최소가격
+     * @param maxPrice   최대가격
+     * @param pageable   페이징
      */
     @Override
-    public Long getCustomProductCounts(String categoryId, CustomKeyboardLayout type) {
+    public Page<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
-        /// 타입을 바탕으로 조회하기
-        /// 하우징인 경우
-        if (categoryId.equals(CategoryType.HOUSING.getValue())){
-            return productPort.countProductsAndCategoryByType(type.getDb(), categoryId);
-        }
-        /// 키캡인 경우
-        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
-            return productPort.countProductsByCategoryAndCustom(categoryId);
-        } else {
-            return productPort.countProductsCount(categoryId);
-        }
+        /// Port에서 조회
+        Page<Product> products = productPort.getProducts(categoryId, minPrice, maxPrice, pageable);
+
+        /// 공통 함수 바탕으로 처리
+        return toProductListResponse(userId, categoryId, products);
     }
 
-    /**
-     * 키보드 배열을 바탕으로 북마크한 상품 개수 조회
-     */
-    @Override
-    public Long getCustomProductCountsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type) {
-
-        /// 로그인 하지 않은 유저가 확인한다면
-        if (userId == null) {
-            return 0L;
-        }
-
-        /// 유저가 북마크를 했는지 체크
-        List<Bookmark> bookmarks = bookmarkPort.getBookmarksByUserIdAndCategoryId(userId, categoryId);
-
-        /// 북마크된 상품 ID만 추출
-        Set<String> bookmarkedProductIds = bookmarks.stream()
-                .map(Bookmark::getProductId)
-                .collect(Collectors.toSet());
-
-        /// 하우징인 경우
-        List<Product> products;
-        if (categoryId.equals(CategoryType.HOUSING.getValue())){
-            products = productPort.getProductsAndCategoryByType(type.getDb(), categoryId);
-            return (long) ProductListResponse.fromBookmark(products, bookmarkedProductIds).size();
-        }
-
-        /// 키캡인 경우
-        else if (categoryId.equals(CategoryType.KEYCAP.getValue())) {
-            products = productPort.getProductsByCategoryAndCustom(categoryId);
-            return (long) ProductListResponse.fromBookmark(products, bookmarkedProductIds).size();
-        } else {
-            products = productPort.getProductsByCategory(categoryId);
-            return (long) ProductListResponse.fromBookmark(products, bookmarkedProductIds).size();
-        }
-    }
 
     // =================
     //  삭제 함수
@@ -393,7 +355,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
      * @param categoryId    카테고리 ID
      * @param products      상품 목록
      */
-    private Slice<ProductListResponse> toProductListResponse(UUID userId, String categoryId, Slice<Product> products) {
+    private Page<ProductListResponse> toProductListResponse(UUID userId, String categoryId, Page<Product> products) {
         /// 응답 값
         List<ProductListResponse> dtoList;
 
@@ -407,7 +369,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
             dtoList = ProductListResponse.from(content);
 
             /// 새로운 Slice 객체로 생성
-            return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+            return new PageImpl<>(dtoList, products.getPageable(), products.getTotalElements());
         }
 
         /// 유저가 북마크를 했는지 체크
@@ -421,7 +383,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         // 북마크 여부 반영하여 DTO 변환
         dtoList = ProductListResponse.from(content, bookmarkedProductIds);
 
-        return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+        return new PageImpl<>(dtoList, products.getPageable(), products.getTotalElements());
     }
 
     // =================
@@ -433,7 +395,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
      * @param categoryId    카테고리 ID
      * @param products      상품 목록
      */
-    private Slice<ProductListResponse> toProductBookmarkResponse(UUID userId, String categoryId, Slice<Product> products) {
+    private Page<ProductListResponse> toProductBookmarkResponse(UUID userId, String categoryId, Page<Product> products) {
         /// 응답 값
         List<ProductListResponse> dtoList;
 
@@ -446,7 +408,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
             dtoList = List.of();
 
             /// 새로운 Slice 객체로 생성
-            return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+            return new PageImpl<>(dtoList, products.getPageable(), products.getTotalElements());
         }
 
         /// 유저가 북마크를 했는지 체크
@@ -460,7 +422,7 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         // 북마크 여부 반영하여 DTO 변환
         dtoList = ProductListResponse.fromBookmark(content, bookmarkedProductIds);
 
-        return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+        return new PageImpl<>(dtoList, products.getPageable(), products.getTotalElements());
     }
 
 }
