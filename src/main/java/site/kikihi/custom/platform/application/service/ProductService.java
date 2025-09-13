@@ -8,7 +8,6 @@ import site.kikihi.custom.platform.application.in.product.ProductUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
 import site.kikihi.custom.platform.application.out.product.ProductPort;
 import site.kikihi.custom.platform.domain.bookmark.Bookmark;
-import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,17 +116,6 @@ public class ProductService implements ProductUseCase {
         return toProductListResponse(userId, categoryId, products);
     }
 
-    /**
-     * 카테고리에 따른 전체 상품 개수
-     * @param categoryId    카테고리
-     */
-    @Override
-    public Long getCountProducts(String categoryId) {
-
-        /// Port에서 조회
-        return productPort.countProductsCount(categoryId);
-    }
-
     // =================
     //  상품 상세 조회
     // =================
@@ -182,29 +170,6 @@ public class ProductService implements ProductUseCase {
 
     // ========================
     // 외부 의존성
-    // ========================
-    /**
-     * 커스텀 키보드에 맞는 부품들 조회
-     * @param userId        북마크 체크를 위한 유저ID
-     * @param categoryId    카테고리 ID
-     * @param layout        생성할 커스텀 키보드 배열
-     * @param pageable      페이징
-     */
-    @Override
-    public Page<ProductListResponse> getProductsByLayout(UUID userId, String categoryId, CustomKeyboardLayout layout, Pageable pageable) {
-
-        /// Port에서 조회
-        Page<Product> products = productPort.getProducts(categoryId, pageable);
-
-        // TODO!필터 작업이 필요하다!!
-        /// 필터를 통해 해당 제품이 특정 배열이 가능한 것만 가져오기
-//        products.stream()
-//                .filter()...
-
-        /// 결과 리턴
-        ///
-        return toProductListResponse(userId, categoryId, products);
-    }
 
     // =================
     //  공통 함수

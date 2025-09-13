@@ -51,22 +51,7 @@ public interface ProductPort {
 
     Page<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
 
-    List<Product> getProductsAndCategoryByType(String type, String categoryId);
-
-    // 개수
-    Long countProductsAndCategoryByType(String type, String categoryId);
-
     Page<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
-
-    // 개수
-    Long countProductsByCategoryAndCustom(String categoryId);
-
-    List<Product> getProductsByCategoryAndCustom(String categoryId);
-
-    /// 상품 개수 조회
-    Long countProductsCount(String category);
-
-    List<Product> getProductsByCategory(String category);
 
     // =================
     //  상품 추천

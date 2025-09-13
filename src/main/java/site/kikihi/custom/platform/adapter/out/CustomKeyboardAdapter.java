@@ -68,9 +68,14 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
         return repository.existsByUserIdAndId(userId, id);
     }
 
+    /**
+     * 커스텀 키보드를 제작했다면 최신의 것 반영
+     * @param userId    유저
+     */
     @Override
     public Optional<CustomKeyboard> loadCustomKeyboardByUserId(UUID userId) {
-        return repository.findByUserId(userId)
+        return repository.findByUserId(userId).stream()
+                .findFirst()
                 .map(CustomKeyboardJpaEntity::toDomain);
     }
 

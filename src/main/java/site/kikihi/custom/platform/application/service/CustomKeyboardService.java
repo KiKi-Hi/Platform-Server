@@ -247,6 +247,11 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         return toProductListResponse(userId, categoryId, products);
     }
 
+    @Override
+    public Page<ProductListResponse> getProductsByFilterAndBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return null;
+    }
+
 
     // =================
     //  삭제 함수

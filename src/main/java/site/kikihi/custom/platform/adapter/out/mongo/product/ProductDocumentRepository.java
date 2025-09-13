@@ -13,12 +13,7 @@ import java.util.List;
 public interface ProductDocumentRepository extends MongoRepository<ProductDocument, String> {
 
     // =================
-    //  생성 함수
-    // =================
-
-
-    // =================
-    //  조회 함수
+    //  상품 조회 함수
     // =================
 
     /// 카테고리 기반 목록 조회 (카테고리)
@@ -42,13 +37,6 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
-    @Aggregation(pipeline = {
-            "{ '$match': { 'category': ?0 } }",
-            "{ '$group': { '_id': '$manufacturer' } }"
-    })
-    List<String> findManufacturersByCategory(String category);
-
-
     /// 카테고리 기반 목록 조회 (카테고리, 제조사, 가격 포함)
     @Query("""
     {
@@ -66,6 +54,19 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     );
 
 
+    /// 제조사 목록 조회 (카테고리, 가격 포함)
+    @Aggregation(pipeline = {
+            "{ '$match': { 'category': ?0 } }",
+            "{ '$group': { '_id': '$manufacturer' } }"
+    })
+    List<String> findManufacturersByCategory(String category);
+
+
+    // =================
+    //  카테고리 상품 조회 함수
+    // =================
+
+    /// 카테고리 상품 목록 조회, 하우징 조회
     @Query("""
     {
       'type': ?0,
@@ -79,23 +80,8 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
             Pageable pageable
     );
 
-    @Query("""
-    {
-      'type': ?0,
-      'category': ?1,
-      'is_custom': true
-    }
-    """)
-    List<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
-            String type,
-            String category
-    );
 
-    @Query(value = """
-  { 'type': ?0, 'category': ?1, 'is_custom': true }
-""", count = true)
-    Long countByTypeAndCategoryAndIsCustomTrue(String type, String category);
-
+    /// 카테고리 상품 목록 조회, 키캡 조회
     @Query("""
     {
       'category': ?0,
@@ -108,27 +94,9 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     );
 
 
-    @Query(value = """
-  {'category': ?0, 'is_custom': true }
-""", count = true)
-    Long countByCategoryAndIsCustomTrue(String category);
-
-    @Query("""
-    {
-      'category': ?0,
-      'is_custom': true
-    }
-    """)
-    List<ProductDocument> fndByCategoryAndCustom(String category);
-
-    @Query("""
-    {
-      'category': ?0
-      }
-    """)
-    List<ProductDocument> fndByCategory(String category);
-
-
+    // =================
+    //  추천용 함수
+    // =================
     /// 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
@@ -148,11 +116,9 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     })
     List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
-    /// 상품 개수
-    Long countByCategory(String category);
-
 
     // =================
     //  삭제 함수
     // =================
+
 }

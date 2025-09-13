@@ -43,11 +43,14 @@ public interface CustomKeyboardUseCase {
     // 배열에 맞는 상품 조회하기
     Page<ProductListResponse> getCustomProducts(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
-    // 배열에 맞는 상품 조회하기 (북마크있는 상품만 조회)
+    // 배열에 맞는 상품 조회하기 (카테고리, 북마크)
     Page<ProductListResponse> getProductsByBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Pageable pageable);
 
-    // 배열에 맞는 상품 가격대 필터링 조회하기 (카테고리, 가격 포함)
+    // 배열에 맞는 상품 가격대 필터링 조회하기 (카테고리, 가격)
     Page<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable);
+
+    // 배열에 맞는 상품 조회하기 (카테고리, 북마크, 가격)
+    Page<ProductListResponse> getProductsByFilterAndBookmark(UUID userId, String categoryId, CustomKeyboardLayout type, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 수정
     // 커스텀 상품 내부에 부품 추가하기

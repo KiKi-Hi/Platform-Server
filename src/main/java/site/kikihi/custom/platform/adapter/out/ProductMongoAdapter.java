@@ -128,10 +128,11 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     /**
-     * 커스텀에서 사용할 함수
+     * 커스텀에서 사용할 하우징 함수
      *
-     * @param type     조회할 타입
-     * @param pageable 페이징
+     * @param type          조회할 타입
+     * @param categoryId    카테고리
+     * @param pageable      페이징
      */
     @Override
     public Page<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable) {
@@ -140,51 +141,16 @@ public class ProductMongoAdapter implements ProductPort {
                 .map(ProductDocument::toDomain);
     }
 
-    @Override
-    public List<Product> getProductsAndCategoryByType(String type, String categoryId) {
-        return documentRepository.findByTypeAndCategoryAndIsCustomTrue(type, categoryId).stream()
-                .map(ProductDocument::toDomain)
-                .toList();
-    }
 
-    @Override
-    public Long countProductsAndCategoryByType(String type, String categoryId) {
-        return documentRepository.countByTypeAndCategoryAndIsCustomTrue(type, categoryId);
-    }
-
+    /**
+     * 커스텀에서 사용할 키캡 함수
+     * @param categoryId    카테고리
+     * @param pageable      페이징
+     */
     @Override
     public Page<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
         return documentRepository.findByCategoryAndIsCustomTrue(categoryId, pageable)
                 .map(ProductDocument::toDomain);
-    }
-
-    @Override
-    public Long countProductsByCategoryAndCustom(String categoryId) {
-        return documentRepository.countByCategoryAndIsCustomTrue(categoryId);
-    }
-
-    @Override
-    public List<Product> getProductsByCategoryAndCustom(String categoryId) {
-        return documentRepository.fndByCategoryAndCustom(categoryId).stream()
-                .map(ProductDocument::toDomain)
-                .toList();
-    }
-
-
-    /**
-     * 상품 개수 조회
-     * @param category  카테고리
-     */
-    @Override
-    public Long countProductsCount(String category) {
-        return documentRepository.countByCategory(category);
-    }
-
-    @Override
-    public List<Product> getProductsByCategory(String category) {
-        return documentRepository.fndByCategory(category).stream()
-                .map(ProductDocument::toDomain)
-                .toList();
     }
 
     // =================
