@@ -82,6 +82,17 @@ public record ProductListResponse(
                 .toList();
     }
 
+    /// 북마크한 내용이 있을 때, 북마크한 상품목록만 가져오는 정적 팩토리 메서드
+    public static List<ProductListResponse> fromBookmark(List<Product> products, Set<String> bookmarkProductIds) {
+        return products.stream()
+                .map(product -> ProductListResponse.from(
+                        product,
+                        bookmarkProductIds.contains(product.getId())))
+                /// true인 것만 가져오게끔
+                .filter(ProductListResponse::likedByMe)
+                .toList();
+    }
+
     /// 북마크한 내용이 있을 때 사용하는, 내부 정적 팩토리 메서드
     public static ProductListResponse from(Product product, boolean likedByMe) {
         return ProductListResponse.builder()

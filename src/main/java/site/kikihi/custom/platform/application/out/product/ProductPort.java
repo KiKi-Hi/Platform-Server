@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.application.out.product;
 
+import org.springframework.data.domain.Page;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.product.Product;
 import org.springframework.data.domain.Pageable;
@@ -24,42 +25,34 @@ public interface ProductPort {
     //  상품 목록 조회
     // =================
     /// 카테고리 기반 상품 목록 조회 (카테고리만)
-    Slice<Product> getProducts(String category, Pageable pageable);
+    Page<Product> getProducts(String category, Pageable pageable);
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
-    Slice<Product> getProducts(String category, List<String> manufacturer, Pageable pageable);
+    Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable);
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
-    Slice<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
-    Slice<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Page<Product> getProducts(String category, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 카테고리 기반 제조사 조회
     List<String> getManufacturers(String category);
 
-
     // =================
-    //  상품 조회
+    //  카테고리 상품 목록 조회
     // =================
-    /// 상품 ID들 바탕으로 조회
-    Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable);
+    /// 카테고리 기반 상품 목록 조회 (카테고리, 타입)
+    Page<Product> getCustomProducts(String type, String categoryId, Pageable pageable);
 
-    /// 상품 ID들 바탕으로 조회
-    Map<String, Product> getProductsByIds(List<String> productIds);
+    /// 카테고리 기반 상품 목록 조회 (카테고리, 타입, 가격)
+    Page<Product> getCustomProducts(String type, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
 
-    Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable);
+    /// 카테고리 기반 상품 목록 조회 (카테고리)
+    Page<Product> getCustomProducts(String categoryId, Pageable pageable);
 
-    // 개수
-    Long getProductsAndCategoryByType(String type, String categoryId);
-
-    Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable);
-
-    // 개수
-    Long getProductsByCategoryAndCustom(String categoryId);
-
-    /// 상품 개수 조회
-    Long getProductsCount(String category);
+    /// 카테고리 기반 상품 목록 조회 (카테고리, 가격)
+    Page<Product> getCustomProducts(String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     // =================
     //  상품 추천
@@ -73,6 +66,16 @@ public interface ProductPort {
 
     /// 비슷한 상품 추천
     List<Product> findProductsByAttributes(String switchId, String keycapId, CustomKeyboardLayout layout);
+
+    // =================
+    //  상품 조회
+    // =================
+    /// 상품 ID들 바탕으로 조회
+    Slice<Product> getProductsByIds(List<String> productIds, Pageable pageable);
+
+    /// 상품 ID들 바탕으로 조회
+    Map<String, Product> getProductsByIds(List<String> productIds);
+
 
     // =================
     //  상품 삭제

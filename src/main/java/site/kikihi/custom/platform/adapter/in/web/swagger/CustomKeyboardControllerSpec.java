@@ -76,17 +76,6 @@ public interface CustomKeyboardControllerSpec {
     ApiResponse<SliceResponse<CustomKeyboardListResponse>> getMyCustoms(
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
-
-    /**
-     * 키보드 배열 종류 조회
-     */
-    @Operation(
-            summary = "키보드 배열 목록 조회 API",
-            description = "키보드 배열의 목록을 조회합니다."
-    )
-    ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyboardLayout();
-
-
     /**
      *
      */
@@ -99,6 +88,9 @@ public interface CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = true) boolean bookmark,
             PageRequest pageRequest
     );
 

@@ -15,8 +15,18 @@ public interface CustomKeyboardJpaRepository extends JpaRepository<CustomKeyboar
 
     Optional<CustomKeyboardJpaEntity> findByUserId(UUID userId);
 
+    /// 커스텀의 아이디 및 내부 상품 존재 여부 여러개 매핑
+    boolean existsByIdAndFrameId(Long id, String frameId);
 
+    boolean existsByIdAndSwitchId(Long id, String switchId);
+
+    boolean existsByIdAndKeyCapId(Long id, String keyCapId);
+
+    boolean existsByIdAndAccessoryId(Long id, String accessoryId);
+
+    /// 해당 유저가 가지고 있는지 체크
     boolean existsByUserIdAndId(UUID userId, Long id);
 
     boolean existsByUserId(UUID userId);
+
 }

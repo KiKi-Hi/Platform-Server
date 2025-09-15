@@ -28,8 +28,8 @@ public enum ErrorCode {
         INVALID_INPUT(400_002, HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
         NULL_VALUE(400_003, HttpStatus.BAD_REQUEST, "Null 값이 들어왔습니다."),
         TEST_ERROR(400_004, HttpStatus.BAD_REQUEST, "테스트 에러입니다."),
-        ALREADY_ON(400_005, HttpStatus.BAD_REQUEST, "이미 검색어 저장 기능이 켜져있습니다"),
-        ALREADY_OFF(400_006, HttpStatus.BAD_REQUEST, "이미 검색어 저장 기능이 꺼져있습니다"),
+        BAD_PRODUCT_DELETE_CUSTOM(403_004, HttpStatus.FORBIDDEN, "커스텀 내부에 존재하지않는 상품을 삭제할 수 없습니다."),
+
 
 
         // ========================

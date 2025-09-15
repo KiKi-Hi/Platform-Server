@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.application.in.product;
 
+import org.springframework.data.domain.Page;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
 import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
@@ -20,29 +21,21 @@ public interface ProductUseCase {
 
     /// 상품 목록 조회
     // 카테고리별 목록 조회 (카테고리 포함) - mongoDB
-    Slice<ProductListResponse> getProductsByCategoryId(UUID userId, String categoryId, Pageable pageable);
+    Page<ProductListResponse> getProductsByCategoryId(UUID userId, String categoryId, Pageable pageable);
 
     // 카테고리별 목록 조회 (카테고리, 제조사 포함)
-    Slice<ProductListResponse> getProductsByCategoryIdAndManufacturerId(UUID userId, String categoryId, List<String> manufacturerId, Pageable pageable);
+    Page<ProductListResponse> getProductsByCategoryIdAndManufacturerId(UUID userId, String categoryId, List<String> manufacturerId, Pageable pageable);
 
     // 카테고리별 목록 조회 (카테고리, 가격 포함)
-    Slice<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
+    Page<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     // 카테고리별 목록 조회 (카테고리, 제조사, 가격 포함)
-    Slice<ProductListResponse> getProductsByCategoryIdAndManufacturerIdAndPrice(UUID userId, String categoryId, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
-
-    /// 상품 개수 조회
-    Long getCountProducts(String categoryId);
+    Page<ProductListResponse> getProductsByCategoryIdAndManufacturerIdAndPrice(UUID userId, String categoryId, List<String> manufacturer, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     /// 상품 상세 조회
     ProductDetailResponse getProduct(UUID userId, String id);
 
     /// 카테고리 목록 조회
     Slice<String> getManufacturers(String categoryId, Pageable pageable);
-
-    /// 외부 의존성
-    // 커스텀 키보드에 맞는 부품들 조회
-    Slice<ProductListResponse> getProductsByLayout(UUID userId, String categoryId, CustomKeyboardLayout layout, Pageable pageable);
-
 
 }

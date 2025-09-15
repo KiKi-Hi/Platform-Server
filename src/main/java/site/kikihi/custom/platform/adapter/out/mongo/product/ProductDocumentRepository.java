@@ -13,16 +13,11 @@ import java.util.List;
 public interface ProductDocumentRepository extends MongoRepository<ProductDocument, String> {
 
     // =================
-    //  생성 함수
-    // =================
-
-
-    // =================
-    //  조회 함수
+    //  상품 조회 함수
     // =================
 
     /// 카테고리 기반 목록 조회 (카테고리)
-    Slice<ProductDocument> findByCategory(String category, Pageable pageable);
+    Page<ProductDocument> findByCategory(String category, Pageable pageable);
 
     /// 카테고리 기반 목록 조회 (카테고리, 제조사 포함)
     @Query("{ 'category': ?0, 'manufacturer': { $in: ?1 } }")
@@ -35,19 +30,12 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'price': { $gte: ?1, $lte: ?2 }
     }
     """)
-    Slice<ProductDocument> findByCategoryAndPriceRange(
+    Page<ProductDocument> findByCategoryAndPriceRange(
             String category,
             Integer minPrice,
             Integer maxPrice,
             Pageable pageable
     );
-
-    @Aggregation(pipeline = {
-            "{ '$match': { 'category': ?0 } }",
-            "{ '$group': { '_id': '$manufacturer' } }"
-    })
-    List<String> findManufacturersByCategory(String category);
-
 
     /// 카테고리 기반 목록 조회 (카테고리, 제조사, 가격 포함)
     @Query("""
@@ -57,7 +45,7 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'price': { $gte: ?2, $lte: ?3 }
     }
     """)
-    Slice<ProductDocument> findByCategoryAndManufacturerAndPriceRange(
+    Page<ProductDocument> findByCategoryAndManufacturerAndPriceRange(
             String category,
             List<String> manufacturer,
             Integer minPrice,
@@ -66,6 +54,19 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     );
 
 
+    /// 제조사 목록 조회 (카테고리, 가격 포함)
+    @Aggregation(pipeline = {
+            "{ '$match': { 'category': ?0 } }",
+            "{ '$group': { '_id': '$manufacturer' } }"
+    })
+    List<String> findManufacturersByCategory(String category);
+
+
+    // =================
+    //  카테고리 상품 조회 함수
+    // =================
+
+    /// 카테고리 상품 목록 조회, 하우징 조회
     @Query("""
     {
       'type': ?0,
@@ -73,36 +74,61 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
       'is_custom': true
     }
     """)
-    Slice<ProductDocument> findByTypeAndCategoryAndIsCustomTrue(
+    Page<ProductDocument> findByCustomHousing(
             String type,
             String category,
             Pageable pageable
     );
 
-    @Query(value = """
-  { 'type': ?0, 'category': ?1, 'is_custom': true }
-""", count = true)
-    Long countByTypeAndCategoryAndIsCustomTrue(String type, String category);
+    /// 카테고리 상품 목록 조회, 하우징 조회(가격 포함)
+    @Query("""
+    {
+      'type': ?0,
+      'category': ?1,
+      'price': { $gte: ?2, $lte: ?3 },
+      'is_custom': true
+    }
+    """)
+    Page<ProductDocument> findByCustomHousing(
+            String type,
+            String category,
+            Integer minPrice,
+            Integer maxPrice,
+            Pageable pageable
+    );
 
+
+    /// 카테고리 상품 목록 조회, 키캡 조회
     @Query("""
     {
       'category': ?0,
       'is_custom': true
     }
     """)
-    Slice<ProductDocument> findByCategoryAndIsCustomTrue(
+    Page<ProductDocument> findByCustomKeyCap(
             String category,
             Pageable pageable
     );
 
+    /// 카테고리 상품 목록 조회, 키캡 조회
+    @Query("""
+    {
+      'category': ?0,
+      'price': { $gte: ?1, $lte: ?2 },
+      'is_custom': true
+    }
+    """)
+    Page<ProductDocument> findByCustomKeyCap(
+            String category,
+            Integer minPrice,
+            Integer maxPrice,
+            Pageable pageable
+    );
 
-    @Query(value = """
-  {'category': ?0, 'is_custom': true }
-""", count = true)
-    Long countByCategoryAndIsCustomTrue(String category);
 
-
-
+    // =================
+    //  추천용 함수
+    // =================
     /// 아이디 기반 조회
     Slice<ProductDocument> findByIdIn(List<String> ids, Pageable pageable);
 
@@ -122,9 +148,9 @@ public interface ProductDocumentRepository extends MongoRepository<ProductDocume
     })
     List<ProductDocument> findRandomExcludeIds(List<String> excludedIds, int limit);
 
-    /// 상품 개수
-    Long countByCategory(String category);
+
     // =================
     //  삭제 함수
     // =================
+
 }
