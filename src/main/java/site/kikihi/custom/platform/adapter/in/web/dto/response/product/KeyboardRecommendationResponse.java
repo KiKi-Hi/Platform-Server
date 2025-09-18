@@ -18,7 +18,10 @@ import java.util.List;
  */
 
 @Builder
-@Schema(name = "KeyboardRecommendationListResponse", description = "튜토리얼 키보드 추천 리스트 응답")
+@Schema(
+        name = "[응답][튜토리얼] 추천 상품 응답 Response",
+        description = "튜토리얼 키보드 추천 리스트 응답"
+)
 public record KeyboardRecommendationResponse(
 
         @Schema(description = "상품 아이디", example = "101")
