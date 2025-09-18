@@ -1,6 +1,7 @@
 package site.kikihi.custom.platform.adapter.in.web.dto.response.product;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import site.kikihi.custom.platform.domain.product.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -21,6 +22,7 @@ import static site.kikihi.custom.platform.adapter.in.web.dto.response.util.Produ
  * @param discountedPrice   가격 (기존 DTO 컬럼과 동일하게 유지)
  */
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 @Schema(name = "[응답][상품] 상품 목록 조회 Response", description = "상품 목록 조회를 위한 DTO입니다.")
 public record ProductListResponse(
@@ -30,6 +32,9 @@ public record ProductListResponse(
 
         @Schema(description = "상품 썸네일 이미지 URL", example = "https://example.com/product/101.jpg")
         String thumbnail,
+
+        @Schema(description = "상품 매핑 이미지 URL", example = "https://example.com/product/101.jpg")
+        String mappingUrl,
 
         @Schema(description = "카테고리명", example = "keycap")
         String category,
@@ -53,6 +58,7 @@ public record ProductListResponse(
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
                 .category(product.getCategory())
+                .mappingUrl(product.getMapping())
                 .manufacturerName(product.getManufacturer())
                 .productName(product.getName())
                 .discountedPrice(getPrice(product))
@@ -76,11 +82,23 @@ public record ProductListResponse(
                 .toList();
     }
 
+    /// 북마크한 내용이 있을 때, 북마크한 상품목록만 가져오는 정적 팩토리 메서드
+    public static List<ProductListResponse> fromBookmark(List<Product> products, Set<String> bookmarkProductIds) {
+        return products.stream()
+                .map(product -> ProductListResponse.from(
+                        product,
+                        bookmarkProductIds.contains(product.getId())))
+                /// true인 것만 가져오게끔
+                .filter(ProductListResponse::likedByMe)
+                .toList();
+    }
+
     /// 북마크한 내용이 있을 때 사용하는, 내부 정적 팩토리 메서드
     public static ProductListResponse from(Product product, boolean likedByMe) {
         return ProductListResponse.builder()
                 .id(product.getId())
                 .thumbnail(product.getThumbnail())
+                .mappingUrl(product.getMapping())
                 .category(product.getCategory())
                 .manufacturerName(product.getManufacturer())
                 .productName(product.getName())

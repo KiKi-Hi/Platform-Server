@@ -47,10 +47,10 @@ public class ProductMongoAdapter implements ProductPort {
     // =================
     /// 카테고리 기반 상품 목록 조회 (카테고리만)
     @Override
-    public Slice<Product> getProducts(String category, Pageable pageable) {
+    public Page<Product> getProducts(String category, Pageable pageable) {
 
         /// DB 조회
-        Slice<ProductDocument> result = documentRepository
+        Page<ProductDocument> result = documentRepository
                 .findByCategory(category, pageable);
 
         return result.
@@ -59,7 +59,7 @@ public class ProductMongoAdapter implements ProductPort {
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사 포함)
     @Override
-    public Slice<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
+    public Page<Product> getProducts(String category, List<String> manufacturer, Pageable pageable) {
 
         /// DB 조회
         Page<ProductDocument> result = documentRepository
@@ -71,9 +71,9 @@ public class ProductMongoAdapter implements ProductPort {
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 가격 포함)
     @Override
-    public Slice<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public Page<Product> getProducts(String category, Integer minPrice, Integer maxPrice, Pageable pageable) {
         /// DB 조회
-        Slice<ProductDocument> result = documentRepository
+        Page<ProductDocument> result = documentRepository
                 .findByCategoryAndPriceRange(category, minPrice, maxPrice, pageable);
 
         return result.
@@ -82,11 +82,11 @@ public class ProductMongoAdapter implements ProductPort {
 
     /// 카테고리 기반 상품 목록 조회 (카테고리, 제조사, 가격 포함)
     @Override
-    public Slice<Product> getProducts(String category, List<String> manufacturer,
+    public Page<Product> getProducts(String category, List<String> manufacturer,
                                      Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         /// DB 조회
-        Slice<ProductDocument> result = documentRepository
+        Page<ProductDocument> result = documentRepository
                 .findByCategoryAndManufacturerAndPriceRange(category, manufacturer, minPrice, maxPrice, pageable);
 
         return result.
@@ -128,32 +128,56 @@ public class ProductMongoAdapter implements ProductPort {
     }
 
     /**
-     * 커스텀에서 사용할 함수
+     * 커스텀에서 사용할 하우징 함수
      *
-     * @param type     조회할 타입
-     * @param pageable 페이징
+     * @param type          조회할 타입
+     * @param categoryId    카테고리
+     * @param pageable      페이징
      */
     @Override
-    public Slice<Product> getProductsAndCategoryByType(String type, String categoryId, Pageable pageable) {
+    public Page<Product> getCustomProducts(String type, String categoryId, Pageable pageable) {
 
-        return documentRepository.findByTypeAndCategoryAndIsCustomTrue(type, categoryId, pageable)
+        return documentRepository.findByCustomHousing(type, categoryId, pageable)
                 .map(ProductDocument::toDomain);
     }
-
-    @Override
-    public Slice<Product> getProductsByCategoryAndCustom(String categoryId, Pageable pageable) {
-        return documentRepository.findByCategoryAndIsCustomTrue(categoryId, pageable)
-                .map(ProductDocument::toDomain);
-    }
-
 
     /**
-     * 상품 개수 조회
-     * @param category  카테고리
+     * 커스텀에서 사용할 하우징 함수 (가격)
+     *
+     * @param type          조회할 타입
+     * @param categoryId    카테고리
+     * @param minPrice      최소 가격
+     * @param maxPrice      최대 가격
+     * @param pageable      페이징
      */
     @Override
-    public Long getProductsCount(String category) {
-        return documentRepository.countByCategory(category);
+    public Page<Product> getCustomProducts(String type, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return documentRepository.findByCustomHousing(type, categoryId, minPrice, maxPrice, pageable)
+                .map(ProductDocument::toDomain);
+    }
+
+    /**
+     * 커스텀에서 사용할 키캡 함수
+     * @param categoryId    카테고리
+     * @param pageable      페이징
+     */
+    @Override
+    public Page<Product> getCustomProducts(String categoryId, Pageable pageable) {
+        return documentRepository.findByCustomKeyCap(categoryId, pageable)
+                .map(ProductDocument::toDomain);
+    }
+
+    /**
+     * 커스텀에서 사용할 키캡 함수
+     * @param categoryId    카테고리
+     * @param minPrice      최소 가격
+     * @param maxPrice      최대 가격
+     * @param pageable      페이징
+     */
+    @Override
+    public Page<Product> getCustomProducts(String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable) {
+        return documentRepository.findByCustomKeyCap(categoryId, minPrice, maxPrice, pageable)
+                .map(ProductDocument::toDomain);
     }
 
     // =================

@@ -24,6 +24,8 @@ public class CustomKeyboard extends BaseDomain {
 
     private String keyCapId;
 
+    private String accessoryId;
+
     private String name;
 
     private String imageUrl;
@@ -31,7 +33,7 @@ public class CustomKeyboard extends BaseDomain {
     private CustomKeyboardLayout layout;
 
     /// 정적 팩토리 메서드
-    public static CustomKeyboard of(UUID userId, CustomKeyboardLayout layout, String frameId, String switchId, String keyCapId, String name, String imageUrl) {
+    public static CustomKeyboard of(UUID userId, CustomKeyboardLayout layout, String frameId, String switchId, String keyCapId, String accessoryId, String name, String imageUrl) {
 
         return CustomKeyboard.builder()
                 .userId(userId)
@@ -39,6 +41,7 @@ public class CustomKeyboard extends BaseDomain {
                 .frameId(frameId)
                 .switchId(switchId)
                 .keyCapId(keyCapId)
+                .accessoryId(accessoryId == null ? "" : accessoryId)
                 .name(name)
                 .imageUrl(imageUrl)
                 .build();

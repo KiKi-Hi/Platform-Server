@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.adapter.in.web.swagger;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import site.kikihi.custom.global.response.ApiResponse;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
@@ -52,13 +53,15 @@ public interface CustomKeyboardControllerSpec {
 
     /**
      * 키보드 상세 조회
-     * @param customKeyboardId  키보드 ID
+     *
+     * @param customKeyboardId 키보드 ID
      */
     @Operation(
             summary = "커스텀 키보드 상세 조회 API",
             description = "커스텀 키보드를 상세 조회합니다."
     )
     ApiResponse<CustomKeyboardDetailResponse> getCustomKeyboard(
+            @Parameter(example = "1")
             @PathVariable Long customKeyboardId);
 
 
@@ -73,17 +76,6 @@ public interface CustomKeyboardControllerSpec {
     ApiResponse<SliceResponse<CustomKeyboardListResponse>> getMyCustoms(
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
-
-    /**
-     * 키보드 배열 종류 조회
-     */
-    @Operation(
-            summary = "키보드 배열 목록 조회 API",
-            description = "키보드 배열의 목록을 조회합니다."
-    )
-    ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyboardLayout();
-
-
     /**
      *
      */
@@ -96,6 +88,9 @@ public interface CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = true) boolean bookmark,
             PageRequest pageRequest
     );
 
@@ -112,9 +107,10 @@ public interface CustomKeyboardControllerSpec {
     String REQUEST = """
             {
               "layout" : "PERCENT_60",
-              "housingId" : "68b3f4fedc26d32d8881fdff",
-              "switchId" : "686bd26d34c3c12ea9b8e7e3",
-              "keyCapId" : "68b3f653dc26d32d8881fe3d",
+              "housingId" : "68b3f4fedc26d32d8881fe12",
+              "switchId" : "689d4fd15f80b10f1691fc96",
+              "keyCapId" : "68b3f653dc26d32d8881fe43",
+              "accessoryId" : "68baf9e37de370ef29647eb1",
               "name" : "테스트 커스텀"
             }
             """;

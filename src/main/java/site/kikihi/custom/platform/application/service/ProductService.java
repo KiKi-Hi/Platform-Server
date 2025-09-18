@@ -1,5 +1,6 @@
 package site.kikihi.custom.platform.application.service;
 
+import org.springframework.data.domain.*;
 import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
@@ -7,13 +8,9 @@ import site.kikihi.custom.platform.application.in.product.ProductUseCase;
 import site.kikihi.custom.platform.application.out.bookmark.BookmarkPort;
 import site.kikihi.custom.platform.application.out.product.ProductPort;
 import site.kikihi.custom.platform.domain.bookmark.Bookmark;
-import site.kikihi.custom.platform.domain.custom.CustomKeyboardLayout;
 import site.kikihi.custom.platform.domain.product.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,10 +47,10 @@ public class ProductService implements ProductUseCase {
      * @param pageable      페이지
      */
     @Override
-    public Slice<ProductListResponse> getProductsByCategoryId(UUID userId, String categoryId, Pageable pageable) {
+    public Page<ProductListResponse> getProductsByCategoryId(UUID userId, String categoryId, Pageable pageable) {
 
         /// Port에서 조회
-        Slice<Product> products = productPort.getProducts(categoryId, pageable);
+        Page<Product> products = productPort.getProducts(categoryId, pageable);
 
         /// 공통 함수 바탕으로 처리
         return toProductListResponse(userId, categoryId, products);
@@ -68,10 +65,10 @@ public class ProductService implements ProductUseCase {
      * @param pageable          페이지
      */
     @Override
-    public Slice<ProductListResponse> getProductsByCategoryIdAndManufacturerId(UUID userId, String categoryId, List<String> manufacturers, Pageable pageable) {
+    public Page<ProductListResponse> getProductsByCategoryIdAndManufacturerId(UUID userId, String categoryId, List<String> manufacturers, Pageable pageable) {
 
         /// Port에서 조회
-        Slice<Product> products = productPort.getProducts(categoryId, manufacturers, pageable);
+        Page<Product> products = productPort.getProducts(categoryId, manufacturers, pageable);
 
         /// 공통 함수 바탕으로 처리
         return toProductListResponse(userId, categoryId, products);
@@ -89,10 +86,10 @@ public class ProductService implements ProductUseCase {
      * @param pageable      페이지
      */
     @Override
-    public Slice<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public Page<ProductListResponse> getProductsByCategoryIdAndPrice(UUID userId, String categoryId, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         /// Port에서 조회
-        Slice<Product> products = productPort.getProducts(categoryId, minPrice, maxPrice, pageable);
+        Page<Product> products = productPort.getProducts(categoryId, minPrice, maxPrice, pageable);
 
         /// 공통 함수 바탕으로 처리
         return toProductListResponse(userId, categoryId, products);
@@ -110,24 +107,13 @@ public class ProductService implements ProductUseCase {
      * @param pageable          페이지
      */
     @Override
-    public Slice<ProductListResponse> getProductsByCategoryIdAndManufacturerIdAndPrice(UUID userId, String categoryId, List<String> manufacturers, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public Page<ProductListResponse> getProductsByCategoryIdAndManufacturerIdAndPrice(UUID userId, String categoryId, List<String> manufacturers, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         /// Port에서 조회
-        Slice<Product> products = productPort.getProducts(categoryId, manufacturers, minPrice, maxPrice, pageable);
+        Page<Product> products = productPort.getProducts(categoryId, manufacturers, minPrice, maxPrice, pageable);
 
         /// 공통 함수 바탕으로 처리
         return toProductListResponse(userId, categoryId, products);
-    }
-
-    /**
-     * 카테고리에 따른 전체 상품 개수
-     * @param categoryId    카테고리
-     */
-    @Override
-    public Long getCountProducts(String categoryId) {
-
-        /// Port에서 조회
-        return productPort.getProductsCount(categoryId);
     }
 
     // =================
@@ -184,29 +170,6 @@ public class ProductService implements ProductUseCase {
 
     // ========================
     // 외부 의존성
-    // ========================
-    /**
-     * 커스텀 키보드에 맞는 부품들 조회
-     * @param userId        북마크 체크를 위한 유저ID
-     * @param categoryId    카테고리 ID
-     * @param layout        생성할 커스텀 키보드 배열
-     * @param pageable      페이징
-     */
-    @Override
-    public Slice<ProductListResponse> getProductsByLayout(UUID userId, String categoryId, CustomKeyboardLayout layout, Pageable pageable) {
-
-        /// Port에서 조회
-        Slice<Product> products = productPort.getProducts(categoryId, pageable);
-
-        // TODO!필터 작업이 필요하다!!
-        /// 필터를 통해 해당 제품이 특정 배열이 가능한 것만 가져오기
-//        products.stream()
-//                .filter()...
-
-        /// 결과 리턴
-        ///
-        return toProductListResponse(userId, categoryId, products);
-    }
 
     // =================
     //  공통 함수
@@ -217,7 +180,7 @@ public class ProductService implements ProductUseCase {
      * @param categoryId    카테고리 ID
      * @param products      상품 목록
      */
-    private Slice<ProductListResponse> toProductListResponse(UUID userId, String categoryId, Slice<Product> products) {
+    private Page<ProductListResponse> toProductListResponse(UUID userId, String categoryId, Page<Product> products) {
         /// 응답 값
         List<ProductListResponse> dtoList;
 
@@ -231,7 +194,7 @@ public class ProductService implements ProductUseCase {
             dtoList = ProductListResponse.from(content);
 
             /// 새로운 Slice 객체로 생성
-            return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+            return new PageImpl<>(dtoList, products.getPageable(), products.getTotalElements());
         }
 
         /// 유저가 북마크를 했는지 체크
@@ -245,7 +208,7 @@ public class ProductService implements ProductUseCase {
         // 북마크 여부 반영하여 DTO 변환
         dtoList = ProductListResponse.from(content, bookmarkedProductIds);
 
-        return new SliceImpl<>(dtoList, products.getPageable(), products.hasNext());
+        return new PageImpl<>(dtoList, products.getPageable(), products.getTotalElements());
     }
 
 

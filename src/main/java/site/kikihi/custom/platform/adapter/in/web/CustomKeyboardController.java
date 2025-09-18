@@ -1,11 +1,13 @@
 package site.kikihi.custom.platform.adapter.in.web;
 
+import org.springframework.data.domain.*;
 import site.kikihi.custom.global.response.ApiResponse;
+import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
-import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardUpdateRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
@@ -16,10 +18,6 @@ import site.kikihi.custom.platform.domain.custom.CustomKeyboardWithName;
 import site.kikihi.custom.security.oauth2.domain.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -97,21 +95,6 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     }
 
     /**
-     * 키보드 배열 종류 조회
-     */
-    @GetMapping("/layout")
-    public ApiResponse<List<CustomKeyboardLayoutResponse>> getCustomKeyboardLayout() {
-
-        /// 서비스
-        List<CustomKeyboardLayout> layouts = service.getKeyboardLayouts();
-
-        /// DTO
-        List<CustomKeyboardLayoutResponse> responses = CustomKeyboardLayoutResponse.from(layouts);
-
-        return ApiResponse.ok(responses);
-    }
-
-    /**
      * 배열에 맞는 상품 조회
      */
     @GetMapping("/products")
@@ -119,6 +102,9 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam CustomCategoryType category,
             @RequestParam CustomKeyboardLayout layout,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = true, defaultValue = "false") boolean bookmark,
             PageRequest pageRequest
     ) {
 
@@ -133,18 +119,59 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         );
 
         /// 서비스
-        Slice<ProductListResponse> content = service.getCustomProducts(userId, category.getValue(), layout, pageable);
+        Slice<ProductListResponse> content;
+        long counts;
 
-        /// DTO 변경
-        Slice<ProductListResponse> dtoSlice = new SliceImpl<>(
-                content.getContent(),
-                content.getPageable(),
-                content.hasNext()
-        );
+        // 파라미터 여부에 따라 분기 처리
+        if (!bookmark && minPrice == null && maxPrice == null) {
+            /// 카테고리만 있는 경우
+            var result = service.getCustomProducts(userId, category.getValue(), layout, pageable);
+            counts = result.getTotalElements();
+            content = result;
+
+        } else if (bookmark && minPrice == null && maxPrice == null) {
+            /// 카테고리와 북마크만 있는 경우
+            var result = service.getProductsByBookmark(userId, category.getValue(), layout, pageable);
+            counts = result.getTotalElements();
+            content = result;
+
+        } else if (!bookmark && minPrice != null && maxPrice != null) {
+            /// 카테고리와 가격만 있는 경우
+            var result = service.getProductsByCategoryIdAndPrice(userId, category.getValue(), layout, minPrice, maxPrice, pageable);
+            counts = result.getTotalElements();
+            content = result;
+
+        } else if (bookmark && minPrice != null && maxPrice != null) {
+            /// 카테고리,북마크,가격 모두 있는 경우
+            var result = service.getProductsByFilterAndBookmark(userId, category.getValue(), layout, minPrice, maxPrice, pageable);
+            counts = result.getTotalElements();
+            content = result;
+        } else {
+            throw new IllegalArgumentException(ErrorCode.BAD_REQUEST.getMessage());
+        }
+
 
         /// 응답
-        return ApiResponse.ok(SliceResponse.from(dtoSlice));
+        return ApiResponse.ok(SliceResponse.from(content, counts));
     }
+
+
+    /**
+     * 커스텀 키보드 내부 상품 추가하기
+     * @param request           추가 DTO
+     * @param principalDetails  유저
+     */
+    public ApiResponse<Void> updateCustomKeyboard(
+            @RequestBody CustomKeyboardUpdateRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ){
+
+        /// 서비스
+        service.insertProductInCustomKeyboard(request.getId(), request.getCategory().getValue(), request.getProductId(), principalDetails.getId());
+
+        return ApiResponse.updated();
+    }
+
 
     /**
      * 커스텀 키보드 삭제 API
@@ -162,5 +189,26 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 응답
         return ApiResponse.deleted();
 
+    }
+
+    /**
+     * 커스텀 키보드 내부 상품 삭제 API
+     * @param id                수정할 커스텀 키보드
+     * @param category          카테고리 API
+     * @param productId         상품 ID
+     * @param principalDetails  유저
+     */
+    @DeleteMapping()
+    public ApiResponse<Void> deleteProductInsideCustom(
+            @RequestParam Long id,
+            @RequestParam CustomCategoryType category,
+            @RequestParam String productId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+
+        /// 서비스 호출
+        service.deleteCustomInside(id, category.getValue(), productId, principalDetails.getId());
+
+        return ApiResponse.deleted();
     }
 }

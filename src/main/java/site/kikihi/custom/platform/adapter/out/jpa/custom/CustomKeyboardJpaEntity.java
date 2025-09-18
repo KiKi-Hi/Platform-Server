@@ -30,6 +30,8 @@ public class CustomKeyboardJpaEntity extends BaseTimeEntity {
 
     private String keyCapId;
 
+    private String accessoryId;
+
     private String name;
 
     private String imageUrl;
@@ -45,6 +47,7 @@ public class CustomKeyboardJpaEntity extends BaseTimeEntity {
                 .frameId(entity.getFrameId())
                 .switchId(entity.getSwitchId())
                 .keyCapId(entity.getKeyCapId())
+                .accessoryId(entity.getAccessoryId())
                 .name(entity.getName())
                 .imageUrl(entity.getImageUrl())
                 .layout(entity.getLayout())
@@ -59,6 +62,7 @@ public class CustomKeyboardJpaEntity extends BaseTimeEntity {
                 .frameId(frameId)
                 .switchId(switchId)
                 .keyCapId(keyCapId)
+                .accessoryId(accessoryId)
                 .name(name)
                 .imageUrl(imageUrl)
                 .layout(layout)

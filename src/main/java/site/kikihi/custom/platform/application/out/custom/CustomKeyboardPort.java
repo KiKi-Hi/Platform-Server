@@ -24,11 +24,15 @@ public interface CustomKeyboardPort {
     // 존재 여부 판단
     Optional<CustomKeyboard> loadCustomKeyboardByUserId(UUID userId);
 
+    // 상품이 커스텀 내부 존재 여부 판단
+    boolean existProductInsideCustomKeyboard(Long id, String categoryId, String productId);
+
     /// 수정
     void updateCustomKeyboard(CustomKeyboard customKeyboard);
 
-
     /// 삭제
     void deleteCustomKeyboard(Long id);
+
+    void deleteProductInsideCustomKeyboard(Long id, String categoryId, String productId);
 
 }
