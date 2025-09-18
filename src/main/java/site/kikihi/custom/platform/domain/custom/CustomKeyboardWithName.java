@@ -30,10 +30,12 @@ public record CustomKeyboardWithName(
         UUID userId,
         String layout,
         String frameId,
+        String frameUrl,
         String frameName,
         String switchId,
         String switchName,
         String keyCapId,
+        String keyCapUrl,
         String keyCapName,
         String accessoryId,
         String accessoryName,
@@ -60,10 +62,12 @@ public record CustomKeyboardWithName(
                 .userId(keyboard.getUserId())
                 .layout(keyboard.getLayout().getLayoutName())
                 .frameId(housingProduct.getId())
+                .frameUrl(housingProduct.getMapping())
                 .frameName(housingProduct.getName())
                 .switchId(switchProduct.getId())
                 .switchName(switchProduct.getName())
                 .keyCapId(keyCapProduct.getId())
+                .keyCapUrl(keyCapProduct.getMapping())
                 .keyCapName(keyCapProduct.getName())
                 .accessoryId(accessoryProduct != null ? accessoryProduct.getId() : null)
                 .accessoryName(accessoryProduct != null ? accessoryProduct.getName() : null)

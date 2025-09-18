@@ -1,5 +1,7 @@
 package site.kikihi.custom.platform.adapter.out;
 
+import jakarta.transaction.Transactional;
+import site.kikihi.custom.global.response.ErrorCode;
 import site.kikihi.custom.platform.adapter.out.jpa.custom.CustomKeyboardJpaEntity;
 import site.kikihi.custom.platform.adapter.out.jpa.custom.CustomKeyboardJpaRepository;
 import site.kikihi.custom.platform.application.out.custom.CustomKeyboardPort;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -129,17 +132,55 @@ public class CustomKeyboardAdapter implements CustomKeyboardPort {
     }
 
     /**
-     * 삭제할 커스텀 키보드
+     * 커스텀 키보드 내부 상품 삭제
      * @param id            아이디
      * @param categoryId    카테고리
      * @param productId     상품 ID
      */
     @Override
+    @Transactional
     public void deleteProductInsideCustomKeyboard(Long id, String categoryId, String productId) {
 
-        /// 삭제가 아닌 수정으로 진행
-        /// 더티 체킹으로서 수행
+        /// 실질적으로는 삭제가 아닌 수정으로 진행
+        /// JPA이기에 영속성을 살려서, 더티 체킹으로서 수행
 
+        /// 조회를 통해, 영속성 컨테이너에 넣기
+        CustomKeyboardJpaEntity entity = repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+
+        /// 찾은 값을 도메인으로 변환 및 로직 수행
+        CustomKeyboard domain = entity.toDomain();
+        /// 도메인 로직 수행
+        domain.removeProduct(categoryId, productId);
+
+        /// 더티체킹 수행(영속성 컨테이너 있는 값 수정)
+        entity.update(domain);
+
+    }
+
+    /**
+     * 커스텀 키보드 내부 상품 추기
+     * @param id            아이디
+     * @param categoryId    카테고리
+     * @param productId     상품 ID
+     */
+    @Override
+    public void addProductInsideCustomKeyboard(Long id, String categoryId, String productId) {
+
+        // 실질적으로는 삭제가 아닌 수정으로 진행
+        /// JPA이기에 영속성을 살려서, 더티 체킹으로서 수행
+
+        /// 조회를 통해, 영속성 컨테이너에 넣기
+        CustomKeyboardJpaEntity entity = repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+
+        /// 찾은 값을 도메인으로 변환 및 로직 수행
+        CustomKeyboard domain = entity.toDomain();
+        /// 도메인 로직 수행
+        domain.addProduct(categoryId, productId);
+
+        /// 더티체킹 수행(영속성 컨테이너 있는 값 수정)
+        entity.update(domain);
 
     }
 }

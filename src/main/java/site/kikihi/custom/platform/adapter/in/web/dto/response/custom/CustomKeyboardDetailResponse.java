@@ -33,11 +33,17 @@ public record CustomKeyboardDetailResponse(
         @Schema(description = "하우징 상품 ID", example = "68b3f4fedc26d32d8881fe12")
         String housingId,
 
+        @Schema(description = "하우징 매핑 이미지 URL", example = "https://example.com/product/101.jpg")
+        String housingImageUrl,
+
         @Schema(description = "하우징(프레임) 이름", example = "TX-65")
         String housingName,
 
         @Schema(description = "키캡 ID", example = "GMK Red Samurai")
         String keyCapId,
+
+        @Schema(description = "키캡 매핑 이미지 URL", example = "https://example.com/product/101.jpg")
+        String keyCapImageUrl,
 
         @Schema(description = "키캡 이름", example = "GMK Red Samurai")
         String keyCapName,
@@ -68,8 +74,10 @@ public record CustomKeyboardDetailResponse(
                 .customName(entity.name())
                 .customKeyboardType(entity.layout())
                 .housingId(entity.frameId())
+                .housingImageUrl(entity.frameUrl())
                 .housingName(entity.frameName())
                 .keyCapId(entity.keyCapId())
+                .keyCapImageUrl(entity.keyCapUrl())
                 .keyCapName(entity.keyCapName())
                 .switchId(entity.switchId())
                 .switchName(entity.switchName())

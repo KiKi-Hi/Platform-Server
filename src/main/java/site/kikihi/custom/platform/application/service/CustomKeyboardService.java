@@ -85,6 +85,20 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     @Override
     public void insertProductInCustomKeyboard(Long customKeyboardId, String categoryId, String productId, UUID userId) {
 
+        /// 해당 유저의 커스텀 키보드인지 체크
+        boolean checked = port.existCustomKeyboardByUserIdAndId(userId, customKeyboardId);
+
+        /// 키보드가 요청자의 것이 아니라면 에러 발생
+        if (!checked) {
+            throw new IllegalStateException(ErrorCode.UNAUTHORIZED_DELETE_CUSTOM.getMessage());
+        }
+
+        /// 추가하고자 하는 상품이 존재하는지 체크
+        Product product = getProduct(productId);
+
+        /// 해당 유저의 상품이며, 커스텀 내부에 상품이 존재하기에 삭제 가능하다.
+        port.addProductInsideCustomKeyboard(customKeyboardId, categoryId, product.getId());
+
     }
 
     // =================
@@ -336,12 +350,13 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         /// 커스텀 내부에 해당 상품의 ID가 있는지 여부 확인
         boolean existed = port.existProductInsideCustomKeyboard(customKeyboardId, categoryId, productId);
 
+        /// 키보드에 상품이 없었다면 삭제
         if (!existed) {
             throw new IllegalStateException(ErrorCode.BAD_PRODUCT_DELETE_CUSTOM.getMessage());
         }
 
         /// 해당 유저의 상품이며, 커스텀 내부에 상품이 존재하기에 삭제 가능하다.
-        port.deleteCustomKeyboard(customKeyboardId);
+        port.deleteProductInsideCustomKeyboard(customKeyboardId, categoryId, productId);
 
     }
 

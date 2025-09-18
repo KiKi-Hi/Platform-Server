@@ -35,4 +35,6 @@ public interface CustomKeyboardPort {
 
     void deleteProductInsideCustomKeyboard(Long id, String categoryId, String productId);
 
+    void addProductInsideCustomKeyboard(Long id, String categoryId, String productId);
+
 }
