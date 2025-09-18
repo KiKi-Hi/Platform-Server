@@ -40,6 +40,9 @@ public record CustomKeyboardListResponse(
         @Schema(description = "스위치 이름", example = "Gateron Ink Black v2")
         String switchName,
 
+        @Schema(description = "악세사리 이름", example = "손목 보호대")
+        String accessoryName,
+
         @Schema(description = "썸네일 이미지 URL", example = "https://example.com/custom/101.jpg")
         String thumbnail,
 
@@ -56,6 +59,7 @@ public record CustomKeyboardListResponse(
                 .housingName(entity.frameName())
                 .keyCapName(entity.keyCapName())
                 .switchName(entity.switchName())
+                .accessoryName(entity.accessoryName())
                 .thumbnail(entity.imageUrl())
                 .price(entity.totalPrice())
                 .build();

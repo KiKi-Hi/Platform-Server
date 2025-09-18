@@ -68,7 +68,13 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         }
 
         /// 객체 생성
-        var customKeyboard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), accessoryId, request.getName(), "thumbnail");
+        var customKeyboard = CustomKeyboard.of(userId,
+                request.getLayout(),
+                frameProduct.getId(),
+                switchProduct.getId(),
+                keyCapProduct.getId(),
+                accessoryId,
+                request.getName(), "");
 
         /// 저장 후 리턴
         return port.saveCustomKeyboard(customKeyboard);
@@ -168,9 +174,9 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
 
         /// 개별 상품 조회
         // TODO! 한번에 조회하도록 쿼리문 수정
-        var frameProduct = getProduct(keyBoard.getFrameId());
-        var switchProduct = getProduct(keyBoard.getSwitchId());
-        var keyCapProduct = getProduct(keyBoard.getKeyCapId());
+        var frameProduct = findProductOrNull(keyBoard.getFrameId());
+        var switchProduct = findProductOrNull(keyBoard.getSwitchId());
+        var keyCapProduct = findProductOrNull(keyBoard.getKeyCapId());
 
         String accessoryId = null;
         if (keyBoard.getAccessoryId() != null && !keyBoard.getAccessoryId().isBlank()) {
@@ -372,6 +378,14 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     private Product getProduct(String productId) {
         return productPort.getProduct(productId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+    }
+
+    /**
+     * 못 찾으면 null 반환(선택 필드에 사용)
+     */
+    private Product findProductOrNull(String productId) {
+        if (productId == null || productId.isBlank()) return null;
+        return productPort.getProduct(productId).orElse(null);
     }
 
     /**

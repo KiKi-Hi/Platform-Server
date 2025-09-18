@@ -51,30 +51,35 @@ public record CustomKeyboardWithName(
             Product keyCapProduct,
             Product accessoryProduct) {
 
-        // accessoryProduct가 null이면 가격에 더하지 않음
-        double totalPrice = housingProduct.getPrice() + switchProduct.getPrice() + keyCapProduct.getPrice();
-        if (accessoryProduct != null) {
-            totalPrice += accessoryProduct.getPrice();
-        }
+        // 총 가격 계산 (null 안전)
+        double totalPrice = 0.0;
+        if (housingProduct   != null) totalPrice += housingProduct.getPrice();
+        if (switchProduct    != null) totalPrice += switchProduct.getPrice();
+        if (keyCapProduct    != null) totalPrice += keyCapProduct.getPrice();
+        if (accessoryProduct != null) totalPrice += accessoryProduct.getPrice();
 
         return CustomKeyboardWithName.builder()
                 .id(keyboard.getId())
                 .userId(keyboard.getUserId())
-                .layout(keyboard.getLayout().getLayoutName())
-                .frameId(housingProduct.getId())
-                .frameUrl(housingProduct.getMapping())
-                .frameName(housingProduct.getName())
-                .switchId(switchProduct.getId())
-                .switchName(switchProduct.getName())
-                .keyCapId(keyCapProduct.getId())
-                .keyCapUrl(keyCapProduct.getMapping())
-                .keyCapName(keyCapProduct.getName())
+                .layout(keyboard.getLayout() != null ? keyboard.getLayout().getLayoutName() : null)
+
+                .frameId(housingProduct != null ? housingProduct.getId() : null)
+                .frameUrl(housingProduct != null ? housingProduct.getMapping() : null)
+                .frameName(housingProduct != null ? housingProduct.getName() : null)
+
+                .switchId(switchProduct != null ? switchProduct.getId() : null)
+                .switchName(switchProduct != null ? switchProduct.getName() : null)
+
+                .keyCapId(keyCapProduct != null ? keyCapProduct.getId() : null)
+                .keyCapUrl(keyCapProduct != null ? keyCapProduct.getMapping() : null)
+                .keyCapName(keyCapProduct != null ? keyCapProduct.getName() : null)
+
                 .accessoryId(accessoryProduct != null ? accessoryProduct.getId() : null)
                 .accessoryName(accessoryProduct != null ? accessoryProduct.getName() : null)
+
                 .name(keyboard.getName())
                 .totalPrice(totalPrice)
                 .imageUrl(keyboard.getImageUrl())
                 .build();
     }
-
 }
