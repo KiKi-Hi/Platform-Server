@@ -25,7 +25,8 @@ public class LogFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         /// 요청 로그 남기기
-        String ipAddress = request.getRemoteAddr();
+        String ipAddress = getClientIp(request);
+
         String httpMethod = request.getMethod();
         String uri = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
@@ -37,4 +38,23 @@ public class LogFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
+
+    /// 요청자의 실제 IP를 조회하기 위한 함수
+    public String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+
+        /// X-Forwarded-For이 있다면
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // 여러 개라면 첫 번째 값이 클라이언트 IP
+            return ip.split(",")[0].trim();
+        }
+
+        /// X-Forwarded-For이 없다면
+        ip = request.getHeader("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        return request.getRemoteAddr();
+    }
+
 }
