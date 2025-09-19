@@ -69,4 +69,18 @@ public class CustomKeyboardJpaEntity extends BaseTimeEntity {
                 .build();
     }
 
+
+    /// 수정하는 함수
+    public void update(CustomKeyboard domain) {
+        this.id = domain.getId();
+        this.userId = domain.getUserId();
+        this.frameId = domain.getFrameId();
+        this.switchId = domain.getSwitchId();
+        this.keyCapId = domain.getKeyCapId();
+        this.accessoryId = domain.getAccessoryId();
+        this.name = domain.getName();
+        this.imageUrl = domain.getImageUrl();
+        this.layout = domain.getLayout();
+    }
+
 }

@@ -6,7 +6,7 @@ import site.kikihi.custom.global.response.page.PageRequest;
 import site.kikihi.custom.global.response.page.SliceResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomCategoryType;
 import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardRequest;
-import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardLayoutResponse;
+import site.kikihi.custom.platform.adapter.in.web.dto.request.custom.CustomKeyboardUpdateRequest;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardDetailResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.custom.CustomKeyboardListResponse;
 import site.kikihi.custom.platform.adapter.in.web.dto.response.product.ProductListResponse;
@@ -22,8 +22,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Tag(name = "커스텀 키보드 API", description = "커스텀 키보드 관련 API입니다.")
 public interface CustomKeyboardControllerSpec {
@@ -77,9 +75,16 @@ public interface CustomKeyboardControllerSpec {
             @AuthenticationPrincipal PrincipalDetails principalDetails);
 
     /**
+     * 키보드 배열에 따른 목록 조회
      *
+     * @param principalDetails 유저
+     * @param category         카테고리
+     * @param layout           레이아웃
+     * @param minPrice         최소가격
+     * @param maxPrice         최대가격
+     * @param bookmark         북마크 여부
+     * @param pageRequest      페이징
      */
-
     @Operation(
             summary = "키보드 배열에 따른 가능한 부품 조회 API",
             description = "키보드 배열에 따라서 가능한 상품 목록을 조회합니다. 유저의 정보가 들어온다면 북마크 여부 또한 제공합니다."
@@ -90,7 +95,7 @@ public interface CustomKeyboardControllerSpec {
             @RequestParam CustomKeyboardLayout layout,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
-            @RequestParam(required = true) boolean bookmark,
+            @RequestParam(defaultValue = "false") boolean bookmark,
             PageRequest pageRequest
     );
 
@@ -100,9 +105,57 @@ public interface CustomKeyboardControllerSpec {
             description = "JWT를 기반으로 커스텀 키보드를 삭제합니다."
     )
     ApiResponse<Void> deleteCustomKeyboard(
+            @Parameter(example = "1")
             @PathVariable Long id,
+
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
+
+
+    @Operation(
+            summary = "커스텀 키보드 내부 부품 삭제 API",
+            description = "커스텀 키보드 내부 부품을 삭제합니다."
+    )
+    ApiResponse<Void> deleteProductInsideCustom(
+
+            @Parameter(example = "1")
+            @RequestParam Long id,
+
+            @RequestParam CustomCategoryType category,
+
+            @Parameter(example = "68b3f4fedc26d32d8881fe12")
+            @RequestParam String productId,
+
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+
+
+    /**
+     * 내부 부품을 추가
+     * @param request           요청
+     * @param principalDetails  유저
+     */
+    @Operation(
+            summary = "커스텀 키보드 내부 부품 추가 API",
+            description = "커스텀 키보드 내부 부품을 추가합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(name = "수정 예시", value = UPDATE_REQUEST),
+                            }
+                    )
+            )
+    )
+    ApiResponse<Void> addProductInsideCustom(
+            @RequestBody @Valid CustomKeyboardUpdateRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+
+
+
 
     String REQUEST = """
             {
@@ -113,6 +166,14 @@ public interface CustomKeyboardControllerSpec {
               "accessoryId" : "68baf9e37de370ef29647eb1",
               "name" : "테스트 커스텀"
             }
+            """;
+
+    String UPDATE_REQUEST = """
+            {
+               "id": "1",
+               "category": "housing",
+               "productId": "68b3f4fedc26d32d8881fe0e"
+             }
             """;
 
 }

@@ -68,7 +68,13 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         }
 
         /// 객체 생성
-        var customKeyboard = CustomKeyboard.of(userId, request.getLayout(), frameProduct.getId(), switchProduct.getId(), keyCapProduct.getId(), accessoryId, request.getName(), "thumbnail");
+        var customKeyboard = CustomKeyboard.of(userId,
+                request.getLayout(),
+                frameProduct.getId(),
+                switchProduct.getId(),
+                keyCapProduct.getId(),
+                accessoryId,
+                request.getName(), "");
 
         /// 저장 후 리턴
         return port.saveCustomKeyboard(customKeyboard);
@@ -84,6 +90,20 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
      */
     @Override
     public void insertProductInCustomKeyboard(Long customKeyboardId, String categoryId, String productId, UUID userId) {
+
+        /// 해당 유저의 커스텀 키보드인지 체크
+        boolean checked = port.existCustomKeyboardByUserIdAndId(userId, customKeyboardId);
+
+        /// 키보드가 요청자의 것이 아니라면 에러 발생
+        if (!checked) {
+            throw new IllegalStateException(ErrorCode.UNAUTHORIZED_DELETE_CUSTOM.getMessage());
+        }
+
+        /// 추가하고자 하는 상품이 존재하는지 체크
+        Product product = getProduct(productId);
+
+        /// 해당 유저의 상품이며, 커스텀 내부에 상품이 존재하기에 삭제 가능하다.
+        port.addProductInsideCustomKeyboard(customKeyboardId, categoryId, product.getId());
 
     }
 
@@ -154,9 +174,9 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
 
         /// 개별 상품 조회
         // TODO! 한번에 조회하도록 쿼리문 수정
-        var frameProduct = getProduct(keyBoard.getFrameId());
-        var switchProduct = getProduct(keyBoard.getSwitchId());
-        var keyCapProduct = getProduct(keyBoard.getKeyCapId());
+        var frameProduct = findProductOrNull(keyBoard.getFrameId());
+        var switchProduct = findProductOrNull(keyBoard.getSwitchId());
+        var keyCapProduct = findProductOrNull(keyBoard.getKeyCapId());
 
         String accessoryId = null;
         if (keyBoard.getAccessoryId() != null && !keyBoard.getAccessoryId().isBlank()) {
@@ -336,12 +356,13 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
         /// 커스텀 내부에 해당 상품의 ID가 있는지 여부 확인
         boolean existed = port.existProductInsideCustomKeyboard(customKeyboardId, categoryId, productId);
 
+        /// 키보드에 상품이 없었다면 삭제
         if (!existed) {
             throw new IllegalStateException(ErrorCode.BAD_PRODUCT_DELETE_CUSTOM.getMessage());
         }
 
         /// 해당 유저의 상품이며, 커스텀 내부에 상품이 존재하기에 삭제 가능하다.
-        port.deleteCustomKeyboard(customKeyboardId);
+        port.deleteProductInsideCustomKeyboard(customKeyboardId, categoryId, productId);
 
     }
 
@@ -357,6 +378,14 @@ public class CustomKeyboardService implements CustomKeyboardUseCase {
     private Product getProduct(String productId) {
         return productPort.getProduct(productId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
+    }
+
+    /**
+     * 못 찾으면 null 반환(선택 필드에 사용)
+     */
+    private Product findProductOrNull(String productId) {
+        if (productId == null || productId.isBlank()) return null;
+        return productPort.getProduct(productId).orElse(null);
     }
 
     /**

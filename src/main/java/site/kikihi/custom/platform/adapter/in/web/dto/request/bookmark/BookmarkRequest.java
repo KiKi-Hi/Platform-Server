@@ -1,10 +1,9 @@
 package site.kikihi.custom.platform.adapter.in.web.dto.request.bookmark;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.UUID;
 
 @Data
 @Builder
@@ -15,6 +14,7 @@ import java.util.UUID;
 public class BookmarkRequest {
 
     @Schema(description = "북마크할 상품 ID", example = "6896ed7d5198cf586e933d6e")
+    @NotNull
     private String productId;
 
 }

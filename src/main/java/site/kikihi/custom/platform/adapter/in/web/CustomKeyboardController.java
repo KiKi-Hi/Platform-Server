@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/custom")
+@RequestMapping("/api/v1/customs")
 @RequiredArgsConstructor
 public class CustomKeyboardController implements CustomKeyboardControllerSpec {
 
@@ -50,14 +50,14 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
     /**
      * 커스텀 키보드 상세 조회
      *
-     * @param customKeyboardId 키보드 상세 조회 ID
+     * @param id 키보드 상세 조회 ID
      */
-    @GetMapping("/{customKeyboardId}")
+    @GetMapping("/{id}")
     public ApiResponse<CustomKeyboardDetailResponse> getCustomKeyboard(
-            @PathVariable Long customKeyboardId
+            @PathVariable Long id
     ) {
         /// 서비스
-        CustomKeyboardWithName keyBoard = service.getCustomKeyboard(customKeyboardId);
+        CustomKeyboardWithName keyBoard = service.getCustomKeyboard(id);
 
         /// DTO 변경
         var response = CustomKeyboardDetailResponse.from(keyBoard);
@@ -71,7 +71,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      *
      * @param principalDetails 유저
      */
-    @GetMapping("/myCustoms")
+    @GetMapping()
     public ApiResponse<SliceResponse<CustomKeyboardListResponse>> getMyCustoms(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
@@ -104,7 +104,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
             @RequestParam CustomKeyboardLayout layout,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
-            @RequestParam(required = true, defaultValue = "false") boolean bookmark,
+            @RequestParam(defaultValue = "false") boolean bookmark,
             PageRequest pageRequest
     ) {
 
@@ -169,6 +169,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 서비스
         service.insertProductInCustomKeyboard(request.getId(), request.getCategory().getValue(), request.getProductId(), principalDetails.getId());
 
+        /// 수정 완료 응답 제공
         return ApiResponse.updated();
     }
 
@@ -188,7 +189,6 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
 
         /// 응답
         return ApiResponse.deleted();
-
     }
 
     /**
@@ -198,7 +198,7 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
      * @param productId         상품 ID
      * @param principalDetails  유저
      */
-    @DeleteMapping()
+    @DeleteMapping("/products")
     public ApiResponse<Void> deleteProductInsideCustom(
             @RequestParam Long id,
             @RequestParam CustomCategoryType category,
@@ -209,6 +209,26 @@ public class CustomKeyboardController implements CustomKeyboardControllerSpec {
         /// 서비스 호출
         service.deleteCustomInside(id, category.getValue(), productId, principalDetails.getId());
 
+        /// 삭제 완료 응답 제공
         return ApiResponse.deleted();
+    }
+
+    /**
+     * 커스텀 키보드 내부 상품 추가 API
+     *
+     * @param request          요청
+     * @param principalDetails 유저
+     */
+    @Override
+    @PatchMapping("/products")
+    public ApiResponse<Void> addProductInsideCustom(
+            @RequestBody @Valid CustomKeyboardUpdateRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        /// 서비스 호출
+        service.insertProductInCustomKeyboard(request.getId(), request.getCategory().getValue(), request.getProductId(), principalDetails.getId());
+
+        /// 수정 완료 응답 제공
+        return ApiResponse.updated();
     }
 }

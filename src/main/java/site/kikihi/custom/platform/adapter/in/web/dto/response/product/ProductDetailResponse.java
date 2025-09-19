@@ -98,6 +98,10 @@ public record ProductDetailResponse(
 
     /// 내부에서만 사용되는 옵션
     @Builder
+    @Schema(
+            name = "[응답][상품] 상품 옵션 조회 Response",
+            description = "상품의 옵션 정보를 반환하는 응답 DTO입니다."
+    )
     private record ProductOptions(
             String optionName,
             Double price,
